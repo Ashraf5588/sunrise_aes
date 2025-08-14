@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theme Marks Selection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+    
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      background-color: white;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+    
+    button {
+      width: 100%;
+      padding: 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    .note {
+      background-color: #e7f3ff;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      border-left: 4px solid #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Theme Marks Report</h1>
+    
+    <div class="form-group">
+      <label for="classSelector">Select Class and Section:</label>
+      <select id="classSelector">
+        <option value="" selected disabled>-- Select a class and section --</option>
+        <% 
+          // Sort studentClassdata by class number
+          const sortedClassData = [...studentClassdata].sort((a, b) => {
+            // Convert class to number for proper numeric sorting
+            const classA = parseInt(a.studentClass);
+            const classB = parseInt(b.studentClass);
+            
+            // First sort by class number
+            if (classA !== classB) {
+              return classA - classB;
+            }
+            
+            // If same class, sort by section
+            return a.section.localeCompare(b.section);
+          });
+          
+          // Group by class for optgroup
+          const classGroups = {};
+          sortedClassData.forEach(item => {
+            const classNum = item.studentClass;
+            if (!classGroups[classNum]) {
+              classGroups[classNum] = [];
+            }
+            classGroups[classNum].push(item);
+          });
+          
+          // Get sorted class numbers
+          const sortedClassNumbers = Object.keys(classGroups).sort((a, b) => parseInt(a) - parseInt(b));
+          
+          // Loop through each class group
+          sortedClassNumbers.forEach(classNum => {
+            const sections = classGroups[classNum];
+        %>
+          <optgroup label="Class <%= classNum %> 📚">
+          <% sections.forEach(studentclass => { %>
+            <option 
+              value="<%=studentclass.section.trim()%>"
+              data-class="<%=studentclass.studentClass%>"
+              data-section="<%=studentclass.section%>">
+              Class <%= studentclass.studentClass %> - Section <%= studentclass.section %>
+            </option>
+          <% }); %>
+          </optgroup>
+        <% }); %>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="subject">Select Subject (Optional):</label>
+      <select name="subject" id="subject">
+        <option value="">-- All Subjects --</option>
+        <% const uniqueSubjects = new Set(newsubjectList.map(item => item.newsubject)); %>
+        <% uniqueSubjects.forEach(function(subject) { %>
+          <option value="<%= subject %>">
+            <%= subject %>
+          </option>
+        <% }); %>
+      </select>
+    </div>
+
+    <button onclick="showMarks()">Show Theme Marks Report</button>
+    
+    <div class="note">
+      <strong>Note:</strong> This report will show theme evaluation marks for all students in the selected class/section. 
+      You can optionally filter by subject to see marks for a specific subject only.
+    </div>
+  </div>
+
+  <script>
+    function showMarks() {
+      const classSelector = document.getElementById('classSelector');
+      const selectedOption = classSelector.options[classSelector.selectedIndex];
+      
+      if (!selectedOption || !selectedOption.dataset.class) {
+        alert("Please select a class and section");
+        return;
+      }
+      
+      const studentClass = selectedOption.dataset.class;
+      const section = selectedOption.dataset.section;
+      const subject = document.getElementById('subject').value;
+
+      if (studentClass && section) {
+        let url = `/theme/marksdata?studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`;
+        
+        if (subject) {
+          url += `&subject=${encodeURIComponent(subject)}`;
+        }
+        
+        window.location.href = url;
+      } else {
+        alert("Please select a class and section");
+      }
+    }
+    
+    // Enable/disable button based on selection
+    document.getElementById('classSelector').addEventListener('change', function() {
+      const button = document.querySelector('button');
+      button.disabled = !this.value;
+    });
+    
+    // Initially disable button
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('button').disabled = true;
+    });
+  </script>
+</body>
+</html>

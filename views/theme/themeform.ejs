@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theme Evaluation Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1a1a1a;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .nav-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 1rem 0;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-header h1 {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .form-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .form-header h1 {
+      color: #2c3e50;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+      color: #7f8c8d;
+      font-size: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #34495e;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"], 
+    input[type="number"], 
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+      color: #2c3e50;
+    }
+
+    input[type="text"]:focus, 
+    input[type="number"]:focus, 
+    input[type="date"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+    }
+
+    .learning-outcome-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .learning-outcome-section h2 {
+      color: #2c3e50;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #3498db;
+    }
+
+    .evaluation-table {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      background: white;
+      margin-top: 1rem;
+    }
+
+    .evaluation-table th {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      padding: 1rem 0.75rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-align: center;
+      border: none;
+    }
+
+    .evaluation-table td {
+      padding: 1rem 0.75rem;
+      text-align: center;
+      border: 1px solid #ecf0f1;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .evaluation-table tr:nth-child(even) td {
+      background: rgba(52, 152, 219, 0.02);
+    }
+
+    .section-header {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      text-align: center;
+      font-weight: 600;
+      padding: 0.75rem;
+    }
+
+    .tools-header {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white;
+      text-align: center;
+      font-weight: 600;
+      padding: 0.75rem;
+    }
+
+    .custom-checkbox {
+      position: relative;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .checkbox-custom {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #bdc3c7;
+      border-radius: 6px;
+      display: inline-block;
+      position: relative;
+      transition: all 0.3s ease;
+      background: white;
+      pointer-events: none;
+    }
+
+    .custom-checkbox input[type="checkbox"]:checked + .checkbox-custom {
+      background: #3498db;
+      border-color: #3498db;
+      transform: scale(1.05);
+    }
+
+    .custom-checkbox input[type="checkbox"]:checked + .checkbox-custom::after {
+      content: '✓';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      opacity: 1;
+      animation: checkmark 0.3s ease-in-out;
+    }
+
+    @keyframes checkmark {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .custom-checkbox:hover .checkbox-custom {
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+    }
+
+    input[type="text"].tools-input {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .totals-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 16px;
+      border: 1px solid #dee2e6;
+    }
+
+    .totals-section h3 {
+      color: #2c3e50;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .totals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .total-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .total-item label {
+      font-size: 0.875rem;
+      color: #7f8c8d;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-item input {
+      font-size: 1.125rem;
+      font-weight: 600;
+      text-align: center;
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #27ae60, #229954);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 2rem;
+      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+      }
+
+      .form-card {
+        padding: 1.5rem;
+        border-radius: 16px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .nav-header h1 {
+        font-size: 1.25rem;
+        padding: 0 1rem;
+      }
+
+      .form-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .evaluation-table {
+        font-size: 0.875rem;
+      }
+
+      .evaluation-table th,
+      .evaluation-table td {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .totals-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .learning-outcome-section {
+        padding: 1rem;
+      }
+
+      .totals-section {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .evaluation-table {
+        font-size: 0.75rem;
+      }
+
+      .evaluation-table th,
+      .evaluation-table td {
+        padding: 0.5rem 0.25rem;
+      }
+
+      .custom-checkbox {
+        width: 20px;
+        height: 20px;
+      }
+
+      .checkbox-custom {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* Hidden elements */
+    .learning-outcome-wrapper {
+      display: none;
+    }
+
+    .learning-outcome-wrapper[style*="display: block"] {
+      display: block !important;
+    }
+  </style>
+</head>
+<body>
+<nav class="nav-header">
+  <h1>Class <%= studentClass %><%=section%> - <%= subject %> Theme Evaluation</h1>
+</nav>
+
+<div class="container">
+  <div class="form-card">
+    <div class="form-header">
+      <h1>Theme Evaluation Form</h1>
+      <p>Complete the evaluation for your selected theme</p>
+    </div>
+    
+    <form action="/theme/form" method="POST" id="themeEvaluationForm">
+      <!-- Student Information Section -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="roll">Roll Number</label>
+          <input type="text" name="roll" id="roll" required placeholder="Enter roll number">
+        </div>
+        <div class="form-group">
+          <label for="name">Student Name</label>
+          <input type="text" name="name" id="name" required placeholder="Enter student name">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="studentClass">Class</label>
+          <input type="text" name="studentClass" id="studentClass" required value="<%= studentClass %>" readonly>
+        </div>
+        <div class="form-group">
+          <label for="section">Section</label>
+          <input type="text" name="section" id="section" required value="<%= section %>" readonly>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input type="text" name="subjects[0][name]" id="subject" required value="<%= subject %>" readonly>
+        </div>
+        <div class="form-group">
+          <label for="themeName">Theme Name</label>
+          <select name="subjects[0][themes][0][themeName]" id="themeName" onchange="filterLearningOutcomes()" required>
+            <option value="">Select a theme</option>
+            <% themeData.forEach(theme => { %>
+              <% theme.themes.forEach(themeitem => { %>
+                <option value="<%= themeitem.themeName %>"><%= themeitem.themeName %></option>
+              <% }) %>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <!-- Learning Outcomes Section -->
+      <% themeData.forEach((themeDoc, themeDocIndex) => { %>
+        <% themeDoc.themes.forEach((themeItem, themeItemIndex) => { %>
+          <div class="learning-outcome-wrapper" data-theme="<%= themeItem.themeName %>" data-theme-index="<%= themeItemIndex %>">
+          <% themeItem.learningOutcome.forEach((outcome, outcomeIndex) => { %>
+            <div class="learning-outcome-section">
+              <h2><%= outcome.learningOutcomeName %></h2>
+              <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.learningOutcomeName %>">
+              
+              <div class="form-group">
+                <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>">Evaluation Date</label>
+                <input type="date" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][evaluationDate]" id="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>">
+              </div>
+              
+              <table class="evaluation-table">
+                <thead>
+                  <tr>
+                    <% outcome.indicators.forEach(indicator => { %>
+                      <th><%= indicator.indicatorName %></th>
+                    <% }); %>
+                    <th>Total Marks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
+                      <td>
+                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][name]" value="<%= indicator.indicatorName %>">
+                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][maxMarks]" value="<%= indicator.indicatorsMarks %>">
+                        <div class="custom-checkbox">
+                          <input type="checkbox" 
+                                 value="<%= indicator.indicatorsMarks %>" 
+                                 data-marks="<%= indicator.indicatorsMarks %>"
+                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before')"
+                                 class="indicator-before">
+                          <span class="checkbox-custom"></span>
+                        </div>
+                        <input type="hidden" 
+                               class="theme-field"
+                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
+                               value="0">
+                      </td>
+                    <% }); %>
+                    <td>
+                      <input type="number" 
+                             id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>" 
+                             class="theme-field"
+                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
+                             readonly>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="<%= outcome.indicators.length + 1 %>" class="section-header">थप सहायता पछि (After Intervention)</td>
+                  </tr>
+                  <tr>
+                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
+                      <td>
+                        <div class="custom-checkbox">
+                          <input type="checkbox" 
+                                 value="<%= indicator.indicatorsMarks %>" 
+                                 data-marks="<%= indicator.indicatorsMarks %>"
+                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After')"
+                                 class="indicator-after">
+                          <span class="checkbox-custom"></span>
+                        </div>
+                        <input type="hidden" 
+                               class="theme-field"
+                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
+                               value="0">
+                      </td>
+                    <% }); %>
+                    <td>
+                      <input type="number" 
+                             id="totalAfter_<%= themeItemIndex %>_<%= outcomeIndex %>" 
+                             class="theme-field"
+                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
+                             readonly>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="<%= outcome.indicators.length + 1 %>" class="tools-header">प्रयोग गरिएको साधन (Tools Used)</td>
+                  </tr>
+                  <tr>
+                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
+                      <td>
+                        <input type="text" class="theme-field tools-input" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][toolsUsed]" placeholder="Tools used">
+                      </td>
+                    <% }); %>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          <% }); %>
+          
+          <!-- Overall theme totals -->
+          <div class="totals-section">
+            <h3>Overall Theme Totals</h3>
+            <div class="totals-grid">
+              <div class="total-item">
+                <label for="overallTotalBefore_<%= themeItemIndex %>">Total Before Intervention</label>
+                <input type="number" id="overallTotalBefore_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalBefore]" readonly>
+              </div>
+              <div class="total-item">
+                <label for="overallTotalAfter_<%= themeItemIndex %>">Total After Intervention</label>
+                <input type="number" id="overallTotalAfter_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalAfter]" readonly>
+              </div>
+            </div>
+          </div>
+          </div>
+        <% }); %>
+      <% }); %>
+      
+      <button type="submit" class="submit-btn" onclick="return validateAndSubmit()">
+        Submit Evaluation
+      </button>
+    </form>
+  </div>
+</div>
+
+  <script>
+    function validateAndSubmit() {
+      try {
+        // Get the selected theme
+        const selectedTheme = document.getElementById('themeName').value;
+        const activeWrapper = document.querySelector('.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]');
+        
+        console.log('Selected theme:', selectedTheme);
+        console.log('Active wrapper found:', !!activeWrapper);
+        
+        if (!activeWrapper) {
+          alert('Please select a theme');
+          return false;
+        }
+        
+        // Validate required fields
+        const roll = document.getElementById('roll').value.trim();
+        const name = document.getElementById('name').value.trim();
+        
+        if (!roll || !name) {
+          alert('Please fill in roll number and name');
+          return false;
+        }
+        
+        // Create a completely new form with clean data structure
+        const originalForm = document.getElementById('themeEvaluationForm');
+        const newForm = document.createElement('form');
+        newForm.action = originalForm.action;
+        newForm.method = originalForm.method;
+        newForm.style.display = 'none';
+        
+        // Helper function to add hidden inputs
+        const addField = (name, value) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value || '';
+          newForm.appendChild(input);
+        };
+        
+        // Add basic student information
+        addField('roll', roll);
+        addField('name', name);
+        addField('studentClass', document.getElementById('studentClass').value);
+        addField('section', document.getElementById('section').value);
+        addField('subjects[0][name]', document.getElementById('subject').value);
+        addField('subjects[0][themes][0][themeName]', selectedTheme);
+        addField('updatedAt', new Date().toISOString());
+        
+        // Process learning outcomes from the active wrapper
+        const themeIndex = activeWrapper.dataset.themeIndex;
+        let newOutcomeIndex = 0;
+        
+        // Find all learning outcome containers in the active wrapper
+        const outcomeContainers = activeWrapper.querySelectorAll('h2');
+        
+        outcomeContainers.forEach((h2) => {
+          const outcomeName = h2.textContent.trim();
+          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][name]`, outcomeName);
+          
+          // Find the next sibling elements until we hit another h2 or end of wrapper
+          let currentElement = h2.nextElementSibling;
+          let evaluationDate = '';
+          let indicators = [];
+          let totalBefore = 0;
+          let totalAfter = 0;
+          
+          while (currentElement && currentElement.tagName !== 'H2') {
+            // Check for evaluation date input
+            if (currentElement.tagName === 'DIV' && currentElement.classList.contains('form-group')) {
+              const dateInput = currentElement.querySelector('input[type="date"]');
+              if (dateInput) {
+                evaluationDate = dateInput.value;
+              }
+            }
+            
+            // Check for table with indicators
+            if (currentElement.tagName === 'TABLE') {
+              const beforeRow = currentElement.querySelector('tbody tr:first-child');
+              const afterRow = currentElement.querySelector('tbody tr:nth-child(3)');
+              const toolsRow = currentElement.querySelector('tbody tr:nth-child(5)');
+              
+              if (beforeRow) {
+                const beforeCheckboxes = beforeRow.querySelectorAll('input[type="checkbox"]');
+                const afterCheckboxes = afterRow ? afterRow.querySelectorAll('input[type="checkbox"]') : [];
+                const toolsInputs = toolsRow ? toolsRow.querySelectorAll('input[type="text"]') : [];
+                
+                beforeCheckboxes.forEach((checkbox, indicatorIndex) => {
+                  const maxMarks = parseFloat(checkbox.dataset.marks) || 0;
+                  const beforeMarks = checkbox.checked ? maxMarks : 0;
+                  const afterMarks = afterCheckboxes[indicatorIndex] && afterCheckboxes[indicatorIndex].checked ? maxMarks : 0;
+                  const toolsUsed = toolsInputs[indicatorIndex] ? toolsInputs[indicatorIndex].value : '';
+                  
+                  // Try to get indicator name from the table header
+                  const headers = currentElement.querySelectorAll('thead th');
+                  const indicatorName = headers[indicatorIndex] ? headers[indicatorIndex].textContent.trim() : `Indicator ${indicatorIndex + 1}`;
+                  
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][name]`, indicatorName);
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][maxMarks]`, maxMarks);
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][marksBeforeIntervention]`, beforeMarks);
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][marksAfterIntervention]`, afterMarks);
+                  if (toolsUsed) {
+                    addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][toolsUsed]`, toolsUsed);
+                  }
+                  
+                  totalBefore += beforeMarks;
+                  totalAfter += afterMarks;
+                });
+              }
+            }
+            
+            currentElement = currentElement.nextElementSibling;
+          }
+          
+          // Add evaluation date and totals
+          if (evaluationDate) {
+            addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][evaluationDate]`, evaluationDate);
+          }
+          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][totalMarksBeforeIntervention]`, totalBefore);
+          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][totalMarksAfterIntervention]`, totalAfter);
+          
+          newOutcomeIndex++;
+        });
+        
+        // Add overall totals
+        const overallBeforeField = activeWrapper.querySelector(`#overallTotalBefore_${themeIndex}`);
+        const overallAfterField = activeWrapper.querySelector(`#overallTotalAfter_${themeIndex}`);
+        
+        addField('subjects[0][themes][0][overallTotalBefore]', overallBeforeField ? overallBeforeField.value : '0');
+        addField('subjects[0][themes][0][overallTotalAfter]', overallAfterField ? overallAfterField.value : '0');
+        
+        // Submit the new form
+        document.body.appendChild(newForm);
+        console.log('Submitting clean form with', newForm.querySelectorAll('input').length, 'fields');
+        newForm.submit();
+        
+        return false;
+        
+      } catch (error) {
+        console.error('Error in validateAndSubmit:', error);
+        alert('Error preparing form submission: ' + error.message);
+        return false;
+      }
+    }
+    
+    function filterLearningOutcomes() {
+      const selectedTheme = document.getElementById('themeName').value;
+      const outcomeWrappers = document.querySelectorAll('.learning-outcome-wrapper');
+      
+      console.log('Filtering for theme:', selectedTheme);
+      console.log('Found wrappers:', outcomeWrappers.length);
+
+      outcomeWrappers.forEach((wrapper, index) => {
+        const wrapperTheme = wrapper.dataset.theme;
+        const isSelected = wrapperTheme === selectedTheme;
+        
+        console.log(`Wrapper ${index}: theme="${wrapperTheme}", selected=${isSelected}`);
+        
+        wrapper.style.display = isSelected ? 'block' : 'none';
+        
+        // Enable/disable form fields based on selection
+        const themeFields = wrapper.querySelectorAll('.theme-field');
+        themeFields.forEach(field => {
+          field.disabled = !isSelected;
+          // Clear values for non-selected themes
+          if (!isSelected) {
+            if (field.type === 'checkbox') {
+              field.checked = false;
+            } else if (field.type !== 'hidden' || !field.name.includes('[name]')) {
+              field.value = '';
+            }
+          }
+        });
+        
+        // Also disable checkboxes
+        const checkboxes = wrapper.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+          cb.disabled = !isSelected;
+          if (!isSelected) cb.checked = false;
+        });
+      });
+      
+      // Update overall totals after filtering
+      calculateOverallTotals();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      filterLearningOutcomes();
+      
+      // Add hidden field with timestamp for updatedAt
+      const form = document.getElementById('themeEvaluationForm');
+      const updatedAtField = document.createElement('input');
+      updatedAtField.type = 'hidden';
+      updatedAtField.name = 'updatedAt';
+      updatedAtField.value = new Date().toISOString();
+      form.appendChild(updatedAtField);
+      
+      // Add click handlers for custom checkboxes as backup
+      document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('checkbox-custom')) {
+          // Find the associated checkbox input
+          const checkboxInput = event.target.previousElementSibling;
+          if (checkboxInput && checkboxInput.type === 'checkbox') {
+            checkboxInput.checked = !checkboxInput.checked;
+            // Trigger the onclick event manually
+            if (checkboxInput.onclick) {
+              checkboxInput.onclick.call(checkboxInput);
+            }
+          }
+        }
+      });
+    });
+
+    function updateMarks(checkbox, outcomeIndex, indicatorIndex, timing) {
+      // Ensure the checkbox state is properly set
+      console.log('Checkbox clicked:', {
+        checked: checkbox.checked,
+        marks: checkbox.dataset.marks,
+        timing: timing,
+        outcomeIndex: outcomeIndex,
+        indicatorIndex: indicatorIndex
+      });
+      
+      // Set the appropriate field name based on timing (Before or After intervention)
+      const fieldName = timing === 'Before' ? 
+        `subjects[0][themes][0][learningOutcomes][${outcomeIndex}][indicators][${indicatorIndex}][marksBeforeIntervention]` :
+        `subjects[0][themes][0][learningOutcomes][${outcomeIndex}][indicators][${indicatorIndex}][marksAfterIntervention]`;
+      
+      // Get the hidden input field that's the next sibling after the checkbox custom span
+      const customSpan = checkbox.nextElementSibling;
+      const inputField = customSpan ? customSpan.nextElementSibling : null;
+      
+      // Set the value based on checkbox state
+      if (inputField && inputField.type === 'hidden') {
+        inputField.value = checkbox.checked ? checkbox.dataset.marks : 0;
+        console.log('Updated hidden field value:', inputField.value);
+      } else {
+        console.warn('Could not find hidden input field for', fieldName);
+      }
+      
+      // Update total for this learning outcome
+      updateLearningOutcomeTotal(outcomeIndex, timing);
+      
+      // Update overall theme totals
+      calculateOverallTotals();
+    }
+    
+    function updateLearningOutcomeTotal(outcomeIndex, timing) {
+      // Get the currently active wrapper
+      const activeWrapper = document.querySelector('.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]');
+      if (!activeWrapper) return;
+      
+      const themeIndex = activeWrapper.dataset.themeIndex;
+      const totalId = timing === 'Before' ? `totalBefore_${themeIndex}_${outcomeIndex}` : `totalAfter_${themeIndex}_${outcomeIndex}`;
+      const checkboxSelector = timing === 'Before' ? '.indicator-before' : '.indicator-after';
+      const totalField = document.getElementById(totalId);
+      
+      if (!totalField) return;
+      
+      // Get all indicators for this learning outcome within the active wrapper
+      const checkboxes = activeWrapper.querySelectorAll(`tr:nth-child(${timing === 'Before' ? 1 : 3}) ${checkboxSelector}`);
+      
+      let total = 0;
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          total += parseFloat(cb.dataset.marks) || 0;
+        }
+      });
+      
+      totalField.value = total;
+    }
+    
+    function calculateOverallTotals() {
+      // Only calculate for visible learning outcome wrapper (the currently selected theme)
+      const activeWrapper = document.querySelector('.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]');
+      if (!activeWrapper) return;
+      
+      const themeIndex = activeWrapper.dataset.themeIndex;
+      let overallBefore = 0;
+      let overallAfter = 0;
+      
+      // Sum up all learning outcome totals for the active theme
+      const beforeTotals = activeWrapper.querySelectorAll(`input[id^="totalBefore_${themeIndex}_"]`);
+      const afterTotals = activeWrapper.querySelectorAll(`input[id^="totalAfter_${themeIndex}_"]`);
+      
+      beforeTotals.forEach(input => {
+        overallBefore += parseFloat(input.value) || 0;
+      });
+      
+      afterTotals.forEach(input => {
+        overallAfter += parseFloat(input.value) || 0;
+      });
+      
+      // Update the overall total fields
+      const overallBeforeField = document.getElementById(`overallTotalBefore_${themeIndex}`);
+      const overallAfterField = document.getElementById(`overallTotalAfter_${themeIndex}`);
+      
+      if (overallBeforeField) overallBeforeField.value = overallBefore;
+      if (overallAfterField) overallAfterField.value = overallAfter;
+    }
+  </script>
+
+  <!-- autofill name  -->
+    <script>
+        const subject = document.getElementById('subject').value.trim();
+const studentClass = document.getElementById('studentClass').value.trim();
+const section = document.getElementById('section').value.trim();
+const terminal = "FIRST"
+
+let debounceTimeout;
+
+        const rollInput = document.getElementById('roll');
+        rollInput.addEventListener('input',async function() {
+            clearTimeout(debounceTimeout);
+
+    debounceTimeout = setTimeout(async () => {
+      const rollValue = rollInput.value.trim();
+      if (!rollValue) return;
+        
+            
+          // Debounce to avoid too many requests
+
+            // // logic to check if the input roll number already exist in the database;
+            // const responseBack = await fetch(`/checkroll/${encodeURIComponent(subject)}/${studentClass}/${encodeURIComponent(section)}/${terminal}?roll=${encodeURIComponent(rollInput.value)}`);
+            // if (!responseBack.ok) {
+            //     console.error('Error checking roll number:', responseBack.statusText);
+            //     return;
+            // }
+            // const rollExists = await responseBack.json();
+            // console.log(rollExists);
+            
+            // if (rollExists) {
+            //     alert(`Roll number  ${rollExists.roll} with Name ${rollExists.studentName} with Total Marks ${rollExists.totalMarks} already exists for ${rollExists.studentClass}-${rollExists.section} for ${rollExists.terminal} Terminal. Please enter a different roll number or delete previous one.`);
+            //     rollInput.value = ''; // Clear the input
+            //     document.getElementById('name').value = ''; // Clear the name field
+            //     return;
+                
+            // }
+            
+                // Fetch student data based on the roll number
+                // Only fetch if the roll number is valid and does not already exist
+             const res = await fetch(`/student_data/${encodeURIComponent(subject)}/${studentClass}/${encodeURIComponent(section)}?roll=${encodeURIComponent(rollInput.value)}`);
+            if (!res.ok) {
+                console.error('Error fetching student data:', res.statusText);
+                return;
+            }
+
+            const data = await res.json();
+            console.log(data)
+            if (data && data.length > 0) {
+                // Autofill the other fields with the retrieved data
+
+                
+               document.getElementById('name').value = data[0].name || '';
+                document.getElementById('roll').value = data[0].roll || '';
+            }
+        
+            // Do something with the data
+        }, 600); // Adjust the debounce time as needed
+        });
+    </script>
+</body>
+</html>

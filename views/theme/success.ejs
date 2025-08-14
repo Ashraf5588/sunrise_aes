@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device    <div class="buttons">
+      <a href="/theme" class="btn btn-primary">Fill Another Form</a>
+      <% if (typeof studentClass !== 'undefined' && typeof section !== 'undefined' && typeof roll !== 'undefined') { %>
+        <a href="#" onclick="viewProgress()" class="btn btn-secondary">View Student Progress</a>
+      <% } else { %>
+        <a href="/" class="btn btn-secondary">Go to Homepage</a>
+      <% } %>
+    </div>
+  </div>
+
+  <script>
+    function viewProgress() {
+      const roll = '<%= typeof roll !== "undefined" ? roll : "" %>';
+      const studentClass = '<%= typeof studentClass !== "undefined" ? studentClass : "" %>';
+      const section = '<%= typeof section !== "undefined" ? section : "" %>';
+      
+      if (roll && studentClass && section) {
+        // Open progress in a new window
+        const progressUrl = `/theme/progress?roll=${encodeURIComponent(roll)}&studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`;
+        window.open(progressUrl, '_blank', 'width=800,height=600,scrollbars=yes');
+      }
+    }
+  </script>h, initial-scale=1.0">
+  <title>Form Submitted Successfully</title>
+  <style>
+    body {
+      background-color: #87ceeb; /* Sky Blue */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      color: #5c3c1c; /* A shade of brown for text */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .success-container {
+      max-width: 600px;
+      padding: 30px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #2e8b57; /* Sea Green */
+      margin-bottom: 20px;
+    }
+
+    .success-icon {
+      font-size: 60px;
+      color: #2e8b57;
+      margin-bottom: 20px;
+    }
+
+    .student-info {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f7f2e9;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .student-info p {
+      margin: 8px 0;
+    }
+
+    .buttons {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .btn-primary {
+      background-color: #4682b4; /* Steel Blue */
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #a52a2a; /* Brown */
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="success-icon">✓</div>
+    <h1>Form Submitted Successfully!</h1>
+    <p>The theme evaluation form has been successfully saved to the database.</p>
+    
+    <% if (typeof studentClass !== 'undefined' && typeof section !== 'undefined' && typeof roll !== 'undefined') { %>
+      <div class="student-info">
+        <h3>Student Information</h3>
+        <p><strong>Name:</strong> <%= typeof name !== 'undefined' ? name : 'Not provided' %></p>
+        <p><strong>Roll:</strong> <%= roll %></p>
+        <p><strong>Class:</strong> <%= studentClass %></p>
+        <p><strong>Section:</strong> <%= section %></p>
+        <p><strong>Subject:</strong> <%= typeof subject !== 'undefined' ? subject : 'Not provided' %></p>
+        <p><strong>Theme:</strong> <%= typeof themeName !== 'undefined' ? themeName : 'Not provided' %></p>
+        
+        <% if (typeof totalSubjects !== 'undefined' && typeof totalThemes !== 'undefined') { %>
+          <div style="margin-top: 15px; padding: 10px; background-color: #e8f5e8; border-radius: 5px;">
+            <h4>Progress Summary</h4>
+            <p><strong>Total Subjects Evaluated:</strong> <%= totalSubjects %></p>
+            <p><strong>Total Themes Completed:</strong> <%= totalThemes %></p>
+            <p style="color: #2e8b57;"><em>This theme has been added to the student's record successfully!</em></p>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div style="color: red; margin: 15px 0;">
+        <p>Note: There was a non-critical error: <%= error %></p>
+      </div>
+    <% } %>
+    
+    <div class="buttons">
+      <a href="/themeform" class="btn btn-primary">Fill Another Form</a>
+      <a href="/" class="btn btn-secondary">Go to Homepage</a>
+    </div>
+  </div>
+</body>
+</html>

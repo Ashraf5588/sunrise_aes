@@ -125,8 +125,20 @@ exports.themeformSave = async (req, res) => {
   try {
     console.log("Form data received:", req.body);
     
+    // Check if req.body exists
+    if (!req.body) {
+      console.error("Request body is undefined");
+      return res.status(400).json({
+        success: false,
+        message: "No form data received"
+      });
+    }
+    
     // Helper function to get first value if array
-    const getValue = (value) => Array.isArray(value) ? value[0] : value;
+    const getValue = (value) => {
+      if (!value) return '';
+      return Array.isArray(value) ? value[0] : value;
+    };
     
     // Validate required fields
     let roll = getValue(req.body.roll);
@@ -143,7 +155,10 @@ exports.themeformSave = async (req, res) => {
     
     if (!roll || !name || !studentClass || !section || !subject || !themeName) {
       console.error("Missing required fields:", { roll, name, studentClass, section, subject, themeName });
-      return res.status(400).send("Missing required fields: roll, name, class, section, subject, or themeName");
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: roll, name, class, section, subject, or themeName"
+      });
     }
     
     // Clean up the form data to handle arrays
@@ -243,13 +258,19 @@ exports.themeformSave = async (req, res) => {
       console.log("New theme form data saved successfully");
     }
     
-    // Redirect to success page with ID
-    if (req.headers.accept && req.headers.accept.includes('application/json')) {
-      // If it's a fetch request (JSON), return JSON response
-      res.json({ success: true, id: result._id, redirect: `/theme/success?id=${result._id}` });
+    // Handle response based on request type
+    if (req.headers.accept && req.headers.accept.includes('application/json') || req.body.autosave === 'true' || req.body.ajax === 'true') {
+      // If it's an AJAX request, autosave, or explicitly requested JSON response
+      res.json({ 
+        success: true, 
+        id: result._id, 
+        message: 'Data saved successfully',
+        isAutosave: req.body.autosave === 'true',
+        redirect: `/themeform?subject=${subject}&studentClass=${studentClass}` 
+      });
     } else {
       // If it's a regular form submission, redirect
-      res.redirect(`/theme/success?id=${result._id}`);
+      res.redirect(`/themeform?subject=${subject}&studentClass=${studentClass}`);
     }
   } catch (err) {
     console.error("Error saving theme form data:", err);
@@ -534,5 +555,163 @@ exports.themeslip =  async (req, res) => {
   } catch (error) {
     console.error('Error fetching theme slip:', error);
     res.status(500).send('Error fetching theme slip: ' + error.message);
+  }
+}
+
+// Function to get previous theme data for a student by roll number
+exports.getPreviousThemeData = async (req, res) => {
+  try {
+    const { roll, subject, themeName, studentClass, section } = req.query;
+    
+    if (!roll || !subject || !themeName || !studentClass || !section) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters: roll, subject, themeName, studentClass, section'
+      });
+    }
+    
+    // Find the student record
+    const studentRecord = await themeForStudent1.findOne({
+      roll,
+      studentClass,
+      section
+    }).lean();
+    
+    if (!studentRecord) {
+      return res.json({
+        success: true,
+        found: false,
+        message: 'No records found for this student'
+      });
+    }
+    
+    // Look for the specific subject and theme
+    let themeData = null;
+    let subjectData = null;
+    
+    // Find the subject
+    for (const subj of studentRecord.subjects) {
+      if (subj.name === subject) {
+        subjectData = subj;
+        
+        // Find the theme
+        for (const theme of subj.themes) {
+          if (theme.themeName === themeName) {
+            themeData = theme;
+            break;
+          }
+        }
+        
+        break;
+      }
+    }
+    
+    if (!themeData) {
+      return res.json({
+        success: true,
+        found: false,
+        message: 'No data found for this theme',
+        studentName: studentRecord.name // Return the student name at least
+      });
+    }
+    
+    return res.json({
+      success: true,
+      found: true,
+      studentName: studentRecord.name,
+      themeData
+    });
+    
+  } catch (error) {
+    console.error('Error fetching previous theme data:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching previous theme data: ' + error.message
+    });
+  }
+}
+
+// Function to get all themes for a student (to show available options)
+exports.getStudentThemes = async (req, res) => {
+  try {
+    const { roll, studentClass, section } = req.query;
+    
+    if (!roll || !studentClass || !section) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required parameters: roll, studentClass, section'
+      });
+    }
+    
+    // Find the student record
+    const studentRecord = await themeForStudent1.findOne({
+      roll,
+      studentClass,
+      section
+    }).lean();
+    
+    if (!studentRecord) {
+      return res.json({
+        success: true,
+        found: false,
+        message: 'No theme data found for this student',
+        themes: []
+      });
+    }
+    
+    // Extract all themes for this student across subjects
+    const allThemes = [];
+    
+    // Process each subject
+    studentRecord.subjects.forEach(subject => {
+      if (subject.themes && subject.themes.length > 0) {
+        // For each theme in this subject
+        subject.themes.forEach(theme => {
+          // Add to our theme list
+          allThemes.push({
+            subject: subject.name,
+            name: theme.themeName,
+            count: 1,  // Count one evaluation
+            updatedAt: theme.updatedAt || studentRecord.updatedAt
+          });
+        });
+      }
+    });
+    
+    // Group themes by name to count multiple evaluations of the same theme
+    const groupedThemes = allThemes.reduce((acc, theme) => {
+      const existingTheme = acc.find(t => t.name === theme.name);
+      if (existingTheme) {
+        existingTheme.count += 1;
+        // Keep the most recent updated date
+        if (theme.updatedAt && (!existingTheme.updatedAt || new Date(theme.updatedAt) > new Date(existingTheme.updatedAt))) {
+          existingTheme.updatedAt = theme.updatedAt;
+        }
+      } else {
+        acc.push(theme);
+      }
+      return acc;
+    }, []);
+    
+    // Sort by most recently updated
+    groupedThemes.sort((a, b) => {
+      if (!a.updatedAt) return 1;
+      if (!b.updatedAt) return -1;
+      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    });
+    
+    return res.json({
+      success: true,
+      found: groupedThemes.length > 0,
+      studentName: studentRecord.name,
+      themes: groupedThemes
+    });
+    
+  } catch (error) {
+    console.error('Error fetching student themes:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching student themes: ' + error.message
+    });
   }
 }

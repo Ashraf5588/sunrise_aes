@@ -239,4 +239,5 @@ student.get('/thememarks', verifytoken, authorized, themecontroller.themeformMar
 student.get('/thememarksofstudent', verifytoken, authorized, themecontroller.thememarksOfStudent);
 student.get('/themewisemarks', verifytoken, authorized, themecontroller.themewisemarks);
 student.get('/themeslip', verifytoken, authorized, themecontroller.themeslip);
+student.get('/theme/previous-data', verifytoken, authorized, themecontroller.getPreviousThemeData);
 module.exports = student;

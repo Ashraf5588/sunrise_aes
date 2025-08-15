@@ -174,7 +174,7 @@
       const subject = document.getElementById('subject').value;
 
       if (studentClass && section) {
-        let url = `/theme/marksdata?studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`;
+        let url = `/thememarks?studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`;
         
         if (subject) {
           url += `&subject=${encodeURIComponent(subject)}`;

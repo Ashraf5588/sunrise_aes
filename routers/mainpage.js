@@ -3,6 +3,7 @@ const student = express.Router();
 const controller = require('../controller/controller')
 const multer  = require('multer')
 const themecontroller = require('../controller/themecontroller')
+const themeInit = require('../controller/theme-init')
 
 
 const {verifytoken,authorized,isAdmin}=require('../middleware/auth')
@@ -240,4 +241,6 @@ student.get('/thememarksofstudent', verifytoken, authorized, themecontroller.the
 student.get('/themewisemarks', verifytoken, authorized, themecontroller.themewisemarks);
 student.get('/themeslip', verifytoken, authorized, themecontroller.themeslip);
 student.get('/theme/previous-data', verifytoken, authorized, themecontroller.getPreviousThemeData);
+student.get('/theme/student-themes', verifytoken, authorized, themecontroller.getStudentThemes);
+student.get('/theme/initialize-student-records', verifytoken, authorized, themeInit.initializeStudentRecords);
 module.exports = student;

@@ -6,8 +6,7 @@ const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { rootDir } = require("../utils/path");
-const { studentSchema } = require("../model/schema");
-const { studentrecordschema } = require("../model/adminschema");
+const { studentSchema, studentrecordschema } = require("../model/adminschema");
 const { classSchema, subjectSchema,terminalSchema } = require("../model/adminschema");
 const {newsubjectSchema } = require("../model/adminschema");
 const { name } = require("ejs");
@@ -17,11 +16,11 @@ const studentRecord = mongoose.model("studentRecord", studentrecordschema, "stud
 const newsubject = mongoose.model("newsubject", newsubjectSchema, "newsubject");
 const bcrypt = require("bcrypt");
 const terminal = mongoose.model("terminal", terminalSchema, "terminal");
-const {ThemeEvaluationSchema, ThemeEvaluation} = require("../model/themeformschema");
+const {ThemeEvaluationSchema} = require("../model/themeformschema");
 // Use the already created model from the schema file
-const themeForStudent1 = ThemeEvaluation;
+
 const {themeSchemaFor1} = require("../model/themeschema")
-const themeFor1 = mongoose.model("themeFor1", themeSchemaFor1, "themeFor1");
+
 app.set("view engine", "ejs");
 app.set("view", path.join(rootDir, "views"));
 const getSidenavData = async (req) => {
@@ -98,6 +97,41 @@ const getSidenavData = async (req) => {
     };
   }
 };
+// For theme configuration/format (uses themeSchemaFor1)
+const getThemeFormat = (studentClass) => {
+  // Collection name: themeFor{class}
+  const collectionName = `themeFor${studentClass}`;
+  console.log(`Getting theme format model for class ${studentClass} using collection ${collectionName}`);
+  
+  // Check if model already exists
+  if (mongoose.models[collectionName]) {
+    return mongoose.models[collectionName];
+  }
+  
+  // Create model with themeSchemaFor1 for configuration
+  return mongoose.model(collectionName, themeSchemaFor1, collectionName);
+};
+
+// For student evaluation data (uses ThemeEvaluationSchema)
+const getStudentThemeData = (studentClass) => {
+  // Collection name: themeForStudent{class}
+  const collectionName = `themeForStudent${studentClass}`;
+  console.log(`Getting student theme data model for class ${studentClass} using collection ${collectionName}`);
+  
+  // Check if model already exists
+  if (mongoose.models[collectionName]) {
+    return mongoose.models[collectionName];
+  }
+  
+  // Create model with ThemeEvaluationSchema for student data
+  return mongoose.model(collectionName, ThemeEvaluationSchema, collectionName);
+};
+
+// For backward compatibility with existing code
+const getSubjectTheme = getThemeFormat;
+const getThemeForClass = getStudentThemeData;
+
+
 exports.themeopener = async (req, res) => {
   try{
     return res.render("theme/theme",{...await getSidenavData(req),editing: false});
@@ -110,15 +144,29 @@ exports.themeopener = async (req, res) => {
 };
 exports.themeform = async (req, res) => {
   try{
-    const {subject, studentClass,section} = req.query;
-          const themeData = await themeFor1.find({studentClass:studentClass, subject:subject, });
-          console.log("Theme data fetched successfully:", themeData);
-    return res.render("theme/themeform", { themeData, subject, studentClass, section });
+    const {subject, studentClass, section,roll} = req.query;
+    const studentData =await  studentRecord.find({studentClass:studentClass, section: section});
+    const themeForstudentData =  getStudentThemeData(studentClass);
+    const existingThemeData = await themeForstudentData.find({studentClass: studentClass, section: section,roll:roll,subject:subject});
+    console.log("data to display",existingThemeData)
+    
+    console.log(`Theme form requested for subject: ${subject}, class: ${studentClass}, section: ${section}`);
+    
+    // Get the theme format model (for theme configuration)
+    const model = getThemeFormat(studentClass);
+    
+    // Find theme format data
+    const themeData = await model.find({
+      studentClass: studentClass, 
+      subject: subject
+    });
+    console.log("Theme data fetched successfully:", themeData);
+    
+    return res.render("theme/themeform", { themeData, subject, studentClass, section, studentData,existingThemeData });
   }catch(err){
     console.error("Error in theme controller:", err);
     res.status(500).send("Internal Server Error");
   }
-  
 };
 
 exports.themeformSave = async (req, res) => {
@@ -195,8 +243,11 @@ exports.themeformSave = async (req, res) => {
     
     console.log("Processed new theme data:", JSON.stringify(newThemeData, null, 2));
     
+    // Get data from the appropriate collection based on class
+    const ThemeModel = getStudentThemeData(studentClass);
+    
     // First, check if student record exists for this student (same roll, class, section)
-    const existingStudentRecord = await themeForStudent1.findOne({
+    const existingStudentRecord = await ThemeModel.findOne({
       roll,
       studentClass,
       section
@@ -204,6 +255,28 @@ exports.themeformSave = async (req, res) => {
     
     let result;
     
+    // Calculate overall totals for all themes before saving
+    function updateOverallTotals(subjects) {
+      if (!Array.isArray(subjects)) return;
+      subjects.forEach(subject => {
+        if (Array.isArray(subject.themes)) {
+          subject.themes.forEach(theme => {
+            let overallBefore = 0;
+            let overallAfter = 0;
+            if (Array.isArray(theme.learningOutcomes)) {
+              theme.learningOutcomes.forEach(outcome => {
+                overallBefore += Number(outcome.totalMarksBeforeIntervention || 0);
+                overallAfter += Number(outcome.totalMarksAfterIntervention || 0);
+              });
+            }
+            theme.overallTotalBefore = overallBefore;
+            theme.overallTotalAfter = overallAfter;
+          });
+        }
+      });
+    }
+
+    // If updating existing record
     if (existingStudentRecord) {
       console.log("Found existing student record");
       
@@ -234,10 +307,9 @@ exports.themeformSave = async (req, res) => {
         console.log("Added new subject with theme");
       }
       
-      // Update the record
+      updateOverallTotals(existingStudentRecord.subjects);
       existingStudentRecord.updatedAt = new Date();
       result = await existingStudentRecord.save();
-      
     } else {
       // No existing record, create new one
       const formData = {
@@ -254,7 +326,8 @@ exports.themeformSave = async (req, res) => {
       };
       
       console.log("Creating new student record:", JSON.stringify(formData, null, 2));
-      result = await themeForStudent1.create(formData);
+      updateOverallTotals(formData.subjects);
+      result = await ThemeModel.create(formData);
       console.log("New theme form data saved successfully");
     }
     
@@ -281,36 +354,69 @@ exports.themeformSave = async (req, res) => {
   
 
 exports.themefillupform = async (req, res) => {
-  try
-  {
-    return res.render("theme/themefiller");
-  }catch(err){
+  try {
+    const { studentClass: classParam } = req.query;
+    
+    // If studentClass is provided, render the form for that class
+    if (classParam) {
+      return res.render("theme/themefiller", { studentClass: classParam });
+    } 
+    
+    // If no class provided, render the class selection page first
+    // Use the model correctly - avoiding the naming conflict
+    const studentClassdata = await studentClass.find({}).lean();
+    return res.render("theme/themefillerclassselect", { 
+      studentClassdata,
+      ...await getSidenavData(req)
+    });
+  } catch(err) {
     console.error("Error in theme controller:", err);
     res.status(500).send("Internal Server Error");
-
   }
 }
 exports.themefillupformsave = async (req, res) => {
-  try
-  {
-    await themeFor1.create(req.body);
-    console.log("Theme filled successfully");
-    res.status(201).send("Theme filled successfully");
-  }catch(err){
+  try {
+    // Get studentClass from query or body
+    const studentClass = req.query.studentClass || req.body.studentClass;
+    
+    if (!studentClass) {
+      return res.status(400).json({
+        success: false,
+        message: "Student class is required"
+      });
+    }
+    
+    // Ensure the studentClass in the request body is set correctly
+    req.body.studentClass = studentClass;
+    
+    // This is for theme format, so use getThemeFormat
+    const model = getThemeFormat(studentClass);
+    const result = await model.create(req.body);
+    console.log(`Theme filled successfully for class ${studentClass}`);
+    
+    // Send a more user-friendly response
+    return res.render("theme/theme-success", {
+      message: `Theme configuration for Class ${studentClass} was created successfully!`,
+      studentClass: studentClass,
+      backUrl: "/theme"
+    });
+  } catch(err) {
     console.error("Error in theme controller:", err);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error: " + err.message);
   }
 }
 
 // Success page after form submission
 exports.success = async (req, res) => {
   const formId = req.query.id;
+  const studentClass = req.query.studentClass || req.body.studentClass;
   
   try {
     // If we have a form ID, get the form data to display context
     let formData = {};
     if (formId) {
-      const themeForm = await themeForStudent1.findById(formId);
+        const ThemeModel = getStudentThemeData(studentClass);
+      const themeForm = await ThemeModel.findById(formId);
       if (themeForm) {
         // Get the most recently added theme (last one in the array)
         let latestSubject = '';
@@ -381,8 +487,9 @@ exports.themeMarks = async (req, res) => {
     }
     
     // Get theme evaluation data
-    const themeData = await themeForStudent1.aggregate(pipeline);
-    
+    const ThemeModel = getStudentThemeData(studentClass);
+    const themeData = await ThemeModel.aggregate(pipeline);
+
     console.log("Theme marks data fetched:", themeData.length, "records");
     
     // Get filter options for the form
@@ -412,8 +519,8 @@ exports.studentProgress = async (req, res) => {
         message: 'Missing required parameters: roll, studentClass, section'
       });
     }
-    
-    const studentRecord = await themeForStudent1.findOne({
+     const ThemeModel = getStudentThemeData(studentClass);
+    const studentRecord = await ThemeModel.findOne({
       roll,
       studentClass,
       section
@@ -489,9 +596,9 @@ exports.thememarksOfStudent = async (req, res) => {
     let query = {};
     if (studentClass) query.studentClass = studentClass;
     if (section) query.section = section;
-    
-    const themeData = await themeForStudent1.find(query).lean();
-    
+    const ThemeModel = getStudentThemeData(studentClass);
+    const themeData = await ThemeModel.find(query).lean();
+
     console.log("Theme data fetched successfully for marks:", themeData.length, "records");
 
     // Get sidenav data
@@ -518,7 +625,8 @@ exports.thememarksOfStudent = async (req, res) => {
 exports.themewisemarks = async (req, res) => {
   try {
     const { studentClass, section, subject } = req.query;
-    const themewisemarks = await themeForStudent1.find({
+      const ThemeModel = getStudentThemeData(studentClass);
+    const themewisemarks = await ThemeModel.find({
       studentClass: studentClass,
       section: section,
       
@@ -539,7 +647,8 @@ exports.themewisemarks = async (req, res) => {
 exports.themeslip =  async (req, res) => {
   try {
     const { studentClass, section, subject } = req.query;
-    const themeslip = await themeForStudent1.find({
+      const ThemeModel = getStudentThemeData(studentClass);
+    const themeslip = await ThemeModel.find({
       studentClass: studentClass,
       section: section,
       
@@ -571,7 +680,9 @@ exports.getPreviousThemeData = async (req, res) => {
     }
     
     // Find the student record
-    const studentRecord = await themeForStudent1.findOne({
+    
+      const ThemeModel = getStudentThemeData(studentClass);
+    const studentRecord = await ThemeModel.findOne({
       roll,
       studentClass,
       section
@@ -644,7 +755,8 @@ exports.getStudentThemes = async (req, res) => {
     }
     
     // Find the student record
-    const studentRecord = await themeForStudent1.findOne({
+    const ThemeModel = getStudentThemeData(studentClass);
+    const studentRecord = await ThemeModel.findOne({
       roll,
       studentClass,
       section

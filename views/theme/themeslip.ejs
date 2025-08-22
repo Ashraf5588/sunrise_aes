@@ -284,6 +284,69 @@
 <body>
   <div class="container">
     <div class="header-card">
+      <h2>Theme Evaluation Report Generator</h2>
+      <div class="form-group" style="margin-top: 20px; text-align: left;">
+        <label for="classSelector" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Select Class and Section:</label>
+        <select id="classSelector">
+          <option value="" selected disabled>-- Select a class and section --</option>
+          <% 
+            // Sort studentClassdata by class number
+            const sortedClassData = [...studentClassdata].sort((a, b) => {
+              // Convert class to number for proper numeric sorting
+              const classA = parseInt(a.studentClass);
+              const classB = parseInt(b.studentClass);
+              
+              // First sort by class number
+              if (classA !== classB) {
+                return classA - classB;
+              }
+              
+              // If same class, sort by section
+              return a.section.localeCompare(b.section);
+            });
+            
+            // Group by class for optgroup
+            const classGroups = {};
+            sortedClassData.forEach(item => {
+              const classNum = item.studentClass;
+              if (!classGroups[classNum]) {
+                classGroups[classNum] = [];
+              }
+              classGroups[classNum].push(item);
+            });
+            
+            // Get sorted class numbers
+            const sortedClassNumbers = Object.keys(classGroups).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            // Loop through each class group
+            sortedClassNumbers.forEach(classNum => {
+              const sections = classGroups[classNum];
+          %>
+            <optgroup label="Class <%= classNum %> 📚">
+            <% sections.forEach(studentclass => { %>
+              <option 
+                value="<%=studentclass.section.trim()%>"
+                data-class="<%=studentclass.studentClass%>"
+                data-section="<%=studentclass.section%>">
+                Class <%= studentclass.studentClass %> - Section <%= studentclass.section %>
+              </option>
+            <% }); %>
+            </optgroup>
+          <% }); %>
+        </select>
+      </div>
+
+      <button id="showMarksBtn" onclick="showMarks()">Generate Theme Marks Report</button>
+      
+      <div class="note" style="margin-top: 15px; padding: 10px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; text-align: left; font-size: 0.9rem; color: #34495e;">
+        <strong>Note:</strong> This report will show theme evaluation marks for all students in the selected class/section. 
+        You can optionally filter by subject to see marks for a specific subject only.
+      </div>
+    </div>
+  </div>
+  
+  <div class="container" id="resultsContainer" <% if (!themeslip || themeslip.length === 0) { %>style="display: none;"<% } %>>
+    <div class="header-card">
       <h1>Theme Evaluation Slip</h1>
       <p>Academic Performance Report</p>
       <% if (studentClass && section) { %>
@@ -340,6 +403,31 @@
                 </tr>
               </thead>
               <tbody>
+                <% 
+                  // Calculate maxPossibleMarks for this subject (sum of all indicator marks from all themes and learning outcomes)
+                  let maxPossibleMarks = 0;
+                  let totalThemesArr = [];
+                  let totalLearningOutcomesArr = [];
+                  subjectGroups[subjectName].forEach(studentData => {
+                    studentData.themes.forEach(theme => {
+                      totalThemesArr.push(theme);
+                      if (theme.learningOutcomes) {
+                        theme.learningOutcomes.forEach(lo => {
+                          totalLearningOutcomesArr.push(lo);
+                          if (lo.indicators) {
+                            lo.indicators.forEach(ind => {
+                              // Use indicatorsMarks as max marks if present, else fallback to maxMarks or 0
+                              maxPossibleMarks += (ind.indicatorsMarks || ind.maxMarks || 0);
+                            });
+                          }
+                        });
+                      }
+                    });
+                  });
+                  // Remove duplicates for themes and learning outcomes
+                  const uniqueThemes = Array.from(new Set(totalThemesArr.map(t => t.themeName))).length;
+                  const uniqueLearningOutcomes = Array.from(new Set(totalLearningOutcomesArr.map(lo => lo.learningOutcomeName))).length;
+                %>
                 <% subjectGroups[subjectName].forEach(studentData => { %>
                   <%
                     // Calculate totals for this student in this subject
@@ -350,16 +438,13 @@
                     const totalMarksObtained = studentData.themes.reduce((acc, theme) => 
                       acc + (theme.overallTotalAfter || 0), 0
                     );
-                    const maxPossibleMarks = totalLearningOutcomes * 4; // Each learning outcome has max 4 marks
-                    
+                    // Use the fixed maxPossibleMarks for all students in this subject
                     // Calculate percentage
                     const percentage = maxPossibleMarks > 0 ? 
                       ((totalMarksObtained / maxPossibleMarks) * 100).toFixed(2) : 0;
-                    
                     // Determine grade based on percentage
                     let gradeClass = '';
                     let gradeText = '';
-                    
                     if (percentage >= 90) {
                       gradeClass = 'grade-a-plus';
                       gradeText = 'A+';
@@ -407,12 +492,38 @@
         <div class="no-data">
           <h3>No Data Available</h3>
           <p>No theme evaluation records found for the selected criteria.</p>
+          <% if (studentClass) { %>
+            <p style="margin-top: 15px; font-size: 0.9rem; color: #6c757d;">
+              No records found for Class <%= studentClass %><% if (section) { %> Section <%= section %><% } %>.
+            </p>
+            <button onclick="window.location.href='/themeslip'" style="margin-top: 20px; background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+              Select Different Class
+            </button>
+          <% } %>
         </div>
       <% } %>
     </div>
   </div>
 
   <script>
+    // Function to show marks based on selected class and section
+    function showMarks() {
+      const selector = document.getElementById('classSelector');
+      const selectedOption = selector.options[selector.selectedIndex];
+      
+      if (!selectedOption || selectedOption.disabled) {
+        alert('Please select a class and section first');
+        return;
+      }
+      
+      // Get class and section from the data attributes of the selected option
+      const studentClass = selectedOption.getAttribute('data-class');
+      const section = selectedOption.getAttribute('data-section');
+      
+      // Redirect to the same page with query parameters
+      window.location.href = `/themeslip?studentClass=${studentClass}&section=${section}`;
+    }
+    
     // Print functionality
     function printSlip() {
       window.print();
@@ -447,6 +558,45 @@
         };
         printBtn.onclick = printSlip;
         headerCard.appendChild(printBtn);
+      }
+      
+      // Style the class selector and button for better appearance
+      const classSelector = document.getElementById('classSelector');
+      if (classSelector) {
+        classSelector.style.cssText = `
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 2px solid #e9ecef;
+          border-radius: 12px;
+          font-size: 1rem;
+          margin-bottom: 1rem;
+          background: white;
+        `;
+      }
+      
+      const showMarksBtn = document.getElementById('showMarksBtn');
+      if (showMarksBtn) {
+        showMarksBtn.style.cssText = `
+          background: linear-gradient(135deg, #3498db, #2980b9);
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          margin: 1rem 0;
+          width: 100%;
+          box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+          transition: all 0.3s ease;
+        `;
+        showMarksBtn.onmouseover = function() {
+          this.style.transform = 'translateY(-2px)';
+          this.style.boxShadow = '0 6px 20px rgba(52, 152, 219, 0.4)';
+        };
+        showMarksBtn.onmouseout = function() {
+          this.style.transform = 'translateY(0)';
+          this.style.boxShadow = '0 4px 15px rgba(52, 152, 219, 0.3)';
+        };
       }
     });
   </script>

@@ -23,7 +23,7 @@ const ThemeEvaluationSchema = new mongoose.Schema({
   },
   section: { 
     type: String, 
-    required: true,
+    required: false,
     set: handleArrayOrSingle 
   },
   roll: { 
@@ -129,20 +129,32 @@ const ThemeEvaluationSchema = new mongoose.Schema({
 });
 
 // Create model from schema if it doesn't exist
-let ThemeEvaluation;
-try {
-  // Try to get the existing model
-  ThemeEvaluation = mongoose.model('ThemeEvaluation');
-} catch (e) {
-  // Create the model if it doesn't exist
-  ThemeEvaluation = mongoose.model('ThemeEvaluation', ThemeEvaluationSchema, 'themeForStudent1');
-}
+// let ThemeEvaluation;
+// try {
+//   // Try to get the existing model
+//   ThemeEvaluation = mongoose.model('ThemeEvaluation');
+// } catch (e) {
+//   // Create the model if it doesn't exist
+//   ThemeEvaluation = mongoose.model('ThemeEvaluation', ThemeEvaluationSchema, 'themeForStudent1');
+// }
 
 // Add pre-save middleware to handle arrays in the document
 ThemeEvaluationSchema.pre('save', function(next) {
+  // Use WeakMap to track processed objects and prevent circular references
+  const processed = new WeakMap();
+  
   // This will handle any nested arrays that might not be caught by the setters
   const processObject = (obj) => {
+    // Skip null, undefined, or primitive values
     if (!obj || typeof obj !== 'object') return obj;
+    
+    // Check if we've already processed this object (prevents circular reference stack overflow)
+    if (processed.has(obj)) {
+      return obj;
+    }
+    
+    // Mark this object as processed
+    processed.set(obj, true);
     
     Object.keys(obj).forEach(key => {
       const value = obj[key];
@@ -178,5 +190,5 @@ ThemeEvaluationSchema.pre('save', function(next) {
 // Export both the schema and model
 module.exports = {
   ThemeEvaluationSchema,
-  ThemeEvaluation
+
 };

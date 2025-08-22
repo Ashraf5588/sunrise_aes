@@ -325,6 +325,8 @@
                           
                           <th rowspan="3" class="total-row">Overall Before</th>
                           <th rowspan="3" class="total-row">Overall After</th>
+                          <th rowspan="3" class="total-row">% Before</th>
+                          <th rowspan="3" class="total-row">% After</th>
                           <th rowspan="3" class="total-row">Grade Before</th>
                           <th rowspan="3" class="total-row">Grade After</th>
                         </tr>
@@ -412,9 +414,8 @@
                             // Calculate grades (assuming grades based on percentage)
                             const percentageBefore = maxPossibleMarks > 0 ? (overallBefore / maxPossibleMarks) * 100 : 0;
                             const percentageAfter = maxPossibleMarks > 0 ? (overallAfter / maxPossibleMarks) * 100 : 0;
-                            
                             function getGrade(percentage) {
-                              if (percentage >= 80) return { grade: 'A+', class: 'grade-excellent' };
+                              if (percentage >= 80) return { grade: 'A+', class:  'grade-excellent' };
                               if (percentage >= 70) return { grade: 'A', class: 'grade-excellent' };
                               if (percentage >= 60) return { grade: 'B+', class: 'grade-good' };
                               if (percentage >= 50) return { grade: 'B', class: 'grade-good' };
@@ -422,11 +423,11 @@
                               if (percentage >= 30) return { grade: 'C', class: 'grade-average' };
                               return { grade: 'D', class: 'grade-needs-improvement' };
                             }
-                            
                             const gradeBefore = getGrade(percentageBefore);
                             const gradeAfter = getGrade(percentageAfter);
                           %>
-                          
+                          <td class="total-row"><%= percentageBefore.toFixed(2) %>%</td>
+                          <td class="total-row"><%= percentageAfter.toFixed(2) %>%</td>
                           <td class="total-row <%= gradeBefore.class %>"><%= gradeBefore.grade %></td>
                           <td class="total-row <%= gradeAfter.class %>"><%= gradeAfter.grade %></td>
                         </tr>

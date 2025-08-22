@@ -138,18 +138,7 @@
       </select>
     </div>
     
-    <div class="form-group">
-      <label for="subject">Select Subject (Optional):</label>
-      <select name="subject" id="subject">
-        <option value="">-- All Subjects --</option>
-        <% const uniqueSubjects = new Set(newsubjectList.map(item => item.newsubject)); %>
-        <% uniqueSubjects.forEach(function(subject) { %>
-          <option value="<%= subject %>">
-            <%= subject %>
-          </option>
-        <% }); %>
-      </select>
-    </div>
+   
 
     <button onclick="showMarks()">Show Theme Marks Report</button>
     
@@ -171,14 +160,12 @@
       
       const studentClass = selectedOption.dataset.class;
       const section = selectedOption.dataset.section;
-      const subject = document.getElementById('subject').value;
+     
 
       if (studentClass && section) {
-        let url = `/thememarks?studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`;
+        let url = `/thememarksofstudent?studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`;
         
-        if (subject) {
-          url += `&subject=${encodeURIComponent(subject)}`;
-        }
+      
         
         window.location.href = url;
       } else {

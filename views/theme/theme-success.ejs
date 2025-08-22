@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#27ae60">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Theme Configuration Success</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary-color: #27ae60;
+      --secondary-color: #3498db;
+      --dark-color: #2c3e50;
+      --light-color: #ecf0f1;
+      --success-gradient: linear-gradient(135deg, #27ae60, #2ecc71);
+      --primary-gradient: linear-gradient(135deg, #3498db, #2980b9);
+      --bg-gradient: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--dark-color);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 650px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Background decoration */
+    .decoration {
+      position: fixed;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .decoration-circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      filter: blur(8px);
+    }
+
+    .decoration-circle-1 {
+      width: 300px;
+      height: 300px;
+      background-color: var(--primary-color);
+      top: -100px;
+      left: -100px;
+    }
+
+    .decoration-circle-2 {
+      width: 200px;
+      height: 200px;
+      background-color: var(--secondary-color);
+      bottom: -50px;
+      right: -50px;
+    }
+
+    .decoration-circle-3 {
+      width: 150px;
+      height: 150px;
+      background-color: #f39c12;
+      top: 40%;
+      left: -75px;
+    }
+
+    /* Success Card Styling */
+    .success-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 3.5rem 2.5rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      text-align: center;
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Card glow effect */
+    .success-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Success Icon Styling */
+    .success-icon-wrapper {
+      position: relative;
+      margin-bottom: 2.5rem;
+    }
+
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: var(--success-gradient);
+      border-radius: 50%;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(39, 174, 96, 0.4);
+      animation: pulse 2s infinite;
+      z-index: 1;
+    }
+
+    .success-icon-glow {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(39, 174, 96, 0.3);
+      filter: blur(10px);
+      z-index: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .success-icon i {
+      color: white;
+      font-size: 40px;
+    }
+
+    /* Success Content Styling */
+    .success-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .success-title {
+      color: var(--primary-color);
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .success-title::after {
+      content: '';
+      position: absolute;
+      width: 60%;
+      height: 4px;
+      background: var(--success-gradient);
+      bottom: -0.5rem;
+      left: 20%;
+      border-radius: 4px;
+    }
+
+    .success-message {
+      color: var(--dark-color);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      font-weight: 500;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Details Box Styling */
+    .details-box {
+      background: linear-gradient(to right, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.1));
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid rgba(52, 152, 219, 0.2);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .details-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(52, 152, 219, 0.15);
+    }
+
+    .details-box::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 40px;
+      height: 40px;
+      background: rgba(52, 152, 219, 0.1);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .details-item {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(52, 152, 219, 0.1);
+      z-index: 1;
+    }
+
+    .details-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .details-label {
+      color: #7f8c8d;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .details-value {
+      color: var(--dark-color);
+      font-weight: 600;
+      font-size: 1.1rem;
+      background: rgba(52, 152, 219, 0.1);
+      padding: 0.25rem 0.75rem;
+      border-radius: 8px;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    /* Button Styling */
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn {
+      padding: 0.85rem 1.75rem;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-width: 180px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--success-gradient);
+      color: white;
+      box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+    }
+
+    /* Animation Keyframes */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+        transform: scale(1);
+      }
+      70% {
+        box-shadow: 0 0 0 15px rgba(39, 174, 96, 0);
+        transform: scale(1.05);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    /* Staggered animation for elements */
+    .animate-element {
+      opacity: 0;
+      animation: slideIn 0.8s forwards;
+    }
+    
+    .animate-delay-1 { animation-delay: 0.2s; }
+    .animate-delay-2 { animation-delay: 0.4s; }
+    .animate-delay-3 { animation-delay: 0.6s; }
+    .animate-delay-4 { animation-delay: 0.8s; }
+
+    /* Confetti effect */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #f39c12;
+      opacity: 0.7;
+      animation: confetti 4s ease-in-out infinite;
+    }
+
+    .confetti:nth-child(1) { left: 10%; animation-delay: 0; background: #e74c3c; }
+    .confetti:nth-child(2) { left: 20%; animation-delay: 0.5s; background: #3498db; }
+    .confetti:nth-child(3) { left: 30%; animation-delay: 1s; background: #2ecc71; }
+    .confetti:nth-child(4) { left: 40%; animation-delay: 1.5s; background: #f1c40f; }
+    .confetti:nth-child(5) { left: 50%; animation-delay: 2s; background: #9b59b6; }
+    .confetti:nth-child(6) { left: 60%; animation-delay: 2.5s; background: #e74c3c; }
+    .confetti:nth-child(7) { left: 70%; animation-delay: 3s; background: #3498db; }
+    .confetti:nth-child(8) { left: 80%; animation-delay: 3.5s; background: #2ecc71; }
+    .confetti:nth-child(9) { left: 90%; animation-delay: 4s; background: #f1c40f; }
+
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0); opacity: 0.7; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      
+      .success-card {
+        padding: 2rem 1.5rem;
+      }
+      
+      .success-title {
+        font-size: 1.8rem;
+      }
+      
+      .success-message {
+        font-size: 1rem;
+        max-width: 100%;
+      }
+      
+      .success-icon {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .success-icon i {
+        font-size: 32px;
+      }
+      
+      .details-box {
+        padding: 1rem;
+      }
+      
+      .buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .btn {
+        width: 100%;
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background decorations -->
+  <div class="decoration decoration-circle decoration-circle-1"></div>
+  <div class="decoration decoration-circle decoration-circle-2"></div>
+  <div class="decoration decoration-circle decoration-circle-3"></div>
+  
+  <!-- Confetti animation -->
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  <div class="confetti"></div>
+  
+  <div class="container">
+    <div class="success-card">
+      <div class="success-icon-wrapper animate-element">
+        <div class="success-icon-glow"></div>
+        <div class="success-icon">
+          <i class="fas fa-check"></i>
+        </div>
+      </div>
+      
+      <div class="success-content">
+        <h1 class="success-title animate-element animate-delay-1">Success!</h1>
+        
+        <p class="success-message animate-element animate-delay-2">
+          <%= typeof message !== 'undefined' ? message : 'Theme configuration was created successfully!' %>
+        </p>
+        
+        <% if (typeof studentClass !== 'undefined') { %>
+        <div class="details-box animate-element animate-delay-3">
+          <div class="details-item">
+            <span class="details-label"><i class="fas fa-school"></i> Class</span>
+            <span class="details-value"><%= studentClass %></span>
+          </div>
+          <div class="details-item">
+            <span class="details-label"><i class="fas fa-calendar-check"></i> Created On</span>
+            <span class="details-value"><%= new Date().toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'}) %></span>
+          </div>
+          <div class="details-item">
+            <span class="details-label"><i class="fas fa-check-circle"></i> Status</span>
+            <span class="details-value" style="background-color: rgba(46, 204, 113, 0.2); color: #27ae60;">Active</span>
+          </div>
+        </div>
+        <% } %>
+        
+        <div class="buttons animate-element animate-delay-4">
+          <a href="/themefillupform" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Configure Another
+          </a>
+          <a href="<%= typeof backUrl !== 'undefined' ? backUrl : '/theme' %>" class="btn btn-secondary">
+            <i class="fas fa-home"></i> Back to Themes
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Create floating confetti elements
+    document.addEventListener('DOMContentLoaded', () => {
+      for (let i = 0; i < 30; i++) {
+        createConfetti();
+      }
+    });
+    
+    function createConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      
+      // Random position and size
+      const size = Math.random() * 10 + 5;
+      confetti.style.width = `${size}px`;
+      confetti.style.height = `${size}px`;
+      confetti.style.left = `${Math.random() * 100}%`;
+      confetti.style.top = `-${size}px`;
+      
+      // Random colors
+      const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c'];
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      
+      // Random shape
+      const shapes = ['circle', 'square', 'rectangle'];
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      
+      switch(shape) {
+        case 'circle':
+          confetti.style.borderRadius = '50%';
+          break;
+        case 'square':
+          // Square is default
+          break;
+        case 'rectangle':
+          confetti.style.width = `${size * 1.5}px`;
+          confetti.style.height = `${size}px`;
+          break;
+      }
+      
+      // Random rotation
+      confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+      
+      // Random animation duration and delay
+      const duration = Math.random() * 3 + 2;
+      const delay = Math.random() * 5;
+      confetti.style.animation = `confetti ${duration}s ease-in-out ${delay}s infinite`;
+      
+      document.body.appendChild(confetti);
+    }
+  </script>
+</body>
+</html>

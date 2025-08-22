@@ -431,14 +431,23 @@
     <div class="header-card">
       <h2>Theme Configuration</h2>
       <p>Set up themes, learning outcomes, and indicators for evaluation</p>
+      <% if (typeof studentClass !== 'undefined') { %>
+        <div style="background-color: #e8f4f8; padding: 10px; margin-top: 15px; border-radius: 8px; font-weight: bold; color: #2980b9;">
+          Configuring for Class <%= studentClass %>
+        </div>
+      <% } %>
     </div>
 
     <div class="form-card">
-      <form action="/theme/fillupform" method="POST" id="mainForm">
+      <form action="/themefillupform?studentClass=<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" method="POST" id="mainForm">
         <div class="form-row">
           <div class="form-group">
             <label for="studentClass">Student Class</label>
-            <input type="text" name="studentClass" id="studentClass" placeholder="Enter class (e.g., 5, 6, 7)" required>
+            <input type="text" name="studentClass" id="studentClass" value="<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" readonly>
+          </div>
+          <div class="form-group">
+            <label for="section">Section (Optional)</label>
+            <input type="text" name="section" id="section" placeholder="Enter section (optional)">
           </div>
           <div class="form-group">
             <label for="subject">Subject</label>
@@ -456,8 +465,13 @@
           <button type="button" class="btn btn-primary" onclick="addTheme()">+ Add Theme</button>
         </div>
 
-        <div class="submit-section">
+        <div class="submit-section" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
           <button type="submit" class="submit-btn">Save Configuration</button>
+          <a href="/themefillupform" style="text-decoration: none;">
+            <button type="button" class="btn btn-warning" style="padding: 10px 20px; min-width: 200px;">
+              Back to Class Selection
+            </button>
+          </a>
         </div>
       </form>
     </div>

@@ -889,7 +889,7 @@
                 }
               }
             %>
-            <% themeData.forEach(theme => { %>
+            <% existingThemeData.forEach(theme => { %>
               <% theme.themes.forEach(themeitem => { %>
                 <option value="<%= themeitem.themeName %>" <%= selectedThemeName === themeitem.themeName ? 'selected' : '' %>><%= themeitem.themeName %></option>
               <% }) %>
@@ -899,7 +899,7 @@
       </div>
 
       <!-- Learning Outcomes Section -->
-      <% themeData.forEach((themeDoc, themeDocIndex) => { %>
+      <% existingThemeData.forEach((themeDoc, themeDocIndex) => { %>
         <% themeDoc.themes.forEach((themeItem, themeItemIndex) => { %>
           <div class="learning-outcome-wrapper" data-theme="<%= themeItem.themeName %>" data-theme-index="<%= themeItemIndex %>" data-student-index="<%= studentIndex %>">
           <% themeItem.learningOutcome.forEach((outcome, outcomeIndex) => { %>
@@ -943,7 +943,7 @@
                         <input type="hidden" 
                                class="theme-field"
                                name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
-                               value="0"
+                               value="<%= marksBeforeIntervention %>"
                                data-student-index="<%= studentIndex %>">
                       </td>
                     <% }); %>
@@ -952,7 +952,7 @@
                              id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
                              class="theme-field"
                              name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
-                             readonly
+                             readonly value="<%= totalMarksBeforeIntervention %>"
                              data-student-index="<%= studentIndex %>">
                     </td>
                   </tr>
@@ -978,7 +978,7 @@
                         <input type="hidden" 
                                class="theme-field"
                                name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
-                               value="0"
+                               value="<%= marksAfterIntervention %>"
                                data-student-index="<%= studentIndex %>">
                       </td>
                     <% }); %>
@@ -987,7 +987,7 @@
                              id="totalAfter_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
                              class="theme-field"
                              name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
-                             readonly
+                             readonly value="<%= totalMarksAfterIntervention %>"
                              data-student-index="<%= studentIndex %>">
                     </td>
                   </tr>

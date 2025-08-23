@@ -144,12 +144,57 @@ exports.themeopener = async (req, res) => {
 };
 exports.themeform = async (req, res) => {
   try{
-    const {subject, studentClass, section,roll} = req.query;
+    const {subject, studentClass, section,roll,themeName} = req.query;
     const studentData =await  studentRecord.find({studentClass:studentClass, section: section});
     const themeForstudentData =  getStudentThemeData(studentClass);
-    const existingThemeData = await themeForstudentData.find({studentClass: studentClass, section: section,roll:roll,subject:subject});
+    console.log(roll,section,studentClass,subject)
+const existingThemeData = await themeForstudentData.aggregate([
+  // Match the document
+  {
+    $match: {
+      studentClass,
+      section,
+      roll: `${roll}`,
+      subjects: { $elemMatch: { name: subject, themes: { $elemMatch: { themeName } } } }
+    }
+  },
+  // Unwind subjects
+  {
+    $unwind: "$subjects"
+  },
+  // Match the specific subject
+  {
+    $match: {
+      "subjects.name": subject
+    }
+  },
+  // Unwind themes
+  {
+    $unwind: "$subjects.themes"
+  },
+  // Match the specific theme
+  {
+    $match: {
+      "subjects.themes.themeName": themeName
+    }
+  },
+  // Project the required fields
+  {
+    $project: {
+      _id: 0,
+      name: 1,
+      studentClass: 1,
+      section: 1,
+      roll: 1,
+      subject: "$subjects.name",
+      theme: "$subjects.themes"
+    }
+  }
+]);
     console.log("data to display",existingThemeData)
-    
+
+
+
     console.log(`Theme form requested for subject: ${subject}, class: ${studentClass}, section: ${section}`);
     
     // Get the theme format model (for theme configuration)

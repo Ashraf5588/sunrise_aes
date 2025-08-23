@@ -566,7 +566,7 @@
       transition: all 0.3s ease;
       width: 100%;
       margin-top: 2rem;
-      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+      box-shadow: 0 4px 15px rgba(34, 218, 255, 0.3);
     }
 
     .submit-btn:hover {
@@ -819,15 +819,9 @@
       <h1>Theme Evaluation Form</h1>
       <p>Complete the evaluation for your selected theme</p>
       <div style="margin-top: 10px;">
-        <p style="font-size: 0.9rem; color: #3498db; padding: 8px 16px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; border-left: 3px solid #3498db; margin-bottom: 8px;">
-          <strong>Smart Data Loading:</strong> Just enter a roll number to see available themes and load previous evaluations!
-        </p>
-        <p style="font-size: 0.9rem; color: #27ae60; padding: 8px 16px; background: rgba(46, 204, 113, 0.1); border-radius: 8px; border-left: 3px solid #27ae60; margin-bottom: 8px;">
-          <strong>Autosave enabled:</strong> Changes are automatically saved as you work!
-        </p>
-        <p style="font-size: 0.9rem; color: #e67e22; padding: 8px 16px; background: rgba(230, 126, 34, 0.1); border-radius: 8px; border-left: 3px solid #e67e22;">
-          <strong>Easy Editing:</strong> Previous evaluations can be modified - just make your changes and they'll be saved!
-        </p>
+      
+        
+        
       </div>
     </div>
     
@@ -835,6 +829,7 @@
     <div class="student-nav-bar">
       <div class="student-nav-title">Students:</div>
       <div class="student-nav-buttons">
+        
         <% studentData.forEach((student, idx) => { %>
           <button type="button" class="student-nav-button <%= idx === 0 ? 'active' : '' %>" onclick="showStudentForm('<%= idx %>')" value="<%= student.roll %>">
             <%= student.roll %> - <%= student.name %>
@@ -843,9 +838,9 @@
       </div>
     </div>
 
-  <% if (existingThemeData.length>0) {%>
-   
-    <% existingThemeData.forEach((student, studentIndex) => { %>
+ <% if (existingThemeData.length > 0) { %>
+  <center><h1>I am coming from if block</h1></center>
+  <% existingThemeData.forEach((student, studentIndex) => { %>
     <form action="/theme/form" method="POST" id="themeEvaluationForm-<%= studentIndex %>" class="themeEvaluationForm" style="<%= studentIndex === 0 ? '' : 'display: none' %>" onsubmit="return validateAndSubmitAjax(event, false, '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">
       <!-- Student Information Section -->
       <div class="form-row">
@@ -862,36 +857,26 @@
       <div class="form-row">
         <div class="form-group">
           <label for="studentClass-<%= studentIndex %>">Class</label>
-          <input type="text" name="studentClass" id="studentClass-<%= studentIndex %>" required value="<%= studentClass %>" readonly data-student-index="<%= studentIndex %>">
+          <input type="text" name="studentClass" id="studentClass-<%= studentIndex %>" required value="<%= student.studentClass %>" readonly data-student-index="<%= studentIndex %>">
         </div>
         <div class="form-group">
           <label for="section-<%= studentIndex %>">Section</label>
-          <input type="text" name="section" id="section-<%= studentIndex %>" required value="<%= section %>" readonly data-student-index="<%= studentIndex %>">
+          <input type="text" name="section" id="section-<%= studentIndex %>" required value="<%= student.section %>" readonly data-student-index="<%= studentIndex %>">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label for="subject-<%= studentIndex %>">Subject</label>
-          <input type="text" name="subjects[0][name]" id="subject-<%= studentIndex %>" required value="<%= subject %>" readonly data-student-index="<%= studentIndex %>">
+          <input type="text" name="subjects[0][name]" id="subject-<%= studentIndex %>" required value="<%= student.subject %>" readonly data-student-index="<%= studentIndex %>">
         </div>
         <div class="form-group">
           <label for="themeName-<%= studentIndex %>">Theme Name</label>
           <select name="subjects[0][themes][0][themeName]" id="themeName-<%= studentIndex %>" onchange="filterLearningOutcomes(this)" required data-student-index="<%= studentIndex %>">
             <option value="">Select a theme</option>
-            <% 
-              // Get the existing theme name for this student
-              let selectedThemeName = '';
-              if (student.subjects && student.subjects.length > 0) {
-                const subjectData = student.subjects.find(s => s.name === subject);
-                if (subjectData && subjectData.themes && subjectData.themes.length > 0) {
-                  selectedThemeName = subjectData.themes[0].themeName;
-                }
-              }
-            %>
-            <% existingThemeData.forEach(theme => { %>
+            <% themeData.forEach(theme => { %>
               <% theme.themes.forEach(themeitem => { %>
-                <option value="<%= themeitem.themeName %>" <%= selectedThemeName === themeitem.themeName ? 'selected' : '' %>><%= themeitem.themeName %></option>
+                <option value="<%= themeitem.themeName %>" <%= themeitem.themeName === student.theme.themeName ? 'selected' : '' %>><%= themeitem.themeName %></option>
               <% }) %>
             <% }) %>
           </select>
@@ -899,157 +884,148 @@
       </div>
 
       <!-- Learning Outcomes Section -->
-      <% existingThemeData.forEach((themeDoc, themeDocIndex) => { %>
-        <% themeDoc.themes.forEach((themeItem, themeItemIndex) => { %>
-          <div class="learning-outcome-wrapper" data-theme="<%= themeItem.themeName %>" data-theme-index="<%= themeItemIndex %>" data-student-index="<%= studentIndex %>">
-          <% themeItem.learningOutcome.forEach((outcome, outcomeIndex) => { %>
-            <div class="learning-outcome-section">
-              <h2><%= outcome.learningOutcomeName %></h2>
-              <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.learningOutcomeName %>">
-              
-              <div class="form-group">
-                <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>">Evaluation Date</label>
-                <input type="date" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][evaluationDate]" id="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">
-              </div>
-              
-              <table class="evaluation-table">
-                <thead>
-                  <tr>
-                    <% outcome.indicators.forEach(indicator => { %>
-                      <th><%= indicator.indicatorName %></th>
-                    <% }); %>
-                    <th>Total Marks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
-                      <td>
-                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][name]" value="<%= indicator.indicatorName %>">
-                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][maxMarks]" value="<%= indicator.indicatorsMarks %>">
-                        <div class="marks-input-container">
-                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
-                          <input type="number" 
-                                 min="0" 
-                                 max="<%= indicator.indicatorsMarks %>" 
-                                 step="any" 
-                                 data-max-marks="<%= indicator.indicatorsMarks %>"
-                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')"
-                                 class="marks-input indicator-before"
-                                 value="0"
-                                 data-student-index="<%= studentIndex %>">
-                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
-                        </div>
-                        <input type="hidden" 
-                               class="theme-field"
-                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
-                               value="<%= marksBeforeIntervention %>"
-                               data-student-index="<%= studentIndex %>">
-                      </td>
-                    <% }); %>
+      <div class="learning-outcome-wrapper" data-theme="<%= student.theme.themeName %>" data-theme-index="0" data-student-index="<%= studentIndex %>">
+        <% student.theme.learningOutcomes.forEach((outcome, outcomeIndex) => { %>
+          <div class="learning-outcome-section">
+            <h2><%= outcome.name %></h2>
+            <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.name %>">
+            <div class="form-group">
+              <label for="evaluationDate_0_<%= outcomeIndex %>-student-<%= studentIndex %>">Evaluation Date</label>
+              <input type="date" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][evaluationDate]" id="evaluationDate_0_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>" value="<%= outcome.evaluationDate || '' %>">
+            </div>
+            <table class="evaluation-table">
+              <thead>
+                <tr>
+                  <% outcome.indicators.forEach(indicator => { %>
+                    <th><%= indicator.name %></th>
+                  <% }); %>
+                  <th>Total Marks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
                     <td>
-                      <input type="number" 
-                             id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                      <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][name]" value="<%= indicator.name %>">
+                      <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][maxMarks]" value="<%= indicator.maxMarks %>">
+                      <div class="marks-input-container">
+                        <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
+                        <input type="number" 
+                               min="0" 
+                               max="<%= indicator.maxMarks %>" 
+                               step="any" 
+                               data-max-marks="<%= indicator.maxMarks %>"
+                               onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')"
+                               class="marks-input indicator-before"
+                               value="<%= indicator.marksBeforeIntervention || 0 %>"
+                               data-student-index="<%= studentIndex %>">
+                        <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
+                      </div>
+                      <input type="hidden" 
                              class="theme-field"
-                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
-                             readonly value="<%= totalMarksBeforeIntervention %>"
+                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
+                             value="<%= indicator.marksBeforeIntervention || '' %>"
                              data-student-index="<%= studentIndex %>">
                     </td>
-                  </tr>
-                  <tr>
-                    <td colspan="<%= outcome.indicators.length + 1 %>" class="section-header" style="color: #2980b9;">थप सहायता पछि (After Intervention)</td>
-                  </tr>
-                  <tr>
-                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
-                      <td>
-                        <div class="marks-input-container">
-                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
-                          <input type="number" 
-                                 min="0" 
-                                 max="<%= indicator.indicatorsMarks %>" 
-                                 step="any" 
-                                 data-max-marks="<%= indicator.indicatorsMarks %>"
-                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')"
-                                 class="marks-input indicator-after"
-                                 value="0"
-                                 data-student-index="<%= studentIndex %>">
-                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
-                        </div>
-                        <input type="hidden" 
-                               class="theme-field"
-                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
-                               value="<%= marksAfterIntervention %>"
-                               data-student-index="<%= studentIndex %>">
-                      </td>
-                    <% }); %>
+                  <% }); %>
+                  <td>
+                    <input type="number" 
+                           id="totalBefore_0_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                           class="theme-field"
+                           name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
+                           readonly value="<%= outcome.totalMarksBeforeIntervention || '' %>"
+                           data-student-index="<%= studentIndex %>">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="<%= outcome.indicators.length + 1 %>" class="section-header" style="color: #2980b9;">थप सहायता पछि (After Intervention)</td>
+                </tr>
+                <tr>
+                  <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
                     <td>
-                      <input type="number" 
-                             id="totalAfter_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                      <div class="marks-input-container">
+                        <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
+                        <input type="number" 
+                               min="0" 
+                               max="<%= indicator.maxMarks %>" 
+                               step="any" 
+                               data-max-marks="<%= indicator.maxMarks %>"
+                               onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')"
+                               class="marks-input indicator-after"
+                               value="<%= indicator.marksAfterIntervention || 0 %>"
+                               data-student-index="<%= studentIndex %>">
+                        <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
+                      </div>
+                      <input type="hidden" 
                              class="theme-field"
-                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
-                             readonly value="<%= totalMarksAfterIntervention %>"
+                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
+                             value="<%= indicator.marksAfterIntervention || '' %>"
                              data-student-index="<%= studentIndex %>">
                     </td>
-                  </tr>
-                  <tr>
-                    <td colspan="<%= outcome.indicators.length + 1 %>" class="tools-header">प्रयोग गरिएको साधन (Tools Used)</td>
-                  </tr>
-                  <tr>
-                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
-                      <td>
-                        <input type="text" class="theme-field tools-input" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][toolsUsed]" placeholder="Tools used">
-                      </td>
-                    <% }); %>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              
-              <!-- Individual outcome totals box -->
-              <div class="outcome-totals-box">
-                <div class="outcome-totals-grid">
-                  <div class="outcome-total-item">
-                    <label for="outcomeBeforeTotal_<%= themeItemIndex %>_<%= outcomeIndex %>">Before Intervention Total</label>
-                    <div class="total-value" id="outcomeBeforeDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</div>
-                  </div>
-                  <div class="outcome-total-item">
-                    <label for="outcomeAfterTotal_<%= themeItemIndex %>_<%= outcomeIndex %>">After Intervention Total</label>
-                    <div class="total-value" id="outcomeAfterDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</div>
-                  </div>
+                  <% }); %>
+                  <td>
+                    <input type="number" 
+                           id="totalAfter_0_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                           class="theme-field"
+                           name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
+                           readonly value="<%= outcome.totalMarksAfterIntervention || '' %>"
+                           data-student-index="<%= studentIndex %>">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="<%= outcome.indicators.length + 1 %>" class="tools-header">प्रयोग गरिएको साधन (Tools Used)</td>
+                </tr>
+                <tr>
+                  <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
+                    <td>
+                      <input type="text" class="theme-field tools-input" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][toolsUsed]" placeholder="Tools used" value="<%= indicator.toolsUsed || '' %>">
+                    </td>
+                  <% }); %>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- Individual outcome totals box -->
+            <div class="outcome-totals-box">
+              <div class="outcome-totals-grid">
+                <div class="outcome-total-item">
+                  <label for="outcomeBeforeTotal_0_<%= outcomeIndex %>">Before Intervention Total</label>
+                  <div class="total-value" id="outcomeBeforeDisplay_0_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>"><%= outcome.totalMarksBeforeIntervention || 0 %></div>
+                </div>
+                <div class="outcome-total-item">
+                  <label for="outcomeAfterTotal_0_<%= outcomeIndex %>">After Intervention Total</label>
+                  <div class="total-value" id="outcomeAfterDisplay_0_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>"><%= outcome.totalMarksAfterIntervention || 0 %></div>
                 </div>
               </div>
             </div>
-          <% }); %>
-          
-          <!-- Overall theme totals -->
-          <div class="totals-section">
-            <h3>Overall Theme Totals</h3>
-            <div class="totals-grid">
-              <div class="total-item">
-                <label for="overallTotalBefore_<%= themeItemIndex %>-student-<%= studentIndex %>">Total Before Intervention</label>
-                <input type="number" id="overallTotalBefore_<%= themeItemIndex %>-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalBefore]" readonly data-student-index="<%= studentIndex %>">
-              </div>
-              <div class="total-item">
-                <label for="overallTotalAfter_<%= themeItemIndex %>-student-<%= studentIndex %>">Total After Intervention</label>
-                <input type="number" id="overallTotalAfter_<%= themeItemIndex %>-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalAfter]" readonly data-student-index="<%= studentIndex %>">
-              </div>
-              <div class="total-item full-width">
-                <label>Total Learning Outcomes: <span id="totalOutcomes_<%= themeItemIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</span></label>
-                <label>Total Max Marks: <span id="totalMaxMarks_<%= themeItemIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</span></label>
-              </div>
-            </div>
-          </div>
           </div>
         <% }); %>
-      <% }); %>
+        <!-- Overall theme totals -->
+        <div class="totals-section">
+          <h3>Overall Theme Totals</h3>
+          <div class="totals-grid">
+            <div class="total-item">
+              <label for="overallTotalBefore_0-student-<%= studentIndex %>">Total Before Intervention</label>
+              <input type="number" id="overallTotalBefore_0-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalBefore]" readonly data-student-index="<%= studentIndex %>" value="<%= student.theme.overallTotalBefore || '' %>">
+            </div>
+            <div class="total-item">
+              <label for="overallTotalAfter_0-student-<%= studentIndex %>">Total After Intervention</label>
+              <input type="number" id="overallTotalAfter_0-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalAfter]" readonly data-student-index="<%= studentIndex %>" value="<%= student.theme.overallTotalAfter || '' %>">
+            </div>
+            <div class="total-item full-width">
+              <label>Total Learning Outcomes: <span id="totalOutcomes_0-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>"><%= student.theme.learningOutcomes.length %></span></label>
+              <label>Total Max Marks: <span id="totalMaxMarks_0-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>"><%= student.theme.learningOutcomes.reduce((sum, outcome) => sum + (outcome.indicators.reduce((s, i) => s + (i.maxMarks || 0), 0)), 0) %></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <button type="submit" class="submit-btn">
         Save Evaluation
       </button>
     </form>
-    <%})%>
-  </div>
-</div>
+  <% }) %>
+
 
   <script>
     function validateAndSubmitAjax(event, isAutosave = false, studentIndex = null) {
@@ -1416,24 +1392,24 @@
     }
     
     function filterLearningOutcomes(selectElement) {
-      const selectedTheme = selectElement.value;
+      const selectedTheme = selectElement.value.trim().toLowerCase();
       const studentIndex = selectElement.getAttribute('data-student-index');
-      
-      console.log(`Filtering for theme: ${selectedTheme}, student index: ${studentIndex}`);
-      
+
+      console.log(`[DEBUG] Filtering for theme: '${selectedTheme}', student index: ${studentIndex}`);
+
       // Get wrappers for this specific student only
       const outcomeWrappers = document.querySelectorAll(`.learning-outcome-wrapper[data-student-index="${studentIndex}"]`);
-      
-      console.log('Found wrappers:', outcomeWrappers.length);
+
+      console.log('[DEBUG] Found wrappers:', outcomeWrappers.length);
 
       outcomeWrappers.forEach((wrapper, index) => {
-        const wrapperTheme = wrapper.dataset.theme;
+        const wrapperTheme = (wrapper.dataset.theme || '').trim().toLowerCase();
         const isSelected = wrapperTheme === selectedTheme;
-        
-        console.log(`Wrapper ${index}: theme="${wrapperTheme}", selected=${isSelected}`);
-        
+
+        console.log(`[DEBUG] Wrapper ${index}: theme='${wrapperTheme}', selected=${isSelected}`);
+
         wrapper.style.display = isSelected ? 'block' : 'none';
-        
+
         // Enable/disable form fields based on selection
         const themeFields = wrapper.querySelectorAll('.theme-field');
         themeFields.forEach(field => {
@@ -1447,7 +1423,7 @@
             }
           }
         });
-        
+
         // Also disable mark inputs
         const markInputs = wrapper.querySelectorAll('.marks-input');
         markInputs.forEach(input => {
@@ -1455,7 +1431,7 @@
           if (!isSelected) input.value = 0;
         });
       });
-      
+
       // Initialize totals for the newly selected theme
       setTimeout(() => initializeAllTotals(studentIndex), 100); // Small delay to ensure DOM is updated
     }
@@ -3286,8 +3262,8 @@
       /* Make the form fields highlight when filled with data */
       input:not([type="checkbox"]):not(:placeholder-shown),
       select:not(:placeholder-shown) {
-        border-color: #27ae60;
-        background-color: rgba(46, 204, 113, 0.05);
+        border-color:  #3498db;
+        background-color: rgba(26, 102, 209, 0.05);
       }
       
       /* Style submit button with animation */
@@ -5933,8 +5909,8 @@ document.addEventListener('DOMContentLoaded', function() {
       /* Make the form fields highlight when filled with data */
       input:not([type="checkbox"]):not(:placeholder-shown),
       select:not(:placeholder-shown) {
-        border-color: #27ae60;
-        background-color: rgba(46, 204, 113, 0.05);
+        border-color:  #3498db;
+        background-color: rgba(55, 160, 209, 0.05);
       }
       
       /* Style submit button with animation */
@@ -5946,7 +5922,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       .submit-btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4);
+        box-shadow: 0 6px 15px rgba(39, 124, 174, 0.4);
       }
       
       .submit-btn:active {

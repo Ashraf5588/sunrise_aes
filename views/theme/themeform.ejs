@@ -829,7 +829,6 @@
     <div class="student-nav-bar">
       <div class="student-nav-title">Students:</div>
       <div class="student-nav-buttons">
-        
         <% studentData.forEach((student, idx) => { %>
           <button type="button" class="student-nav-button <%= idx === 0 ? 'active' : '' %>" onclick="showStudentForm('<%= idx %>')" value="<%= student.roll %>">
             <%= student.roll %> - <%= student.name %>
@@ -1393,6 +1392,7 @@
     
     function filterLearningOutcomes(selectElement) {
       const selectedTheme = selectElement.value.trim().toLowerCase();
+      
       const studentIndex = selectElement.getAttribute('data-student-index');
 
       console.log(`[DEBUG] Filtering for theme: '${selectedTheme}', student index: ${studentIndex}`);

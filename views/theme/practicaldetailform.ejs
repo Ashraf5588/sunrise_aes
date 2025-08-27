@@ -16,6 +16,50 @@
    <center><h1>Attendance Marks </h1></center> 
    <input type="number" name="terminal[0][totalAttendance]" placeholder="Enter Total attendance" id="attendanceDays" oninput="calculateAttendanceMarks()">
    <input type="number" name="terminal[0][attendanceMarks]" placeholder="attendanceMarks" readonly id="attendanceMarks" step="0.1"> <br>
+   <center><h1>Participation Marks
+    <table border="1" cellspacing="0" cellpadding="0">
+  <tr>
+    <th>आधार </th>
+    <th>स्तर</th>
+    <th>अंक</th>
+  </tr>
+  <tr>
+    <td rowspan="4">सक्रियता र सहभागिता</td>
+    <td>
+      सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा सक्रियतापूर्वक भाग लिएको, 
+      आफ्ना विचार निर्वाध र स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका सम्पूर्ण कार्य स्वयंमले पूरा गरेको
+
+    </td>
+    <td>सर्वोत्कृष्ट</td>
+    <td>२ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="2"></td>
+  </tr>
+  <tr>
+    <td>
+      सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा कम सक्रियतापूर्वक भाग लिएको, 
+      आफ्ना विचार स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका अधिकांश कार्य पूरा गरेको
+    </td>
+    <td>उत्कृष्ट</td>
+    <td>१.५ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="1.5"></td>
+  </tr>
+  <tr>
+    <td>
+      सिकाइमा कम जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा निर्देशानुसार भाग लिएको, 
+      आफ्ना विचार आंशिक रूपमा मात्र प्रस्तुत गरेको, दिइएका कार्य आधा मात्र पूरा गरेको
+    </td>
+    <td>मध्यम</td>
+    <td>१ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="1"></td>
+  </tr>
+  <tr>
+    <td>
+      सिकाइप्रति उदासीन रहेमा, समूह छलफल र अन्तरक्रियामा सक्रियता नदेखाएको, 
+      आफ्ना विचार प्रस्तुत गर्न साथी वा शिक्षकको सहयोग चाहिएको, अरुको सहयोगमा दिइएको कार्य पूरा गरेको
+    </td>
+    <td>सामान्य</td>
+    <td>०.५ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="0.5"></td>
+  </tr>
+</table>
+
+   </h1></center>
    <center><h1>Terminal Marks</h1></center>
    <input type="number" name="terminal[0][subject][0][theoryMarks]" placeholder="Terminal Marks"  id="theoryMarks" step="0.1" oninput="calculateTerminalMarks()">    
    <input type="number" name="terminal[0][subject][0][terminalMarks]" placeholder="Obtained Converted Marks" readonly id="obtainedconvertedmarks" step="0.1"> <br>

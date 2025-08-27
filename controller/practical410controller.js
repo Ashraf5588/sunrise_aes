@@ -150,71 +150,120 @@ exports.showpracticalDetailForm = async (req, res) => {
 };
 exports.savepracticalDetailForm = async (req, res) => { 
 
-  try{
-    async function savePractical(data) {
-      let {studentClass} = req.body;
-      let { roll, name,  section, subject, terminal } =data; 
-const practicalModel = getStudentThemeData(studentClass);
-      let studentExist = await practicalModel.findOne({ roll, studentClass, section, subject });
-      if(!studentExist){
-        studentExist = new practicalModel({ 
-          roll,
-          name,
-          studentClass, 
-          section, 
-          terminal: [
-            {
-              terminalName: terminal.terminalName,
-              totalAttendance: terminal.totalAttendance,
-              attendanceMarks: terminal.attendanceMarks,
-              subject: [
-                {
-                  subjectName: subject,
-                  praticipationIndicator: terminal.subject[0].praticipationIndicator,
-                  participationMarks: terminal.subject[0].participationMarks,
-                  theoryMarks: terminal.subject[0].theoryMarks,
-                  terminalMarks: terminal.subject[0].terminalMarks,
-                  mulyangkanAdhar: terminal.subject[0].mulyangkanAdhar.map(mulyangkan => ({
-                    mulyangkanName: mulyangkan.mulyangkanName,
-                    prixyanPakxya: mulyangkan.prixyanPakxya,
-                    praptaSuchak: mulyangkan.praptaSuchak,
-                    praptangka: mulyangkan.praptangka
-                  })),
-                  totalObtained: terminal.subject[0].totalObtained
+   try {
+    const { roll, name, studentClass, section, terminal } = req.body;
+    const Practical = getStudentThemeData(studentClass);
+
+    // Validate required fields
+    if (!roll || !name || !studentClass || !section) {
+      return res.status(400).json({ error: 'Roll, name, studentClass, and section are required' });
+    }
+
+    // Ensure terminal is an array
+    const terminalData = Array.isArray(terminal) ? terminal : [terminal];
+
+    // Find existing document for this roll, class, and section
+    let existingPractical = await Practical.findOne({
+      roll: roll,
+      studentClass: studentClass,
+      section: section
+    });
+
+    if (existingPractical) {
+      // Update existing document - process all terminals
+      for (const terminalItem of terminalData) {
+        const terminalName = terminalItem.terminalName;
+
+        // Find if this terminal already exists
+        const terminalIndex = existingPractical.terminal.findIndex(
+          t => t.terminalName === terminalName
+        );
+
+        if (terminalIndex !== -1) {
+          // Terminal exists, process all subjects in this terminal
+          const subjectData = Array.isArray(terminalItem.subject) ? terminalItem.subject : [terminalItem.subject];
+          
+          for (const subjectItem of subjectData) {
+            const subjectName = subjectItem.subjectName;
+            
+            // Find if subject exists in this terminal
+            const subjectIndex = existingPractical.terminal[terminalIndex].subject.findIndex(
+              s => s.subjectName === subjectName
+            );
+
+            if (subjectIndex !== -1) {
+              // Subject exists, update it
+              existingPractical.terminal[terminalIndex].subject[subjectIndex] = {
+                ...existingPractical.terminal[terminalIndex].subject[subjectIndex],
+                ...subjectItem
+              };
+            } else {
+              // Subject doesn't exist, add it
+              existingPractical.terminal[terminalIndex].subject.push(subjectItem);
             }
-          ] 
-            }
-        ]
-        });
-        await studentExist.save();
+          }
+
+          // Update terminal-level data (attendance, etc.)
+          existingPractical.terminal[terminalIndex].totalAttendance = terminalItem.totalAttendance;
+          existingPractical.terminal[terminalIndex].attendanceMarks = terminalItem.attendanceMarks;
+
+        } else {
+          // Terminal doesn't exist, add new terminal
+          existingPractical.terminal.push(terminalItem);
+        }
       }
-      else
-      {
-        const terminalIndex = student.terminal.findIndex(
-      (t) => t.terminalName === terminalName
-    );
-      if (terminalIndex === -1) {
-        student.terminal.push({
-        terminalName,
-        totalAttendance,
-        attendanceMarks: 0,
-        subject: subjectData, // 8 subjects
+
+      // Save the updated document
+      await existingPractical.save();
+
+      res.status(200).json({
+        message: 'Practical data updated successfully',
+        data: existingPractical
       });
-      } else {
-        student.terminal[terminalIndex] = terminal;
-      }
-      await student.save();
-    }
-  } catch (err) {
-    console.error('Error saving practical detail form:', err);
-    res.status(500).send('Internal Server Error');
-  }
 
-};
-    }
-  }catch(err){
-    console.error('Error saving practical detail form:', err);
-    res.status(500).send('Internal Server Error');
-  }
+    } else {
+      // Create new document
+      const newPractical = new Practical({
+        roll,
+        name,
+        studentClass,
+        section,
+        terminal: terminalData
+      });
 
+      await newPractical.save();
+
+      res.status(201).json({
+        message: 'Practical data created successfully',
+        data: newPractical
+      });
+    }
+
+  } catch (error) {
+    console.error('Error saving practical data:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      details: error.message
+    });
+  }
 };
+
+
+exports.showpracticalSlip = async (req,res,next)=>{
+try
+{
+  const { studentClass, section, subject } = req.query;
+  console.log(studentClass, section, subject);
+
+  const practicalDetail = getStudentThemeData(studentClass);
+  const practicalDetailData = await practicalDetail.find().lean();
+
+  res.render("theme/practicalslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, practicalDetailData});
+}catch(err)
+{
+
+}
+
+
+
+}

@@ -201,7 +201,7 @@ const practicalSchema = new mongoose.Schema(
       {
         
         subjectName:{ type:String, required:false},
-        praticipationIndicator: {type:String, required:false},
+     
         participationMarks: {type:Number, required:false},
         theoryMarks:{type:Number,required:false},
         terminalMarks: {type:Number, required:false},

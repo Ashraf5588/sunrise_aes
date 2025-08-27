@@ -249,5 +249,5 @@ student.get('/evaluationform',verifytoken,authorized,practical410controller.eval
 student.get('/practicaldetailform',verifytoken,authorized,practical410controller.showpracticalDetailForm);
 student.post('/practicaldetailform',verifytoken,authorized,practical410controller.savepracticalDetailForm);
 
-
+student.get('/practicalslip',verifytoken,authorized,practical410controller.showpracticalSlip);
 module.exports = student;

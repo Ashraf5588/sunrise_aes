@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical Slip</title>
+</head>
+<body>
+  <table cellspacing="0" border="1">
+    <tr>
+      <th>SN</th>
+      <th>Name</th>
+      <th>Attendance(4)</th>
+      <th>Practical(36)</th>
+      <th>Terminal Examination(10)</th>
+      <th>Total Obtained(50)</th>
+      <th>Obtained Grade</th>
+    </tr>
+<% practicalDetailData.forEach((student, index) => { %>
+    <tr>
+      <td><%= index + 1 %></td>
+      <td><%= student.name %></td>
+      <td><%= student.terminal[0].attendanceMarks+student.terminal[0].subject[0].participationMarks || 0 %></td>
+      <% mulyangkanAdharMarks = student.terminal[0].subject[0].mulyangkanAdhar.reduce((sum, item) => sum + (item.praptangka), 0) %>
+      <td><%= mulyangkanAdharMarks %></td>
+      <td><%= (student.terminal[0].subject[0].terminalMarks || 0) %></td>
+      <% totalObtained = student.terminal[0].attendanceMarks+student.terminal[0].subject[0].participationMarks+mulyangkanAdharMarks+student.terminal[0].subject[0].terminalMarks || 0 %>
+      <td><%= totalObtained %></td>
+      <% obtainedPercentage = totalObtained / 50 * 100 %>
+      <td><% if(obtainedPercentage>=90 && obtainedPercentage<100) { %> A <% } else if(obtainedPercentage>=80 && obtainedPercentage<90) { %> B <% } else if(obtainedPercentage>=70 && obtainedPercentage<80) { %> C <% } else if(obtainedPercentage>=60 && obtainedPercentage<70) { %> D <% } else { %> NG<% } %></td>
+    </tr>
+  <% }) %>
+  </table>
+</body>
+</html>

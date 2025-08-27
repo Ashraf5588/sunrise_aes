@@ -1,0 +1,294 @@
+const path = require("path");
+
+const fs= require("fs");
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const { rootDir } = require("../utils/path");
+c          mulyangk          mulyangkanAdhar: mulyangkanAdhar.map(m => ({ // Map mulyangkanAdhar.
+              mulyangkanName: m.mulyangkanName || '',
+              prixyanPakxya: m.prixyanPakxya || '', // Correct field name
+              praptaSuchak: m.praptaSuchak || '',
+              praptangka: m.praptangka !== undefined ? parseFloat(m.praptangka) : 0har: mulyangkanAdhar.map(m => ({ // Map mulyangkanAdhar to ensure all fields are present.
+              mulyangkanName: m.mulyangkanName || '', // Default to empty string if undefined.
+              prixyanPakxya: m.prixyanPakxya || '', // Correct field name
+              praptaSuchak: m.praptaSuchak || '', // Default to empty string if undefined.
+              praptangka: m.praptangka !== undefined ? parseFloat(m.praptangka) : 0 // Parse praptangka as float, default to 0. { studentSchema, studentrecordschema } = require("../model/adminschema");
+const { classSchema, subjectSchema,terminalSchema } = require("../model/adminschema");
+const {newsubjectSchema } = require("../model/adminschema");
+const { name } = require("ejs");
+const subjectlist = mongoose.model("subjectlist", subjectSchema, "subjectlist");
+const studentClass = mongoose.model("studentClass", classSchema, "classlist");
+const studentRecord = mongoose.model("studentRecord", studentrecordschema, "studentrecord");
+const newsubject = mongoose.model("newsubject", newsubjectSchema, "newsubject");
+const bcrypt = require("bcrypt");
+const terminal = mongoose.model("terminal", terminalSchema, "terminal");
+const {ThemeEvaluationSchema,practicalSchema} = require("../model/themeformschema");
+// Use the already created model from the schema file
+
+const {themeSchemaFor1} = require("../model/themeschema");
+const { studentData } = require("./controller");
+
+app.set("view engine", "ejs");
+app.set("view", path.join(rootDir, "views"));
+const getSidenavData = async (req) => {
+  try {
+    const subjects = await subjectlist.find({}).lean();
+    const studentClassdata = await studentClass.find({}).lean();
+    const terminals = await terminal.find({}).lean();
+    
+    let accessibleSubject = [];
+    let accessibleClass = [];
+      let newaccessibleSubjects = [];
+    const newsubjectList = await newsubject.find({}).lean();
+    
+    // Check if req exists and has user property
+    if (req && req.user) {
+      const user = req.user;
+      // Log user info for debugging
+      if (user && user.role) {
+        console.log('User role:', user.role);
+        console.log('User allowed subjects:', user.allowedSubjects || []);
+      } else {
+        console.log('User object exists but missing role or allowedSubjects');
+      }
+      
+      if (user.role === "ADMIN") {
+        accessibleSubject = subjects;
+        accessibleClass = studentClassdata;
+        newaccessibleSubjects = newsubjectList;
+      } else {
+        // Filter subjects based on user's allowed subjects
+        accessibleSubject = subjects.filter(subj =>
+          user.allowedSubjects && user.allowedSubjects.some(allowed =>
+            allowed.subject === subj.subject
+          )
+        );
+        
+        // Filter classes based on user's allowed classes/sections
+        accessibleClass = studentClassdata.filter(classItem =>
+          user.allowedSubjects && user.allowedSubjects.some(allowed =>
+            allowed.studentClass === classItem.studentClass && 
+            allowed.section === classItem.section
+          )
+        );
+         newaccessibleSubjects = newsubjectList.filter(subj =>
+  user.allowedSubjects.some(allowed =>
+    allowed.subject === subj.newsubject
+  )
+);
+        console.log('Filtered subjects:', accessibleSubject.length);
+        console.log('Filtered classes:', accessibleClass.length);
+      }
+    } else {
+      // If no user is found, return all data (default admin view)
+      console.log('No user found in request, returning all data');
+      accessibleSubject = subjects;
+      accessibleClass = studentClassdata;
+      newsubjectList = newaccessibleSubjects;
+      
+    }
+    
+    return {
+      subjects: accessibleSubject,
+      studentClassdata: accessibleClass,
+      terminals,
+      newsubjectList: newaccessibleSubjects
+
+    };
+  } catch (error) {
+    console.error('Error fetching sidenav data:', error);
+    return {
+      subjects: [],
+      studentClassdata: [],
+      terminals: []
+    };
+  }
+};
+
+const getThemeFormat = (studentClass) => {
+  // Collection name: themeFor{class}
+  const collectionName = `themeFor${studentClass}`;
+  console.log(`Getting theme format model for class ${studentClass} using collection ${collectionName}`);
+  
+  // Check if model already exists
+  if (mongoose.models[collectionName]) {
+    return mongoose.models[collectionName];
+  }
+
+  // Create model with practicalSchema for configuration
+  return mongoose.model(collectionName, practicalSchema, collectionName);
+};
+const getStudentThemeData = (studentClass) => {
+  // Collection name: themeForStudent{class}
+  const collectionName = `PracticalForStudent${studentClass}`;
+  console.log(`Getting student theme data model for class ${studentClass} using collection ${collectionName}`);
+  
+  // Check if model already exists
+  if (mongoose.models[collectionName]) {
+    return mongoose.models[collectionName];
+  }
+
+  // Create model with practicalSchema for student data
+  return mongoose.model(collectionName, practicalSchema, collectionName);
+};
+
+exports.chooseClass = async (req, res) => {
+  
+  res.render("theme/class", {...await getSidenavData(req),editing: false});
+};
+exports.evaluationForm = async (req, res) => {
+  const {studentClass,section} = req.query;
+  console.log(studentClass,section);
+  if(studentClass==='1' || studentClass==='2' || studentClass==='3') {
+    return res.render("theme/theme", {...await getSidenavData(req),editing: false, studentClass, section});
+  } else {
+     return res.render("theme/practicalform410pannel", {...await getSidenavData(req),editing: false, studentClass, section});
+  }
+};
+exports.showpracticalDetailForm = async (req, res) => {
+  const { studentClass, section, subject } = req.query;
+  console.log(studentClass, section, subject);
+
+  const practicalFormat = getThemeFormat(studentClass);
+  const practicalFormatData = await practicalFormat.find().lean();
+
+  res.render("theme/practicaldetailform", {...await getSidenavData(req), editing: false, studentClass, section, subject, practicalFormatData});
+  
+};
+exports.savepracticalDetailForm = async (req, res) => { 
+  
+try {
+    const { roll, name, studentClass, section } = req.body;
+
+    const Practical = getStudentThemeData(studentClass)
+    
+    // Log complete request body for debugging
+    console.log("Request body:", JSON.stringify(req.body, null, 2))
+    
+    // Log request body for debugging
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    
+    // Extract top-level fields from form data.
+    const submittedTerminal = req.body.terminal[0]; // Get the submitted terminal object (form uses terminal[0]).
+    const terminalName = submittedTerminal.terminalName; // Extract terminalName.
+    const totalAttendance = parseInt(submittedTerminal.totalAttendance) || 0; // Parse totalAttendance as integer, default to 0.
+    const attendanceMarks = parseFloat(submittedTerminal.attendanceMarks) || 0; // Parse attendanceMarks as float, default to 0.
+
+    // Extract all subjects from the form (form may submit multiple subjects in subject array)
+    const submittedSubjects = submittedTerminal.subject || []; // Get the subject array, default to empty if undefined.
+
+    // Find existing document for the student
+    let practical = await Practical.findOne({ roll, studentClass, section }); // Query for existing student document.
+
+    if (!practical) { // If no document exists, create a new one.
+      practical = new Practical({ // Initialize new document.
+        roll, // Set roll.
+        name, // Set name.
+        studentClass, // Set studentClass.
+        section, // Set section.
+        terminal: [] // Initialize empty terminal array.
+      });
+    }
+
+    // Check if the terminal already exists
+    const existingTerminalIndex = practical.terminal.findIndex( // Find index of terminal with matching terminalName.
+      t => t.terminalName === terminalName // Compare terminalName.
+    );
+
+    let currentTerminal;
+    if (existingTerminalIndex === -1) { // If terminal doesn’t exist, add a new one.
+      currentTerminal = { // Create new terminal object.
+        terminalName, // Set terminalName.
+        totalAttendance, // Set totalAttendance.
+        attendanceMarks, // Set attendanceMarks.
+        subject: [] // Initialize empty subject array.
+      };
+      practical.terminal.push(currentTerminal); // Add to terminal array.
+    } else { // If terminal exists, use it.
+      currentTerminal = practical.terminal[existingTerminalIndex]; // Reference existing terminal.
+      currentTerminal.totalAttendance = totalAttendance; // Update totalAttendance.
+      currentTerminal.attendanceMarks = attendanceMarks; // Update attendanceMarks.
+    }
+
+    // Process each submitted subject
+    submittedSubjects.forEach(submittedSubject => { // Iterate over all submitted subjects.
+      const subjectName = submittedSubject.subjectName; // Extract subjectName.
+      const participationStatus = submittedSubject.participationStatus || 'active'; // Default to 'active' if undefined.
+      const participationMarks = parseFloat(submittedSubject.participationMarks) || 0; // Parse participationMarks, default to 0.
+      const theoryMarks = parseFloat(submittedSubject.theoryMarks) || 0; // Parse theoryMarks, default to 0.
+      const terminalMarks = parseFloat(submittedSubject.terminalMarks) || 0; // Parse terminalMarks, default to 0.
+      
+      // Fix for mulyangkanAdhar - ensure it's properly processed as an array
+      let mulyangkanAdhar = [];
+      if (submittedSubject.mulyangkanAdhar) {
+        // If it's an array of objects, use it directly
+        if (Array.isArray(submittedSubject.mulyangkanAdhar)) {
+          mulyangkanAdhar = submittedSubject.mulyangkanAdhar;
+        } 
+        // If it's an object with numeric keys (common with form data)
+        else if (typeof submittedSubject.mulyangkanAdhar === 'object') {
+          mulyangkanAdhar = Object.values(submittedSubject.mulyangkanAdhar);
+        }
+      }
+      
+      // Filter out empty mulyangkanAdhar entries
+      mulyangkanAdhar = mulyangkanAdhar.filter(m => 
+        m && (m.mulyangkanName || m.praptangka || m.praptaSuchak || m.prixyanPakxya)
+      );
+      
+      console.log(`Processed mulyangkanAdhar for ${subjectName}:`, JSON.stringify(mulyangkanAdhar, null, 2));
+      
+      // Calculate total from praptangka values
+      const totalObtained = mulyangkanAdhar.reduce((sum, m) => 
+        sum + (parseFloat(m.praptangka) || 0), 0
+      );
+
+      // Check if subject already exists in the terminal
+      const existingSubjectIndex = currentTerminal.subject.findIndex( // Find index of subject with matching subjectName.
+        s => s.subjectName === subjectName // Compare subjectName.
+      );
+
+      if (existingSubjectIndex === -1) { // If subject doesn’t exist, add a new one.
+        currentTerminal.subject.push({ // Add new subject object.
+          subjectName, // Set subjectName.
+          participationStatus, // Set participationStatus.
+          participationMarks, // Set participationMarks.
+          theoryMarks, // Set theoryMarks.
+          terminalMarks, // Set terminalMarks.
+          mulyangkanAdhar: mulyangkanAdhar.map(m => ({ // Map mulyangkanAdhar to ensure all fields are present.
+            mulyangkanName: m.mulyangkanName || '', // Default to empty string if undefined.
+            praptaSuchak: m.praptaSuchak || '', // Default to empty string if undefined.
+            praptangka: m.praptangka !== undefined ? parseFloat(m.praptangka) : 0 // Parse praptangka as float, default to 0.
+          })),
+          totalObtained: mulyangkanAdhar.reduce((sum, m) => sum + (parseFloat(m.praptangka) || 0), 0) // Calculate totalObtained by summing praptangka.
+        });
+      } else { // If subject exists, update it.
+        currentTerminal.subject[existingSubjectIndex] = { // Overwrite existing subject.
+          subjectName, // Set subjectName.
+          participationStatus, // Set participationStatus.
+          participationMarks, // Set participationMarks.
+          theoryMarks, // Set theoryMarks.
+          terminalMarks, // Set terminalMarks.
+          mulyangkanAdhar: mulyangkanAdhar.map(m => ({ // Map mulyangkanAdhar.
+            mulyangkanName: m.mulyangkanName || '',
+            praptaSuchak: m.praptaSuchak || '',
+            praptangka: m.praptangka !== undefined ? parseFloat(m.praptangka) : 0
+          })),
+          totalObtained: mulyangkanAdhar.reduce((sum, m) => sum + (parseFloat(m.praptangka) || 0), 0)
+        };
+      }
+    });
+
+    // Save the document
+    await practical.save(); // Persist changes to the database.
+    console.log("✅ Saved practical data:", JSON.stringify(practical, null, 2));
+
+    // Redirect with appropriate query parameters
+    res.redirect(`/practicaldetailform?studentClass=${studentClass}&section=${section}&subject=${submittedSubjects[0]?.subjectName || ''}&success=true`);
+  } catch (error) {
+    console.error('❌ Error saving practical data:', error); // Log error for debugging.
+    res.status(500).send('Error saving data: ' + error.message); // Send error response with details.
+  }
+};

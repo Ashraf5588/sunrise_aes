@@ -186,9 +186,44 @@ ThemeEvaluationSchema.pre('save', function(next) {
   processObject(this);
   next();
 });
-
+const practicalSchema = new mongoose.Schema(
+  {
+    roll:{ type:String, required:false},
+    name: {type:String, required:false},
+    studentClass: {type:String, required:false},
+    section:{ type:String, required:false},
+    terminal:[
+      {
+          terminalName:{ type:String, required:false},
+          totalAttendance: {type:Number, required:false},
+          attendanceMarks: {type:Number, required:false},
+    subject:[
+      {
+        
+        subjectName:{ type:String, required:false},
+        praticipationIndicator: {type:String, required:false},
+        participationMarks: {type:Number, required:false},
+        theoryMarks:{type:Number,required:false},
+        terminalMarks: {type:Number, required:false},
+        mulyangkanAdhar: [
+          {
+            
+            mulyangkanName:{type:String, required:false},
+            prixyanPakxya: {type:String,required:false},
+            praptaSuchak: {type:String, required:false},
+            praptangka: {type:Number, required:false},
+          }
+        ],
+        totalObtained: {type:Number, required:false}
+      },
+    ],
+    },
+  ],
+  }
+)
 // Export both the schema and model
 module.exports = {
   ThemeEvaluationSchema,
+  practicalSchema
 
 };

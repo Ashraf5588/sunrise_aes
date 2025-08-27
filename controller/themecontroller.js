@@ -103,13 +103,24 @@ const getThemeFormat = (studentClass) => {
   const collectionName = `themeFor${studentClass}`;
   console.log(`Getting theme format model for class ${studentClass} using collection ${collectionName}`);
   
-  // Check if model already exists
+  // Delete the model if it exists to prevent schema conflicts
   if (mongoose.models[collectionName]) {
-    return mongoose.models[collectionName];
+    delete mongoose.models[collectionName];
+    console.log(`Cleared existing model cache for ${collectionName}`);
   }
   
+  // Verify we have the correct schema
+  console.log('themeSchemaFor1 structure:', Object.keys(themeSchemaFor1.obj));
+  
   // Create model with themeSchemaFor1 for configuration
-  return mongoose.model(collectionName, themeSchemaFor1, collectionName);
+  const model = mongoose.model(collectionName, themeSchemaFor1, collectionName);
+  console.log(`Created new model for collection ${collectionName} with themeSchemaFor1`);
+  
+  // Test the model schema to ensure it's correct
+  const schemaFields = Object.keys(model.schema.obj);
+  console.log(`Model schema fields:`, schemaFields);
+  
+  return model;
 };
 
 // For student evaluation data (uses ThemeEvaluationSchema)
@@ -148,49 +159,15 @@ exports.themeform = async (req, res) => {
     const studentData =await  studentRecord.find({studentClass:studentClass, section: section});
     const themeForstudentData =  getStudentThemeData(studentClass);
     console.log(roll,section,studentClass,subject)
-const existingThemeData = await themeForstudentData.aggregate([
-  // Match the document
+const existingThemeData = await themeForstudentData.find(
   {
-    $match: {
-      studentClass,
-      section,
-      roll: `${roll}`,
-      subjects: { $elemMatch: { name: subject, themes: { $elemMatch: { themeName } } } }
-    }
+    studentClass,
+    section,
+    roll: `${roll}`,
+    subjects: { $elemMatch: { name: subject, themes: { $elemMatch: { themeName } } } }
   },
-  // Unwind subjects
-  {
-    $unwind: "$subjects"
-  },
-  // Match the specific subject
-  {
-    $match: {
-      "subjects.name": subject
-    }
-  },
-  // Unwind themes
-  {
-    $unwind: "$subjects.themes"
-  },
-  // Match the specific theme
-  {
-    $match: {
-      "subjects.themes.themeName": themeName
-    }
-  },
-  // Project the required fields
-  {
-    $project: {
-      _id: 0,
-      name: 1,
-      studentClass: 1,
-      section: 1,
-      roll: 1,
-      subject: "$subjects.name",
-      theme: "$subjects.themes"
-    }
-  }
-]);
+  { name: 1, studentClass: 1, section: 1, roll: 1, "subjects.$": 1 }
+);
     console.log("data to display",existingThemeData)
 
 
@@ -431,13 +408,50 @@ exports.themefillupformsave = async (req, res) => {
       });
     }
     
-    // Ensure the studentClass in the request body is set correctly
-    req.body.studentClass = studentClass;
+    // Log the incoming data for debugging
+    console.log(`Theme data received for class ${studentClass}:`, JSON.stringify(req.body, null, 2));
+    console.log(`Request headers:`, req.headers['content-type']);
+    console.log(`Form data keys:`, Object.keys(req.body));
+    
+    // Validate required fields exist
+    if (!req.body.subject || !req.body.credit) {
+      console.error("Missing required fields - subject or credit");
+      console.error("Available fields:", Object.keys(req.body));
+      return res.status(400).json({
+        success: false,
+        message: "Subject and credit are required"
+      });
+    }
+    
+    // Check if themes data exists and is in the right format
+    if (!req.body.themes) {
+      console.error("No themes data found in request body");
+      return res.status(400).json({
+        success: false,
+        message: "No themes data provided"
+      });
+    }
+    
+    console.log("Themes data type:", typeof req.body.themes);
+    console.log("Themes data structure:", JSON.stringify(req.body.themes, null, 2));
+    
+    // Prepare data for saving - extract the required fields
+    const themeData = {
+      studentClass: studentClass,
+      subject: req.body.subject,
+      credit: parseInt(req.body.credit) || req.body.credit,
+      themes: req.body.themes || []
+    };
+    
+    console.log(`Processed theme data for saving:`, JSON.stringify(themeData, null, 2));
     
     // This is for theme format, so use getThemeFormat
     const model = getThemeFormat(studentClass);
-    const result = await model.create(req.body);
-    console.log(`Theme filled successfully for class ${studentClass}`);
+    console.log(`Using model for collection: themeFor${studentClass}`);
+    
+    const result = await model.create(themeData);
+    console.log(`Theme filled successfully for class ${studentClass}. Document ID: ${result._id}`);
+    console.log(`Saved document structure:`, Object.keys(result.toObject()));
     
     // Send a more user-friendly response
     return res.render("theme/theme-success", {
@@ -447,6 +461,8 @@ exports.themefillupformsave = async (req, res) => {
     });
   } catch(err) {
     console.error("Error in theme controller:", err);
+    console.error("Error details:", err.message);
+    console.error("Stack trace:", err.stack);
     res.status(500).send("Internal Server Error: " + err.message);
   }
 }

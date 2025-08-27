@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Theme Management</title>
+  <title>Class 4 to 10 Practical Management</title>
   <style>
     * {
       margin: 0;
@@ -444,25 +444,25 @@
 <body>
   <div class="container fade-in">
     <div class="header-card">
-      <h1>Theme Management</h1>
-      <p>Select class, section and subject to manage themes</p>
+      <h1>Class 4-10 Practical Management</h1>
+      <p>Select subject to manage practical</p>
     </div>
 
     <!-- Quick Actions at the top -->
     <div class="quick-actions">
       <h3>🚀 Quick Navigation</h3>
       <div class="action-grid">
-        <a href="/thememarks" class="compact-action-card">
+        <a href="/thememarksofstudent?studentClass=<%= studentClass %>&section=<%= section %>" class="compact-action-card">
           <div class="compact-action-icon">📊</div>
           <div class="compact-action-title">View Marks</div>
         </a>
 
-        <a href="/themefillupform" target="_blank" class="compact-action-card">
+        <a href="/themefillupform?studentClass=<%= studentClass %>&section=<%= section %>" target="_blank" class="compact-action-card">
           <div class="compact-action-icon">⚙️</div>
           <div class="compact-action-title">Configure</div>
         </a>
 
-        <a href="/themeslip" class="compact-action-card">
+        <a href="/themeslip?studentClass=<%= studentClass %>&section=<%= section %>" class="compact-action-card">
           <div class="compact-action-icon">📋</div>
           <div class="compact-action-title">Report Slip</div>
         </a>
@@ -470,57 +470,8 @@
     </div>
 
     <!-- Form with side-by-side selectors -->
-    <div class="selector-form">
-      <div class="selector-group">
-        <label for="classSelector">📚 Class & Section</label>
-        <select id="classSelector" class="ios-select">
-          <option value="" selected disabled>-- Choose class & section --</option>
-          <% 
-            // Sort studentClassdata by class number
-            const sortedClassData = [...studentClassdata].sort((a, b) => {
-              // Convert class to number for proper numeric sorting
-              const classA = parseInt(a.studentClass);
-              const classB = parseInt(b.studentClass);
-              
-              // First sort by class number
-              if (classA !== classB) {
-                return classA - classB;
-              }
-              
-              // If same class, sort by section
-              return a.section.localeCompare(b.section);
-            });
-            
-            // Group by class for optgroup
-            const classGroups = {};
-            sortedClassData.forEach(item => {
-              const classNum = item.studentClass;
-              if (!classGroups[classNum]) {
-                classGroups[classNum] = [];
-              }
-              classGroups[classNum].push(item);
-            });
-            
-            // Get sorted class numbers
-            const sortedClassNumbers = Object.keys(classGroups).sort((a, b) => parseInt(a) - parseInt(b));
-            
-            // Loop through each class group
-            sortedClassNumbers.forEach(classNum => {
-              const sections = classGroups[classNum];
-          %>
-            <optgroup label="Class <%= classNum %> 📚">
-            <% sections.forEach(studentclass => { %>
-              <option 
-                value="<%=studentclass.section.trim()%>"
-                data-class="<%=studentclass.studentClass%>"
-                data-section="<%=studentclass.section%>">
-                Section <%= studentclass.section %>
-              </option>
-            <% }); %>
-            </optgroup>
-          <% }); %>
-        </select>
-      </div>
+  
+  
 
       <div class="selector-group">
         <label for="subject">📖 Subject</label>
@@ -534,12 +485,25 @@
           <% }); %>
         </select>
       </div>
+         <div class="selector-group">
+        <label for="terminal"> Terminal</label>
+        <select name="terminal" id="terminal" class="ios-select">
+          <option value="" disabled selected>-- Choose terminal --</option>
+
+          <% terminals.forEach(function(terminal) { %>
+            <option value="<%= terminal.terminal %>" <%= editing && subjectedit.terminal === terminal.terminal ? 'selected' : '' %>>
+              <%= terminal.terminal %>
+            </option>
+          <% }); %>
+        </select>
+      </div>
 
       <button class="load-button" onclick="themeform()">
         🚀 Load Form
       </button>
     </div>
-
+<input type="hidden" id="studentClass" value="<%=studentClass%>">
+<input type="hidden" id="section" value="<%=section%>">
     <div id="alert-message" class="alert"></div>
   </div>
 
@@ -556,13 +520,14 @@
     }
 
     function themeform() {
-      const classSelector = document.getElementById('classSelector');
+     
       const subjectSelector = document.getElementById('subject');
-      
-      const selectedOption = classSelector.options[classSelector.selectedIndex];
-      const studentClass = selectedOption?.dataset.class;
-      const section = selectedOption?.dataset.section;
+
+
+      const studentClass = document.getElementById('studentClass').value;
+      const section = document.getElementById('section').value;
       const subject = subjectSelector.value;
+      const terminal = document.getElementById('terminal').value;
 
       // Validation
       if (!studentClass || !section) {
@@ -583,8 +548,8 @@
       button.innerHTML = '🔄 Loading...';
       button.classList.add('loading');
 
-      // Navigate to theme form
-      const url = `/themeform?subject=${encodeURIComponent(subject)}&studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`;
+      // Navigate to practical detail form
+      const url = `/practicaldetailform?subject=${encodeURIComponent(subject)}&studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}&terminal=${encodeURIComponent(terminal)}`;
       window.location.href = url;
     }
 

@@ -3,6 +3,7 @@ const student = express.Router();
 const controller = require('../controller/controller')
 const multer  = require('multer')
 const themecontroller = require('../controller/themecontroller')
+const practical410controller = require('../controller/practical410controller')
 const themeInit = require('../controller/theme-init')
 
 
@@ -243,4 +244,10 @@ student.get('/themeslip', verifytoken, authorized, themecontroller.themeslip);
 student.get('/theme/previous-data', verifytoken, authorized, themecontroller.getPreviousThemeData);
 student.get('/theme/student-themes', verifytoken, authorized, themecontroller.getStudentThemes);
 student.get('/theme/initialize-student-records', verifytoken, authorized, themeInit.initializeStudentRecords);
+student.get('/class',verifytoken,authorized,practical410controller.chooseClass);
+student.get('/evaluationform',verifytoken,authorized,practical410controller.evaluationForm);
+student.get('/practicaldetailform',verifytoken,authorized,practical410controller.showpracticalDetailForm);
+student.post('/practicaldetailform',verifytoken,authorized,practical410controller.savepracticalDetailForm);
+
+
 module.exports = student;

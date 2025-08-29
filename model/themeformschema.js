@@ -207,7 +207,9 @@ const practicalSchema = new mongoose.Schema(
         terminalMarks: {type:Number, required:false},
         mulyangkanAdhar: [
           {
-            
+
+            unitName:{type:String, required:false},
+            practicalName:{type:String, required:false},
             mulyangkanName:{type:String, required:false},
             prixyanPakxya: {type:String,required:false},
             praptaSuchak: {type:String, required:false},
@@ -222,8 +224,36 @@ const practicalSchema = new mongoose.Schema(
   }
 )
 // Export both the schema and model
+
+const scienceprojectSchema = new mongoose.Schema({
+  roll: { type: String, required: false },
+  name: { type: String, required: false },
+  studentClass: { type: String, required: false },
+  section: { type: String, required: false },
+  subject: { type: String, required: false },
+  terminal: { type: String, required: false },
+  projectWorks: [
+    {
+      projectWorkLesson: { type: String, required: false },
+      projectName: { type: String, required: false },
+         projectAdhar: { type: String, required: false },
+  projectIndicator: { type: String, required: false },
+      projectMarks: { type: Number, required: false }
+    }
+  ],
+    practical: [
+    {
+      practicalName: { type: String, required: false },
+      practicalLesson: { type: String, required: false },
+      practicalAdhar: { type: String, required: false },
+      practicalIndicator: { type: String, required: false },
+      practicalMarks: { type: Number, required: false }
+    }
+  ]
+});
 module.exports = {
   ThemeEvaluationSchema,
-  practicalSchema
+  practicalSchema,
+  scienceprojectSchema
 
 };

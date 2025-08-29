@@ -250,4 +250,21 @@ student.get('/practicaldetailform',verifytoken,authorized,practical410controller
 student.post('/practicaldetailform',verifytoken,authorized,practical410controller.savepracticalDetailForm);
 
 student.get('/practicalslip',verifytoken,authorized,practical410controller.showpracticalSlip);
+
+// Science Practical Form Routes
+student.get('/sciencepracticalform', verifytoken, authorized, (req, res) => {
+  const studentClass = req.query.studentClass || '';
+  res.render('theme/sciencepracticalform', { studentClass });
+});
+
+student.post('/sciencepractical', verifytoken, authorized, practical410controller.saveSciencePractical);
+
+// Temporary test route to debug form data
+student.post('/test-form-data', (req, res) => {
+  console.log('=== TEST FORM DATA ===');
+  console.log('Raw body:', JSON.stringify(req.body, null, 2));
+  console.log('=== END TEST ===');
+  res.json({ received: req.body });
+});
+student.post('/scienceData', verifytoken, authorized, practical410controller.saveScienceData);
 module.exports = student;

@@ -314,7 +314,33 @@
       display: block;
     }
 
-    
+    .marks-input[data-type="theory"] {
+      background-color: var(--light-gray);
+      color: var(--light-brown);
+      cursor: not-allowed;
+      border-color: #D6D8DB;
+      user-select: none;
+    }
+
+    .marks-input[data-type="theory"]:hover {
+      cursor: not-allowed;
+    }
+
+    .marks-input[data-type="theory"]:focus {
+      cursor: not-allowed;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .marks-input[data-type="grade"] {
+      background-color: var(--light-gray);
+      color: var(--dark-brown);
+      cursor: not-allowed;
+      border-color: #D6D8DB;
+      user-select: none;
+      text-align: center;
+      font-weight: 600;
+    }
 
     .marks-input[data-type="practical"] {
       background-color: var(--white);
@@ -583,7 +609,7 @@
         <div class="entry-body">
           <div class="info-alert">
             <i class="fas fa-info-circle"></i>
-            Theory marks are shown for reference only. Enter practical marks and they will be saved automatically.
+            Theory marks are read-only. Enter practical marks, attendance & participation, practical & project work, and terminal scores. Total and grade will be calculated automatically.
           </div>
           
           <div class="table-container">
@@ -593,13 +619,24 @@
                   <th style="width: 50px;">Roll</th>
                   <th style="width: 60px;">Photo</th>
                   <th style="width: 180px;">Student Details</th>
-                  <th style="width: 70px;">Theory<br><small class="opacity-75"></small></th>
+                  <th style="width: 70px;">Theory<br><small class="opacity-75">(readonly)</small></th>
                   <th style="width: 70px;">Practical<br><small class="opacity-75">(editable)</small></th>
+                  <th style="width: 70px;">Attendance &<br>Participation</th>
+                  <th style="width: 70px;">Practical &<br>Project</th>
+                  <th style="width: 70px;">Terminal<br>Score</th>
                   <th style="width: 70px;">Total<br><small class="opacity-75">(auto)</small></th>
+                  <th style="width: 60px;">Grade</th>
                 </tr>
               </thead>
               <tbody>
-                <% studentPrData.forEach(student => { %>
+                <% studentPrData.forEach(student => { 
+                  // Find corresponding practical data for this student
+                  const studentPracticalData = practicalData ? practicalData.find(pd => 
+                    pd.roll === student.roll && 
+                    pd.studentClass === studentClass && 
+                    pd.section === section
+                  ) : null;
+                %>
                   <tr data-roll="<%= student.roll %>">
                     <td class="text-center fw-bold"><%= student.roll %></td>
                     <td class="text-center">
@@ -615,8 +652,8 @@
                              data-type="theory" 
                              name="th_<%= student.roll %>" 
                              value="<%= student.theory || '' %>" 
-                             
-                             >
+                             readonly
+                             title="Theory marks (read-only)">
                     </td>
                     <td class="text-center">
                       <input type="number" 
@@ -631,9 +668,56 @@
                     </td>
                     <td class="text-center">
                       <input type="number" 
+                             class="marks-input" 
+                             data-type="attendance" 
+                             name="attendance_<%= student.roll %>" 
+                             value="<%= studentPracticalData ? studentPracticalData.attendanceParticipation || '' : '' %>" 
+                             min="0" 
+                             max="10" 
+                             step="0.01"
+                             title="Attendance & Participation marks"
+                             placeholder="0">
+                    </td>
+                    <td class="text-center">
+                      <input type="number" 
+                             class="marks-input" 
+                             data-type="practicalProject" 
+                             name="practicalProject_<%= student.roll %>" 
+                             value="<%= studentPracticalData ? studentPracticalData.practicalProject || '' : '' %>" 
+                             min="0" 
+                             max="20" 
+                             step="0.01"
+                             title="Practical & Project marks"
+                             placeholder="0">
+                    </td>
+                    <td class="text-center">
+                      <input type="number" 
+                             class="marks-input" 
+                             data-type="terminalScore" 
+                             name="terminalScore_<%= student.roll %>" 
+                             value="<%= studentPracticalData ? studentPracticalData.terminal || '' : '' %>" 
+                             min="0" 
+                             max="10" 
+                             step="0.01"
+                             title="Terminal score"
+                             placeholder="0">
+                    </td>
+                    <td class="text-center">
+                      <input type="number" 
                              class="total-input" 
                              readonly 
+                             value="<%= studentPracticalData ? studentPracticalData.total || '' : '' %>"
                              title="Total marks (auto-calculated)">
+                    </td>
+                    <td class="text-center">
+                      <input type="text" 
+                             class="marks-input" 
+                             data-type="grade" 
+                             name="grade_<%= student.roll %>" 
+                             value="<%= studentPracticalData ? studentPracticalData.grade || '' : '' %>" 
+                             readonly
+                             title="Grade (auto-calculated)"
+                             style="width: 50px;">
                     </td>
                   </tr>
                 <% }) %>
@@ -705,7 +789,7 @@ function debounce(func, delay) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const inputs = document.querySelectorAll(".marks-entry");
+  const inputs = document.querySelectorAll(".marks-input[data-type]:not([data-type='theory']):not([data-type='grade'])");
   const statusMessage = document.createElement('div');
   statusMessage.className = 'save-status alert';
   statusMessage.style.position = 'fixed';
@@ -728,12 +812,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
   
-  // Calculate initial totals on page load
-  document.querySelectorAll('tr[data-roll]').forEach(row => {
+  // Function to calculate total and grade for a row
+  function calculateTotalAndGrade(row) {
     const theory = parseFloat(row.querySelector('input[data-type="theory"]').value || 0);
     const practical = parseFloat(row.querySelector('input[data-type="practical"]').value || 0);
-    const total = theory + practical;
-    row.querySelector(".total-input").value = total || '';
+    const attendance = parseFloat(row.querySelector('input[data-type="attendance"]').value || 0);
+    const practicalProject = parseFloat(row.querySelector('input[data-type="practicalProject"]').value || 0);
+    const terminalScore = parseFloat(row.querySelector('input[data-type="terminalScore"]').value || 0);
+    
+    const total = theory + practical + attendance + practicalProject + terminalScore;
+    
+    // Calculate grade based on total
+    let grade = 'NG';
+    if (total >= 90) grade = 'A+';
+    else if (total >= 80) grade = 'A';
+    else if (total >= 70) grade = 'B+';
+    else if (total >= 60) grade = 'B';
+    else if (total >= 50) grade = 'C+';
+    else if (total >= 40) grade = 'C';
+    else if (total >= 32) grade = 'D';
+    else grade = 'NG';
+    
+    // Update the total and grade fields
+    row.querySelector(".total-input").value = total.toFixed(2);
+    row.querySelector('input[data-type="grade"]').value = grade;
+    
+    return { total, grade };
+  }
+  
+  // Calculate initial totals on page load
+  document.querySelectorAll('tr[data-roll]').forEach(row => {
+    calculateTotalAndGrade(row);
   });
 
   // ✅ Debounced save function
@@ -741,17 +850,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const roll = row.dataset.roll;
     const theoryInput = row.querySelector('input[data-type="theory"]');
     const practicalInput = row.querySelector('input[data-type="practical"]');
-    const totalCell = row.querySelector(".total-input");
+    const attendanceInput = row.querySelector('input[data-type="attendance"]');
+    const practicalProjectInput = row.querySelector('input[data-type="practicalProject"]');
+    const terminalScoreInput = row.querySelector('input[data-type="terminalScore"]');
     
     const theory = parseFloat(theoryInput.value || 0);
     const practical = parseFloat(practicalInput.value || 0);
-    const total = theory + practical;
+    const attendance = parseFloat(attendanceInput.value || 0);
+    const practicalProject = parseFloat(practicalProjectInput.value || 0);
+    const terminalScore = parseFloat(terminalScoreInput.value || 0);
 
-    // ✅ Update total immediately
-    totalCell.value = total;
+    // ✅ Calculate total and grade
+    const { total, grade } = calculateTotalAndGrade(row);
     
     // Highlight the cell being saved
-    practicalInput.style.backgroundColor = '#ffffcc';
+    const activeInput = document.activeElement;
+    if (activeInput) {
+      activeInput.style.backgroundColor = '#ffffcc';
+    }
 
     const subjectinput = document.getElementById("subjectinput").value;
     const studentClass = document.getElementById("studentClass").value;
@@ -771,7 +887,12 @@ document.addEventListener("DOMContentLoaded", () => {
           academicyear,
           roll,
           theory,
-          practical
+          practical,
+          attendanceParticipation: attendance,
+          practicalProject: practicalProject,
+          terminalScore: terminalScore,
+          total: total,
+          grade: grade
         })
       });
 
@@ -779,34 +900,39 @@ document.addEventListener("DOMContentLoaded", () => {
       
       if (data.success) {
         // Success indication
-        practicalInput.style.backgroundColor = '#d4edda';
-        setTimeout(() => {
-          practicalInput.style.backgroundColor = '';
-        }, 2000);
+        if (activeInput) {
+          activeInput.style.backgroundColor = '#d4edda';
+          setTimeout(() => {
+            activeInput.style.backgroundColor = '';
+          }, 2000);
+        }
         
         showStatus(`Marks saved for Roll ${roll}`, true);
         console.log("✅ Auto-saved:", data);
       } else {
         // Error indication
-        practicalInput.style.backgroundColor = '#f8d7da';
+        if (activeInput) {
+          activeInput.style.backgroundColor = '#f8d7da';
+        }
         showStatus(`Error: ${data.error}`, false);
         console.error("❌ Auto-save failed", data.error);
       }
     } catch (err) {
-      practicalInput.style.backgroundColor = '#f8d7da';
+      if (activeInput) {
+        activeInput.style.backgroundColor = '#f8d7da';
+      }
       showStatus(`Failed to save: Network error`, false);
       console.error("❌ Auto-save failed", err);
     }
   }, 500); // waits 0.5s after typing stops
 
   inputs.forEach(input => {
-    // Only attach to practical inputs (theory is readonly)
-    if (input.dataset.type === 'practical') {
-      input.addEventListener("input", (e) => {
-        const row = e.target.closest("tr");
-        saveMarks(row); // ✅ debounced
-      });
-    }
+    // Attach to all editable inputs (excluding theory and grade)
+    input.addEventListener("input", (e) => {
+      const row = e.target.closest("tr");
+      calculateTotalAndGrade(row); // Calculate immediately
+      saveMarks(row); // ✅ debounced save
+    });
   });
 });
 </script>

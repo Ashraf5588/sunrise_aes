@@ -25,7 +25,7 @@ app.set("view engine", "ejs");
 app.set("view", path.join(rootDir, "views"));
 const getSidenavData = async (req) => {
   try {
-    const subjects = await subjectlist.find({}).lean();
+    const subjects = await newsubject.find({}).lean();
     const studentClassdata = await studentClass.find({}).lean();
     const terminals = await terminal.find({}).lean();
     
@@ -381,9 +381,10 @@ exports.themefillupform = async (req, res) => {
     
     // If studentClass is provided, render the form for that class
     if (classParam) {
-      return res.render("theme/themefiller", { studentClass: classParam });
-    } 
-    
+      const subjects = await newsubject.find({})
+      return res.render("theme/themefiller", { studentClass: classParam ,subjects});
+    }
+
     // If no class provided, render the class selection page first
     // Use the model correctly - avoiding the naming conflict
     const studentClassdata = await studentClass.find({}).lean();
@@ -452,7 +453,7 @@ exports.themefillupformsave = async (req, res) => {
     const result = await model.create(themeData);
     console.log(`Theme filled successfully for class ${studentClass}. Document ID: ${result._id}`);
     console.log(`Saved document structure:`, Object.keys(result.toObject()));
-    
+    const subjects = await newsubject.find({})
     // Send a more user-friendly response
     return res.render("theme/theme-success", {
       message: `Theme configuration for Class ${studentClass} was created successfully!`,

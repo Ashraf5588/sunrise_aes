@@ -26,21 +26,27 @@
        <th>Grade</th>
       </tr>
   <% sciencepracticaldata.forEach((student, index) => { %>
+       <% let totalGivenAllPractical = 0; %>
+      <% let totalGivenAllProject = 0; %>
+      <% let totalObtainedAllPractical = 0; %>
+      <% let totalObtainedAllProject = 0; %>
+      <% let totalDoneAllPractical = 0; %>
+      <% let totalDoneAllProject = 0; %>
+       <% let totalPractical =0%>
+       <% let totalPracticalproject = 0 %>
     <tr>
       <td><%=student.roll %></td>
        <td><%=student.name %></td>
         <td><%=student.studentClass %></td>
          <td><%=student.section %></td>
           <td><%=student.attendanceMarks+student.participationMarks %></td>
+            <!-- Hidden inputs -->
 
 
 
-      <% let totalGivenAllPractical = 0; %>
-      <% let totalGivenAllProject = 0; %>
-      <% let totalObtainedAllPractical = 0; %>
-      <% let totalObtainedAllProject = 0; %>
-      <% let totalDoneAllPractical = 0; %>
-      <% let totalDoneAllProject = 0; %>
+
+
+   
 
 
       <% lessonData.forEach((lesson) => { %>
@@ -64,21 +70,27 @@
 <% totalObtainedAllProject += obtainedProjectMarks; %>
 <% totalDoneAllPractical += totalPracticalDone; %>
 <% totalDoneAllProject += totalProjectDone; %>
-     
+
         <% }) %>
       <% }) %>
 
-
+<% totalPracticalproject = (((((totalObtainedAllPractical/10)*20) + (((totalObtainedAllProject)/8)*16))) / lessonData[0].units.length) %>
+ 
            <td><%= (((((totalObtainedAllPractical/10)*20) + (((totalObtainedAllProject)/8)*16))) / lessonData[0].units.length)%></td>
 
-           <td><%= student.attendanceMarks+student.terminalMarks %></td>
+           <td><%= student.terminalMarks %></td>
            <% totalPractical = (student.attendanceMarks+student.participationMarks+
            ((((totalObtainedAllPractical/10)*20)) + (((totalObtainedAllProject)/8)*16)) / lessonData[0].units.length
            +student.attendanceMarks+student.terminalMarks)/50*100 %>
            <td><%=student.attendanceMarks+student.participationMarks+
             (((((totalObtainedAllPractical/10)*20)) 
             + (((totalObtainedAllProject)/8)*16)) / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks %></td>
-           <td> <% if (totalPractical >= 90 && totalPractical <= 100) { %>
+           <td> 
+            <% totalPractical = ((student.attendanceMarks+student.participationMarks+
+            (((((totalObtainedAllPractical/10)*20)) 
+            + (((totalObtainedAllProject)/8)*16)) / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks)/50*100)
+           %>
+            <% if (totalPractical >= 90 && totalPractical <= 100) { %>
   A+
   <% let grade = "A+" %>
 <% } else if (totalPractical >= 85 && totalPractical < 90) { %>
@@ -100,15 +112,15 @@
         </td>
         </tr>
    
-     <input type="hidden" name="slip[<%= index %>][roll]" value="<%= student.roll %>">
-        <input type="hidden" name="slip[<%= index %>][name]" value="<%= student.name %>">
-        <input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student.studentClass %>">
-        <input type="hidden" name="slip[<%= index %>][section]" value="<%= student.section %>">
-        <input type="hidden" name="slip[<%= index %>][attendanceParticipation]" value="<%= (student.attendanceMarks + student.participationMarks) %>">
-        <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= totalPractical.toFixed(2) %>">
-        <input type="hidden" name="slip[<%= index %>][terminal]" value="<%= student.terminalMarks %>">
-        <input type="hidden" name="slip[<%= index %>][totalPractical]" value="<%= totalPractical.toFixed(2) %>">
-       
+    
+         <input type="hidden" name="slip[<%= index %>][roll]" value="<%= student.roll %>">
+  <input type="hidden" name="slip[<%= index %>][name]" value="<%= student.name %>">
+  <input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student.studentClass %>">
+  <input type="hidden" name="slip[<%= index %>][section]" value="<%= student.section %>">
+  <input type="hidden" name="slip[<%= index %>][attendanceParticipation]" value="<%= student.attendanceMarks + student.participationMarks %>">
+  <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= totalPracticalproject %>">
+  <input type="hidden" name="slip[<%= index %>][terminal]" value="<%= student.terminalMarks %>">
+  <input type="hidden" name="slip[<%= index %>][total]" value="<%= ((totalPracticalproject + student.terminalMarks) +student.attendanceMarks + ) %>">
     <br><br>
   <% }) %>
     </table>

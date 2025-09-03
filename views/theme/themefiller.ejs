@@ -445,14 +445,21 @@
             <label for="studentClass">Student Class</label>
             <input type="text" name="studentClass" id="studentClass" value="<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" readonly>
           </div>
-          <div class="form-group">
-            <label for="section">Section (Optional)</label>
-            <input type="text" name="section" id="section" placeholder="Enter section (optional)">
-          </div>
+        
           <div class="form-group">
             <label for="subject">Subject</label>
-            <input type="text" name="subject" id="subject" placeholder="Enter subject name" required>
+            <select name="subject" id="subject" required>
+              <option value="" disabled selected>Choose a Subject</option>
+              <%
+  const uniqueSubjects = new Set(subjects.filter(sub => sub.forClass === studentClass).map(sub => sub.newsubject)    
+  );
+%>
+              <% uniqueSubjects.forEach(function(subject) { %>
+                <option value="<%= subject %>"><%= subject %></option>
+              <% }); %>
+            </select>
           </div>
+
           <div class="form-group">
             <label for="credit">Credit Hour</label>
             <input type="text" name="credit" id="credit" placeholder="Enter credit hour" required>
@@ -462,7 +469,7 @@
         <div id="themes-container"></div>
 
         <div class="btn-group" style="justify-content: center; margin-bottom: 2rem;">
-          <button type="button" class="btn btn-primary" onclick="addTheme()">+ Add Theme</button>
+          <button type="button" class="btn btn-primary" onclick="addTheme()"><% if(studentClass<=3) { %>+ Add Theme<% }else{ %>+ मुल्याङ्कनका आधार थप्नुहोस (Add evaluation Criteria)<% } %></button>
         </div>
 
         <div class="submit-section" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
@@ -489,16 +496,16 @@
 
       themeDiv.innerHTML = `
         <div class="theme-header">
-          <h3>थीम ${themeIndex + 1}</h3>
+          <h3><% if(studentClass<=3) { %>थीम ${themeIndex + 1}<% }else{ %> मुल्याङ्कन आधार ${themeIndex + 1} (Evaluation Criteria-${themeIndex + 1})<% } %></h3>
           <button type="button" class="btn btn-danger" onclick="removeTheme(this)">Remove Theme</button>
         </div>
         <div class="form-group">
-          <label for="themeName_${themeIndex}">Theme Name</label>
-          <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" placeholder="Enter theme name" required>
+          <label for="themeName_${themeIndex}"><% if(studentClass<=3){ %>Theme Name<% }else{ %>मुल्याङ्कन आधारको नाम (Evaluation Criteria Name)<% } %></label>
+          <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" placeholder="<% if(studentClass<=3){ %>Enter Theme Name<% }else{ %>Enter मुल्याङ्कन आधारको नाम (Enter Evaluation Criteria Name)<% } %>" required>
         </div>
         <div class="outcomes-container" id="outcomes-${themeIndex}"></div>
         <div class="btn-group">
-          <button type="button" class="btn btn-primary" onclick="addOutcome(${themeIndex})">+ Add Learning Outcome</button>
+          <button type="button" class="btn btn-primary" onclick="addOutcome(${themeIndex})">+ <% if(studentClass<=3){ %>+ Add Learning Outcome<% }else{ %>परिक्षण पक्षको नाम थप्नुहोस (Add Examination Criteria Name)<% } %></button>
         </div>
       `;
 
@@ -517,14 +524,14 @@
 
       outcomeDiv.innerHTML = `
         <div class="outcome-header">
-          <h4>मुख्य सिकाइ उपलब्धि ${outcomeIndex + 1}</h4>
-          <button type="button" class="btn btn-warning" onclick="removeOutcome(this)">Remove Outcome</button>
+          <h4><% if(studentClass<=3){ %>मुख्य सिकाइ उपलब्धि ${outcomeIndex + 1}<% }else{ %>परिक्षण पक्ष (Examination Criteria) ${outcomeIndex + 1}<% } %></h4>
+          <button type="button" class="btn btn-warning" onclick="removeOutcome(this)">Remove</button>
         </div>
         <div class="form-group">
-          <label for="outcomeName_${themeIdx}_${outcomeIndex}">Learning Outcome Name</label>
+          <label for="outcomeName_${themeIdx}_${outcomeIndex}"><% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %></label>
           <input type="text" name="themes[${themeIdx}][learningOutcome][${outcomeIndex}][learningOutcomeName]" 
                  id="outcomeName_${themeIdx}_${outcomeIndex}" 
-                 placeholder="Enter learning outcome name" required>
+                 placeholder="Enter <% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %>" required>
         </div>
         <div class="indicators-container" id="indicators-${themeIdx}-${outcomeIndex}"></div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">

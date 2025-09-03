@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical Project Record</title>
+</head>
+<body>
+  <form action="/practicalslipsave" method="POST">
+    <h1>Practical Project Slip Final</h1>
+      <% totalTerminal = marksheetSetting[0].totalTerminals; %>
+   <%= totalTerminal || 3 %>
+    <table border="1" cellspacing="0" cellpadding="5">
+      <tr>
+          <th>Roll</th>
+       <th>Name</th>
+       <th>Class</th>
+       <th>Section</th>
+       <th>Attendance & Participation (4)</th>
+       <th>Project Work & Practical Work (36)</th>
+       <th>Terminal Exam Marks (10)</th>
+       <th>Total</th>
+       <th>Grade</th>
+      </tr>
+ 
+        <% sciencepracticaldata.forEach((student, index) => { %>
+           <tr>
+      <td><%=student._id.roll %></td>
+      <td><%=student._id.name %></td>
+     
+       
+        <td><%=student._id.studentClass %></td>
+         <td><%=student._id.section %></td>
+          <td><%=((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal).toFixed(2) %></td>
+
+         <% let totalUnit = 0 %>
+      <% lessonData.forEach((lesson) => { %>
+        <% lesson.totalLessons.forEach((unit, uIndex) => { %>
+          <% unit.units.forEach((allUnit, sIndex) => { %>
+            
+            <% totalUnit+= (uIndex) %>
+          <% }) %>
+
+        <% }) %>
+      <% }) %>
+   
+<!-- combined terminal started from here -->
+
+          <%let totalPracticalFinal=0;%>
+          <%let totalProjectFinal=0 %>
+        <% let  totalPracticalProjectMarks%>
+    <% student.terminals.forEach(terminal => { %>
+  
+    
+<% terminal.unit.forEach(unitdata=>{%>
+         <% unitdata.practicals.forEach(practicaldata=>{%>
+             <p><% ((practicaldata.practicalMarks / 10) * 20)/unitdata.practicals.length %></p>
+
+             <% totalPracticalFinal += (((practicaldata.practicalMarks / 10) * 20)/unitdata.practicals.length) %>
+           
+
+
+          <%})%>
+         
+          <% unitdata.projectWorks.forEach(projectdata=>{%>
+            <p><% ((projectdata.projectMarks / 8) * 16)/unitdata.projectWorks.length %></p>
+
+            <% totalProjectFinal += (((projectdata.projectMarks / 8) * 16)/unitdata.projectWorks.length) %>
+      <%})%>
+      <%})%>
+      <% totalPracticalProjectMarks = (totalPracticalFinal/totalUnit)+(totalProjectFinal/totalUnit) %>
+      
+      
+      <%})%>
+
+<td><%=totalPracticalProjectMarks.toFixed(2)%></td>
+ <% 
+      firstSecondMarks = 0;
+      totalTerminal = 3;
+      if (student.terminals && student.terminals.length > 0) {
+        student.terminals.forEach(t => {
+          if (t.terminalName === "FIRST-2082" || t.terminalName === "SECOND-2082") {
+            firstSecondMarks += t.terminalMarks || 0;
+            
+          }
+        });
+      }
+    %>
+<td><%=( firstSecondMarks.toFixed(2)/(totalTerminal-1)) %></td>
+<td><%=(((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal)+
+  totalPracticalProjectMarks+
+  ( firstSecondMarks/(totalTerminal-1)) ).toFixed(2)
+
+   %></td>
+
+   <%OverallFinalPracticalMarks = ((( (student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal +
+   totalPracticalProjectMarks +
+   ( firstSecondMarks/(totalTerminal-1)) ).toFixed(2))/36)*100 %>
+<td>
+<% if (OverallFinalPracticalMarks >= 90 && OverallFinalPracticalMarks <= 100) { %>
+  A+
+<% } else if (OverallFinalPracticalMarks >= 80 && OverallFinalPracticalMarks < 90) { %>
+  A
+<% } else if (OverallFinalPracticalMarks >= 70 && OverallFinalPracticalMarks < 80) { %>
+  B+
+<% } else if (OverallFinalPracticalMarks >= 60 && OverallFinalPracticalMarks < 70) { %>
+  B
+<% } else if (OverallFinalPracticalMarks >= 50 && OverallFinalPracticalMarks < 60) { %>
+  C+
+<% } else if (OverallFinalPracticalMarks >= 40 && OverallFinalPracticalMarks < 50) { %>
+  C
+<% } else if (OverallFinalPracticalMarks >= 30 && OverallFinalPracticalMarks < 40) { %>
+  D
+<% } else { %>
+  NG
+<% } %>
+
+
+</td>
+<input type="hidden" name="slip[<%= index %>][roll]" value="<%= student._id.roll %>">
+<input type="hidden" name="slip[<%= index %>][name]" value="<%= student._id.name %>">
+<input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student._id.studentClass %>">
+<input type="hidden" name="slip[<%= index %>][section]" value="<%= student._id.section %>">
+<input type="hidden" name="slip[<%= index %>][attendanceParticipation]" value="<%= ((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal).toFixed(2) %>">
+<input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= totalPracticalProjectMarks.toFixed(2) %>">
+<input type="hidden" name="slip[<%= index %>][terminal]" value="<%= (firstSecondMarks/(totalTerminal-1)).toFixed(2) %>">
+<input type="hidden" name="slip[<%= index %>][total]" value="<%= (((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal)+totalPracticalProjectMarks+(firstSecondMarks/(totalTerminal-1))).toFixed(2) %>">
+<input type="hidden" name="slip[<%= index %>][grade]" value="<% if (OverallFinalPracticalMarks >= 90) { %>A+<% } else if (OverallFinalPracticalMarks >= 80) { %>A<% } else if (OverallFinalPracticalMarks >= 70) { %>B+<% } else if (OverallFinalPracticalMarks >= 60) { %>B<% } else if (OverallFinalPracticalMarks >= 50) { %>C+<% } else if (OverallFinalPracticalMarks >= 40) { %>C<% } else if (OverallFinalPracticalMarks >= 30) { %>D<% } else { %>NG<% } %>">
+
+  <% }) %>
+        </tr>
+    </table>
+    <input type="submit" value="Save Slip">
+     </form>
+      
+    <br><br>
+
+</body>
+</html>

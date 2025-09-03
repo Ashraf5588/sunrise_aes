@@ -12,7 +12,7 @@
     <input type="text" name="studentClass" value="<%= studentClass %>" placeholder="Enter Student Class">
     <input type="text" name="section" value="<%= section %>" placeholder="Enter Section">
     <input type="text" name="terminal[0][subject][0][subjectName]" value="<%= subject %>" placeholder="Enter Subject"> <br>
-     <input type="text" name="terminal[0][terminalName]" placeholder="Enter Terminal"> <br>
+     <input type="text"  id="terminal" name="terminal[0][terminalName]" placeholder="Enter Terminal"> <br>
    <center><h1>Attendance Marks </h1></center> 
    <input type="number" name="terminal[0][totalAttendance]" placeholder="Enter Total attendance" id="attendanceDays" oninput="calculateAttendanceMarks()">
    <input type="number" name="terminal[0][attendanceMarks]" placeholder="attendanceMarks" readonly id="attendanceMarks" step="0.1"> <br>
@@ -68,12 +68,7 @@
      <div class="sciencecontainer" style="display: flex;">
 <div class="left">
 
- <% if (ScienceData && ScienceData.length > 0) { %>
-  <% ScienceData.forEach((item) => { %>
-    <% item.units.forEach((unit) => { %>
-      <% unit.practicals.forEach((practical, practicalIndex) => { %>
 
-        <h3><%= unit.unitName %> - Practical <%= practicalIndex + 1 %>: <%= practical %></h3>
 
         <table border="1" cellspacing="0">
           <tr>
@@ -120,8 +115,8 @@
                       <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][mulyangkanName]" value="<%= theme.themeName %>">
                       <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][parixyanPakxhya]" value="<%= lo.learningOutcomeName %>">
                       <input type="hidden" id="prapta<%= mulyIndex %>" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][praptaSuchak]" value="">
-                      <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][unitName]" value="<%= unit.unitName %>">
-                      <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][practicalName]" value="<%= practical%>">
+                  
+                     
                     <% } %>
                   </tr>
                 <% }) %>
@@ -133,171 +128,11 @@
         </table>
         <br>
 
-      <% }) %> <!-- end practical loop -->
-    <% }) %> <!-- end unit loop -->
-  <% }) %> <!-- end item loop -->
-<% } else{%>
+
   
-<%= iIndex = 0 %>
 
-<% practicalFormatData.forEach(function(doc) { %>
-  <% doc.themes.forEach(function(theme) { %>
-    <% 
-      let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0);
-    %>
 
-    <% let firstThemeRow = true; %>
 
-    <% theme.learningOutcome.forEach(function(lo) { %>
-      <% let loRowspan = lo.indicators.length; %>
-      <% let mulyIndex = iIndex; %>
-
-      <% lo.indicators.forEach(function(ind, indIndex) { %>
-        <tr>
-          <% if(firstThemeRow && indIndex === 0) { %>
-            <td rowspan="<%= themeRowspan %>"><%= iIndex+1 %></td>
-            <td rowspan="<%= themeRowspan %>"><%= theme.themeName %></td>
-            <% firstThemeRow = false; %>
-          <% } %>
-
-          <% if(indIndex === 0) { %>
-            <td rowspan="<%= loRowspan %>"><%= lo.learningOutcomeName %></td>
-          <% } %>
-
-          <td><%= ind.indicatorName %></td>
-          <td>
-            <%= ind.indicatorsMarks %>
-            <input type="radio" 
-                   name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][praptangka]" 
-                   value="<%= ind.indicatorsMarks %>" onclick="document.getElementById('prapta<%= mulyIndex %>').value='<%= ind.indicatorName %>'">
-          </td>
-
-          <% if(indIndex === 0) { %>
-            <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][mulyangkanName]" value="<%= theme.themeName %>">
-            <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][parixyanPakxhya]" value="<%= lo.learningOutcomeName %>">
-            <input type="hidden" id="prapta<%= mulyIndex %>" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][praptaSuchak]" value="">
-          <% } %>
-        </tr>
-      <% }) %>
-
-      <% iIndex++ %>
-    <% }) %>
-  <% }) %>
-<% }) %>
-
-<%}%>
-</table>
-</div>
-</form>
-<div class="right">
-
-  <% if (ScienceData && ScienceData.length > 0) { %>
-    <form action="/scienceData" method="POST">
-  <% ScienceData.forEach((item) => { %>
-    <% item.units.forEach((unit) => { %>
-      <% unit.projectworks.forEach((projectwork, projectIndex) => { %>
-
-        <h3><%= unit.unitName %> - Project Work <%= projectIndex + 1 %>: <%= projectwork %></h3>
-  <center><h1>Project Work Marks</h1></center>
-  <table border="1" cellspacing="0" cellpadding="5">
-  <tr>
-    <th>आधार</th>
-    <th>सूचक</th>
-    <th>जम्मा अंक</th>
-    <th>प्राप्तांक</th>
-  </tr>
-  
-  <tr>
-    <td rowspan="4">परियोजना कार्य सञ्चालन र प्रस्तुतिकरण</td>
-    <input type="hidden" name="projectAdhar" value="परियोजना कार्य सञ्चालन र प्रस्तुतिकरण">
-    <td>
-      तोकिएको प्रक्रिया पूरा गरी परियोजना कार्य सम्पन्न गरेको र 
-      अपेक्षित उद्देश्य प्राप्त भएमा, चरणबद्ध रूपमा क्रियाकलापको 
-      प्रस्तुतिकरण गरेको र सोसँगै सोधिएका सबै प्रश्नको तर्क दिन सकेमा
-      <input type="hidden" name="projectIndicator" value=" तोकिएको प्रक्रिया पूरा गरी परियोजना कार्य सम्पन्न गरेको र 
-      अपेक्षित उद्देश्य प्राप्त भएमा, चरणबद्ध रूपमा क्रियाकलापको 
-      प्रस्तुतिकरण गरेको र सोसँगै सोधिएका सबै प्रश्नको तर्क दिन सकेमा">
-    </td>
-    <td>४ <input type="radio" name="projectMarks" value="4"></td>
-    <td></td>
-  </tr>
-  
-  <tr>
-    <td>
-      तोकिएको अधिकांश प्रक्रिया पूरा गरी परियोजना कार्य सम्पन्न गरेको र 
-      अपेक्षित उद्देश्य धेरैजसो प्राप्त भएमा, धेरैजसो चरणहरु समेटेर 
-      क्रियाकलापको प्रस्तुतिकरण गरेको र धेरैजसो प्रश्नको तर्क दिन सकेमा
-    </td>
-    <td>३</td>
-    <td></td>
-  </tr>
-  
-  <tr>
-    <td>
-      आंशिक प्रक्रिया पूरा गरी परियोजना कार्य गरेमा, आंशिक रूपमा 
-      क्रियाकलापको प्रस्तुतिकरण गर्ने प्रयास मात्र गरेमा र केही प्रश्नको 
-      मात्र तर्क दिन सकेमा
-    </td>
-    <td>२</td>
-    <td></td>
-  </tr>
-  
-  <tr>
-    <td>
-      परियोजना कार्य गर्न प्रयास मात्र गरेमा, प्रस्तुतिकरण गर्ने प्रयास मात्र गरेमा 
-      र कुनै तर्कसंगतता नभएमा
-    </td>
-    <td>१</td>
-    <td></td>
-  </tr>
-  
-  <tr>
-    <td rowspan="4">अभिलेखीकरण</td>
-    <td>
-      तोकिएको समयमा परियोजना कार्य सम्पन्न गरी सही, सफा, 
-      तोकिएको ढाँचामा र क्रमबद्ध तरिकाले अभिलेख राखेमा
-    </td>
-    <td>४</td>
-    <td></td>
-  </tr>
-  
-  <tr>
-    <td>
-      तोकिएको समयमा परियोजना कार्य सम्पन्न गरी आंशिक कार्य सम्पन्न गरे पनि 
-      अभिलेख सही नभएमा, सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा 
-      कुनै तीन आधारमा अभिलेख राखेमा
-    </td>
-    <td>३</td>
-    <td></td>
-  </tr>
-  
-  <tr>
-    <td>
-      तोकिएको समयमा दुर्बल ढंगले परियोजना कार्य सम्पन्न गरी सही नभएमा, 
-      सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा कुनै दुई आधारमा अभिलेख राखेमा
-    </td>
-    <td>२</td>
-    <td></td>
-  </tr>
-  
-  <tr>
-    <td>
-      तोकिएको समयमा सही ढंग नभए ढिलाइ गरी समय लगाई परियोजना कार्य सम्पन्न 
-      गरी सही नभएमा, सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा कुनै एक आधारमा 
-      अभिलेख राखेमा
-    </td>
-    <td>१</td>
-    <td></td>
-  </tr>
-</table>
-
-      <% }) %> <!-- end practical loop -->
-     
-    <% }) %> <!-- end unit loop -->
-  <% }) %> <!-- end item loop -->
-  <%}%>
-</div>
-</div>
 <input type="Submit">
  
 
@@ -320,7 +155,7 @@
     const terminalParams = new URLSearchParams(terminal);
     
     const terminalValue = terminalParams.get('terminal');
-    document.querySelector('input[name="terminal"]').value = terminalValue;
+    document.querySelector('#terminal').value = terminalValue;
 function calculateTerminalMarks() {
       const terminal = window.location.search;
     
@@ -328,11 +163,17 @@ function calculateTerminalMarks() {
     
     const terminalValue = terminalParams.get('terminal');
   
-    if(terminalValue === "FIRST-2082")
+    if(terminalValue !="FINAL")
   {
     const theoryMarks = parseFloat(document.getElementById('theoryMarks').value);
-    document.getElementById('obtainedconvertedmarks').value = 0.1 * theoryMarks;
+    document.getElementById('obtainedconvertedmarks').value = (( theoryMarks)/50)*10;
   }
+  else if(terminalValue ==="FINAL")
+  {
+    const theoryMarks = parseFloat(document.getElementById('theoryMarks').value);
+    document.getElementById('obtainedconvertedmarks').value = 0.2 * theoryMarks;
+  }
+
 }
 
     function calculateAttendanceMarks() {

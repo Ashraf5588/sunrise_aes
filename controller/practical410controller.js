@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 const { rootDir } = require("../utils/path");
 const { studentSchema, studentrecordschema } = require("../model/adminschema");
 const { classSchema, subjectSchema,terminalSchema } = require("../model/adminschema");
-const {newsubjectSchema } = require("../model/adminschema");
+const {newsubjectSchema,marksheetsetupSchema } = require("../model/adminschema");
 const { name } = require("ejs");
 const subjectlist = mongoose.model("subjectlist", subjectSchema, "subjectlist");
 const studentClass = mongoose.model("studentClass", classSchema, "classlist");
@@ -16,12 +16,21 @@ const studentRecord = mongoose.model("studentRecord", studentrecordschema, "stud
 const newsubject = mongoose.model("newsubject", newsubjectSchema, "newsubject");
 const bcrypt = require("bcrypt");
 const terminal = mongoose.model("terminal", terminalSchema, "terminal");
-const {ThemeEvaluationSchema,practicalSchema,scienceprojectSchema} = require("../model/themeformschema");
-const {themeSchemaFor1,scienceSchema} = require("../model/themeschema")
+const {ThemeEvaluationSchema,practicalSchema,scienceprojectSchema, practicalprojectSchema} = require("../model/themeformschema");
+const {themeSchemaFor1,scienceSchema,FinalPracticalSlipSchema} = require("../model/themeschema")
+ const marksheetSetup = new mongoose.model("MarksheetSetup", marksheetsetupSchema,"marksheetSetting");
+
+
+
 
 // Create ScienceModel after importing scienceSchema
 const ScienceModel = mongoose.model('sciencepractical', scienceSchema, 'sciencepracticals');
 const scienceProjectModel = mongoose.model('scienceproject', scienceprojectSchema, 'scienceprojects');
+
+const practicalProjectModel = mongoose.model('practicalprojectscience', practicalprojectSchema, 'practicalprojectscience');
+
+const FinalPracticalSlipModel = mongoose.model('finalPracticalSlip', FinalPracticalSlipSchema, 'finalPracticalSlips');
+
 
 app.set("view engine", "ejs");
 app.set("view", path.join(rootDir, "views"));
@@ -34,7 +43,7 @@ const getSidenavData = async (req) => {
     let accessibleSubject = [];
     let accessibleClass = [];
       let newaccessibleSubjects = [];
-    const newsubjectList = await newsubject.find({}).lean();
+    let newsubjectList = await newsubject.find({}).lean();
     
     // Check if req exists and has user property
     if (req && req.user) {
@@ -141,20 +150,119 @@ exports.evaluationForm = async (req, res) => {
   }
 };
 exports.showpracticalDetailForm = async (req, res) => {
-  const { studentClass, section, subject } = req.query;
-  console.log(studentClass, section, subject);
-  const practicalFormat = getThemeFormat(studentClass);
-  const practicalFormatData = await practicalFormat.find({studentClass:studentClass,subject:subject}).lean();
-  if(subject === "SCIENCE")
-  {
-    ScienceData = await ScienceModel.find({studentClass:studentClass,subject:subject}).lean();
-     res.render("theme/practicaldetailform", {...await getSidenavData(req), editing: false, studentClass, section, subject, practicalFormatData, ScienceData});
-  }
-  else
-  {
-  res.render("theme/practicaldetailform", {...await getSidenavData(req), editing: false, studentClass, section, subject, practicalFormatData});
-  }
+  console.log('=== FUNCTION CALLED: showpracticalDetailForm ===');
+  console.log('Timestamp:', new Date().toISOString());
   
+  try {
+    const { studentClass, section, subject,terminal } = req.query;
+    
+    console.log('=== QUERY PARAMETERS ===');
+    console.log('studentClass:', studentClass);
+    console.log('section:', section);
+    console.log('subject:', subject);
+    console.log('All query params:', JSON.stringify(req.query, null, 2));
+    
+    console.log('=== GETTING PRACTICAL FORMAT ===');
+    const practicalFormat = getThemeFormat(studentClass);
+    console.log('practicalFormat model created');
+    
+    console.log('=== SEARCHING FOR PRACTICAL FORMAT DATA ===');
+    const practicalFormatData = await practicalFormat.find({
+      studentClass: studentClass,
+      subject: subject
+    }).lean();
+    
+    console.log('practicalFormatData found:', practicalFormatData.length, 'records');
+    
+    console.log('=== CHECKING SUBJECT TYPE ===');
+    console.log('Subject value:', `"${subject}"`);
+    console.log('Subject type:', typeof subject);
+    console.log('Subject === "SCIENCE":', subject === "SCIENCE");
+    console.log('Subject.toUpperCase() === "SCIENCE":', subject && subject.toUpperCase() === "SCIENCE");
+    
+    if (subject === "SCIENCE") {
+      console.log('🔬 === SCIENCE SUBJECT DETECTED ===');
+      console.log('Proceeding with science flow...');
+      
+      console.log('=== SEARCHING FOR SCIENCE DATA ===');
+      console.log('ScienceModel:', typeof ScienceModel);
+      
+      const ScienceData = await ScienceModel.find({
+        studentClass: studentClass,
+        terminal: terminal,
+        subject: subject
+      }).lean();
+      
+      console.log('✅ Science data query completed');
+      console.log('Science data found:', ScienceData.length, 'records');
+      
+      if (ScienceData.length > 0) {
+        console.log('📊 Science data preview:');
+        ScienceData.forEach((data, index) => {
+          console.log(`Record ${index + 1}:`, {
+            id: data._id,
+            studentClass: data.studentClass,
+            subject: data.subject,
+            unitsCount: data.units ? data.units.length : 0
+          });
+        });
+      } else {
+        console.log('⚠️  NO SCIENCE DATA FOUND');
+        console.log('Let me check what science data exists...');
+        
+        const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
+        console.log('Total science records in database:', allScienceData.length);
+         console.log(allScienceData)
+        if (allScienceData.length > 0) {
+          console.log('Available science data:');
+          allScienceData.forEach((data, index) => {
+            console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
+          });
+        } else {
+          console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
+        }
+      }
+      
+      console.log('🎨 Rendering practicalprojectform...');
+     
+      return res.render("theme/practicalprojectform", {
+        ...await getSidenavData(req), 
+        editing: false, 
+        studentClass, 
+        section, 
+        subject, 
+        practicalFormatData, 
+        ScienceData
+      });
+      
+    } else {
+      console.log('📝 === NON-SCIENCE SUBJECT ===');
+      console.log('Subject is not SCIENCE, rendering regular form');
+      console.log('Subject value was:', `"${subject}"`);
+      
+      console.log('🎨 Rendering practicaldetailform...');
+      return res.render("theme/practicaldetailform", {
+        ...await getSidenavData(req), 
+        editing: false, 
+        studentClass, 
+        section, 
+        subject, 
+        practicalFormatData
+      });
+    }
+    
+  } catch (err) {
+    console.error('❌ === ERROR in showpracticalDetailForm ===');
+    console.error('Error message:', err.message);
+    console.error('Error stack:', err.stack);
+    console.error('Full error object:', err);
+    
+    return res.status(500).json({
+      error: 'Internal server error',
+      message: err.message,
+      stack: err.stack
+    });
+  }
 };
 exports.savepracticalDetailForm = async (req, res) => { 
 
@@ -260,13 +368,73 @@ exports.savepracticalDetailForm = async (req, res) => {
 exports.showpracticalSlip = async (req,res,next)=>{
 try
 {
-  const { studentClass, section, subject } = req.query;
-  console.log(studentClass, section, subject);
+  const { studentClass, section, subject,terminal } = req.query;
+  console.log(studentClass, section, subject,terminal);
+
+  if(subject==="SCIENCE")
+  {
+    if(terminal==="FINAL")
+    {
+
+
+     const sciencepracticaldata = await practicalProjectModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+const marksheetSetting = await marksheetSetup.find();
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/projectpracticalslipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    else
+    { 
+        const sciencepracticaldata = await practicalProjectModel.find({studentClass:studentClass,terminalName:terminal});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal});
+     const marksheetSetting = await marksheetSetup.find({});
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/projectpracticalslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+
+    }
+  }
+else
+{
+
 
   const practicalDetail = getStudentThemeData(studentClass);
   const practicalDetailData = await practicalDetail.find().lean();
 
+
+
   res.render("theme/practicalslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, practicalDetailData});
+}
 }catch(err)
 {
 
@@ -275,12 +443,26 @@ try
 
 
 }
-exports.saveSciencePractical = async (req, res, next) => {
+
+exports.sciencepracticalForm = async (req,res,next)=>
+{
+  try
+  {
+    res.render("theme/sciencepracticalform")
+
+  }catch(err)
+  {
+    console.log(err);
+    
+  }
+
+}
+ exports.saveSciencePractical = async (req, res, next) => {
   try {
     console.log('Raw form data received:', JSON.stringify(req.body, null, 2));
     
     // Process and clean the form data
-    let { studentClass, section, subject, academicYear, units } = req.body;
+    let { studentClass, section, subject, terminal, units } = req.body;
     
     // Transform units data to handle different input formats
     if (units && Array.isArray(units)) {
@@ -320,7 +502,7 @@ exports.saveSciencePractical = async (req, res, next) => {
       studentClass,
       section,
       subject,
-      academicYear,
+      terminal,
       units: units ? units.length : 0,
       unitsDetail: units ? units.map((unit, index) => ({
         unitIndex: index,
@@ -333,9 +515,9 @@ exports.saveSciencePractical = async (req, res, next) => {
     });
 
     // Validate required fields
-    if (!studentClass || !subject || !academicYear) {
+    if (!studentClass || !subject || !terminal) {
       return res.status(400).json({ 
-        error: 'Student class, subject, and academic year are required' 
+        error: 'Student class, subject, and terminal are required' 
       });
     }
 
@@ -391,7 +573,7 @@ exports.saveSciencePractical = async (req, res, next) => {
     const existingConfig = await ScienceModel.findOne({
       studentClass,
       subject,
-      academicYear,
+      terminal,
       ...(section && { section })
     });
 
@@ -414,7 +596,7 @@ exports.saveSciencePractical = async (req, res, next) => {
         studentClass,
         section: section || '',
         subject,
-        academicYear,
+        terminal,
         units,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -442,10 +624,10 @@ exports.saveScienceData = async (req,res,next)=>
 {
   try
   {
-    const { roll, name, studentClass, section, subject, academicYear, units } = req.body;
+    const { roll, name, studentClass, section, subject, terminal, units } = req.body;
 
     // Validate required fields
-    if (!roll || !name || !studentClass || !subject || !academicYear) {
+    if (!roll || !name || !studentClass || !subject || !terminal) {
       return res.status(400).json({ 
         error: 'Roll, name, studentClass, subject, and academic year are required' 
       });
@@ -479,7 +661,7 @@ exports.saveScienceData = async (req,res,next)=>
       studentClass,
       section,
       subject,
-      academicYear,
+      terminal,
       units: processedUnits.length,
       unitsDetail: processedUnits.map((unit, index) => ({
         unitIndex: index,
@@ -497,7 +679,7 @@ exports.saveScienceData = async (req,res,next)=>
       studentClass,
       section: section || '',
       subject,
-      academicYear
+      terminal
     });
 
     if (existingRecord) {
@@ -522,7 +704,7 @@ exports.saveScienceData = async (req,res,next)=>
         studentClass,
         section,
         subject,
-        academicYear,
+        terminal,
         units: processedUnits,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -543,5 +725,52 @@ exports.saveScienceData = async (req,res,next)=>
       error: 'Internal server error',
       details: err.message
     });
+  }
+}
+
+exports.savepracticalprojectform = async (req,res,next)=>
+{
+
+try{
+
+  const {  studentClass, section, subject, terminal } = req.query;
+  console.log('Received practical project form data:', {
+    studentClass,
+    section,
+    subject,
+    terminal
+  });
+  const data = await practicalProjectModel.create(req.body);
+    return res.status(201).json({
+        success: true,
+        message: 'Science student record created successfully',
+        data: data
+      });
+
+}catch(err)
+{
+  console.log(err)
+  res.status(500).json({error:'Internal server error',details:err.message});
+}
+}
+
+exports.savepracticalslip = async (req,res,next)=>
+{
+   try {
+    const slips = req.body.slip; // this will be an array of student slips
+
+    // Example schema
+    // slipModel = mongoose.model("Slip", new mongoose.Schema({
+    //   roll: String, name: String, studentClass: String, section: String,
+    //   attendanceParticipation: Number, practicalProject: Number,
+    //   terminal: Number, total: Number, grade: String
+    // }));
+
+    await FinalPracticalSlipModel.insertMany(slips);
+
+    res.send("Slip saved successfully!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving slip");
   }
 }

@@ -3,8 +3,6 @@ const student = express.Router();
 const controller = require('../controller/controller')
 const multer  = require('multer')
 const themecontroller = require('../controller/themecontroller')
-const practical410controller = require('../controller/practical410controller')
-const themeInit = require('../controller/theme-init')
 
 
 const {verifytoken,authorized,isAdmin}=require('../middleware/auth')
@@ -58,38 +56,29 @@ student.post('/admin/subjectadd/:subId',verifytoken,authorized,upload.single('qu
 student.post('/admin/subjectadd',verifytoken,authorized,upload.single('questionPaperOfClass'),admincontrol.addSubject)
 student.get('/admin/get_subject_data',verifytoken,admincontrol.subjectData)
 
-student.get('/admin/class/:classId',verifytoken,authorized,isAdmin,admincontrol.showClass)
-student.get('/admin/class',verifytoken,authorized,isAdmin,admincontrol.showClass)
-student.post('/admin/class/:classId',verifytoken,authorized,isAdmin,admincontrol.addClass)
-student.post('/admin/class',verifytoken,authorized,isAdmin,admincontrol.addClass)
+student.get('/admin/class/:classId?',verifytoken,authorized,isAdmin,admincontrol.showClass)
+student.post('/admin/class/:classId?',verifytoken,authorized,isAdmin,admincontrol.addClass)
 student.get('/admin/terminal',verifytoken,authorized,isAdmin,admincontrol.addTerminal)
-student.post('/admin/terminal/:terminalId',verifytoken,authorized,isAdmin,admincontrol.addTerminalpost)
-student.post('/admin/terminal',verifytoken,authorized,isAdmin,admincontrol.addTerminalpost)
-student.get('/admin/terminal/:terminalId/:editing',verifytoken,authorized,isAdmin,admincontrol.editTerminal)
-student.get('/admin/terminal/:terminalId',verifytoken,authorized,isAdmin,admincontrol.editTerminal)
+student.post('/admin/terminal/:terminalId?',verifytoken,authorized,isAdmin,admincontrol.addTerminalpost)
+student.get('/admin/terminal/:terminalId/:editing?',verifytoken,authorized,isAdmin,admincontrol.editTerminal)
 student.get('/delete/terminal/:terminalId',verifytoken,authorized,isAdmin,admincontrol.deleteTerminal)
 student.get('/admin/new/subject',verifytoken,authorized,isAdmin,admincontrol.addNewSubject)
-student.post('/admin/new/subject/:subjectId',verifytoken,authorized,isAdmin,admincontrol.addNewSubjectPost)
-student.post('/admin/new/subject',verifytoken,authorized,isAdmin,admincontrol.addNewSubjectPost)
-student.get('/admin/new/subject/:subjectId/:editing',verifytoken,authorized,isAdmin,admincontrol.editNewSubject)
-student.get('/admin/new/subject/:subjectId',verifytoken,authorized,isAdmin,admincontrol.editNewSubject)
+student.post('/admin/new/subject/:subjectId?',verifytoken,authorized,isAdmin,admincontrol.addNewSubjectPost)
+student.get('/admin/new/subject/:subjectId/:editing?',verifytoken,authorized,isAdmin,admincontrol.editNewSubject)
 student.get('/delete/new/subject/:subjectId',verifytoken,authorized,isAdmin,admincontrol.deleteNewSubject)
 
-student.get('/delete/subject/:subjectId/:subjectname',verifytoken,authorized,admincontrol.deleteSubject)
-student.get('/delete/subject/:subjectId',verifytoken,authorized,admincontrol.deleteSubject)
+student.get('/delete/subject/:subjectId/:subjectname?',verifytoken,authorized,admincontrol.deleteSubject)
 student.get('/delete/class/:classId',verifytoken,authorized,isAdmin,admincontrol.deleteStudentClass)
-student.get('/admin/editsub/:subId/:editing',verifytoken,authorized,admincontrol.editSub)
-student.get('/admin/editsub/:subId',verifytoken,authorized,admincontrol.editSub)
-student.get('/admin/editclass/:classId/:editing',verifytoken,authorized,admincontrol.editClass)
-student.get('/admin/editclass/:classId',verifytoken,authorized,admincontrol.editClass)
+student.get('/admin/editsub/:subId/:editing?',verifytoken,authorized,admincontrol.editSub)
+student.get('/admin/editclass/:classId/:editing?',verifytoken,authorized,admincontrol.editClass)
 // Route for editing a student
-student.get('/edit-student/:studentId/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized, controller.editStudent);
+student.get('/edit-student/:studentId/:subjectinput?/:studentClass?/:section?/:terminal?',verifytoken,authorized, controller.editStudent);
 
 // Route for updating a student
 student.post('/update-student/:studentId/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized,controller.updateStudent);
 
 // Route for deleting a student
-student.get('/delete-student/:studentId/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized,controller.deleteStudent);
+student.get('/delete-student/:studentId/:subjectinput?/:studentClass?/:section?/:terminal?',verifytoken,authorized,controller.deleteStudent);
 student.get('/crossheet',verifytoken,authorized,isAdmin,admincontrol.cross_sheet)
 student.get('/teacher/:subject/:controller',verifytoken,authorized,controller.studentclass)
 
@@ -98,16 +87,12 @@ student.get('/findData/:subjectinput/:studentClass/:section/:termwise/:status',v
 // student.get('/findData/:subjectinput/:studentClass/:section/:termwise/:termwisereport/:status',verifytoken,authorized,controller.termwisedata)
 student.get('/findData/:subjectinput/:studentClass/:section/:termwise/:termwisereport/:status/:qno/:terminal',verifytoken,authorized,controller.termdetail)
 
-student.get('/student_data/:subjectinput/:studentClass/:section/:terminal', verifytoken,authorized,controller.studentrecord)
-student.get('/student_data/:subjectinput/:studentClass/:section', verifytoken,authorized,controller.studentrecord)
+student.get('/student_data/:subjectinput/:studentClass/:section/:terminal?', verifytoken,authorized,controller.studentrecord)
 student.post('/search/:subject/:studentClass/:section/:terminal',verifytoken,authorized,controller.search)
 student.get('/:controller/:subject',verifytoken,authorized,controller.studentclass)
 student.get('/:controller/:subject/:studentClass/:section',verifytoken,authorized,controller.terminal)
-student.get('/forms/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized,controller.showForm)
-student.get('/forms/:subjectinput/:studentClass/:section',verifytoken,authorized,controller.showForm)
-student.post('/forms/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized,controller.saveForm)
-student.post('/forms/:subjectinput/:studentClass/:section',verifytoken,authorized,controller.saveForm)
-student.post('/forms/:subjectinput',verifytoken,authorized,controller.saveForm)
+student.get('/forms/:subjectinput/:studentClass/:section/:terminal?',verifytoken,authorized,controller.showForm)
+student.post('/forms/:subjectinput/:studentClass?/:section?/:terminal?',verifytoken,authorized,controller.saveForm)
 
 // Temporary debug route
 student.get('/debug/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized, (req, res) => {
@@ -137,7 +122,7 @@ student.get('/debug/:subjectinput/:studentClass/:section/:terminal',verifytoken,
 
 student.get('/studentData/:subjectinput/:studentClass/:section/:qno/:status/:terminal',verifytoken,authorized,controller.studentData)
 // student.get('/totalStudent/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized,controller.totalStudent)
-student.get('/checkroll/:subjectinput/:studentClass/:section/:terminal',verifytoken,authorized,controller.checkroll)
+student.get('/checkroll/:subjectinput?/:studentClass/:section/:terminal?',verifytoken,authorized,controller.checkroll)
 student.get('/checksubjectexist',verifytoken,authorized,admincontrol.subjectlistcheck)
 // Debug route to check available subjects
 student.get('/debug/subjects', verifytoken,authorized,async (req, res) => {
@@ -172,12 +157,10 @@ student.get('/debug/subjects', verifytoken,authorized,async (req, res) => {
 student.get('/studentrecord',verifytoken,authorized,isAdmin,upload.single('studentRecords'),admincontrol.studentrecord)
 student.post('/studentrecord',verifytoken,authorized,isAdmin,upload.single('studentRecords'),admincontrol.studentrecordpost)
 student.post('/studentrecord/add',verifytoken,authorized,isAdmin,admincontrol.studentrecordadd)
-student.get('/studentrecord/edit/:studentId/:editing',verifytoken,authorized,isAdmin,admincontrol.studentrecordedit)
-student.get('/studentrecord/edit/:studentId',verifytoken,authorized,isAdmin,admincontrol.studentrecordedit)
+student.get('/studentrecord/edit/:studentId/:editing?',verifytoken,authorized,isAdmin,admincontrol.studentrecordedit)
 student.post('/studentrecord/delete/:studentId',verifytoken,authorized,isAdmin,admincontrol.studentrecorddelete)
 student.get('/user',verifytoken,authorized,isAdmin,admincontrol.showuser)
-student.post('/user/:userId',verifytoken,authorized,isAdmin,admincontrol.saveuser)
-student.post('/user',verifytoken,authorized,isAdmin,admincontrol.saveuser)
+student.post('/user/:userId?',verifytoken,authorized,isAdmin,admincontrol.saveuser)
 // Route to view/display uploaded files in browser
 student.get('/view-file/:filename',verifytoken,authorized, admincontrol.viewFile)
 student.get('/marksheet',verifytoken,authorized,isAdmin, admincontrol.marksheet);
@@ -229,48 +212,11 @@ student.get('/view-pdf/:filename', (req, res) => {
 
 // Diagnostic route for VM deployment issues
 student.get('/admin/diagnostics', admincontrol.diagnostics)
-student.get('/user/edit-teacher/:userId/:editing', verifytoken, authorized, isAdmin, admincontrol.editTeacher);
-student.get('/user/edit-teacher/:userId', verifytoken, authorized, isAdmin, admincontrol.editTeacher);
+student.get('/user/edit-teacher/:userId/:editing?', verifytoken, authorized, isAdmin, admincontrol.editTeacher);
 
 student.get('/theme', verifytoken, authorized, themecontroller.themeopener);
 student.get('/themeform', verifytoken, authorized, themecontroller.themeform);
 student.get('/themefillupform', verifytoken, authorized, themecontroller.themefillupform);
 student.post('/themefillupform', verifytoken, authorized, themecontroller.themefillupformsave);
-student.post('/themeform', verifytoken, authorized, themecontroller.themeformSave);
-student.get('/thememarks', verifytoken, authorized, themecontroller.themeformMarks);
-student.get('/thememarksofstudent', verifytoken, authorized, themecontroller.thememarksOfStudent);
-student.get('/themewisemarks', verifytoken, authorized, themecontroller.themewisemarks);
-student.get('/themeslip', verifytoken, authorized, themecontroller.themeslip);
-student.get('/theme/previous-data', verifytoken, authorized, themecontroller.getPreviousThemeData);
-student.get('/theme/student-themes', verifytoken, authorized, themecontroller.getStudentThemes);
-
-student.get('/class',verifytoken,authorized,practical410controller.chooseClass);
-student.get('/evaluationform',verifytoken,authorized,practical410controller.evaluationForm);
-student.get('/practicaldetailform',verifytoken,authorized,practical410controller.showpracticalDetailForm);
-student.post('/practicaldetailform',verifytoken,authorized,practical410controller.savepracticalDetailForm);
-
-student.get('/practicalslip',verifytoken,authorized,practical410controller.showpracticalSlip);
-
-// Science Practical Form Routes
-student.get('/sciencepracticalform', verifytoken, authorized, (req, res) => {
-  const studentClass = req.query.studentClass || '';
-  res.render('theme/sciencepracticalform', { studentClass });
-});
-
-student.post('/sciencepractical', verifytoken, authorized, practical410controller.saveSciencePractical);
-
-// Temporary test route to debug form data
-student.post('/test-form-data', (req, res) => {
-  console.log('=== TEST FORM DATA ===');
-  console.log('Raw body:', JSON.stringify(req.body, null, 2));
-  console.log('=== END TEST ===');
-  res.json({ received: req.body });
-});
-student.post('/scienceData', verifytoken, authorized, practical410controller.saveScienceData);
-student.post('/practicalprojectform', verifytoken, authorized, practical410controller.savepracticalprojectform);
-student.get('sciencepractical',verifytoken,authorized,practical410controller.sciencepracticalForm)
-student.post('/practicalslipsave', verifytoken, authorized, practical410controller.savepracticalslip);
-student.get('/marksheetsetup', verifytoken, authorized, admincontrol.showmarksheetSetupForm);
-student.post('/marksheetsetup', verifytoken, authorized, admincontrol.savemarksheetSetupForm);
 
 module.exports = student;

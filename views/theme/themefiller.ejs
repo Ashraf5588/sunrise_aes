@@ -359,63 +359,6 @@
       margin-bottom: 0.25rem;
     }
 
-    /* Copy checkbox styling */
-    .copy-checkbox-container {
-      transition: all 0.3s ease;
-    }
-
-    .copy-checkbox-container:hover {
-      background: rgba(52, 152, 219, 0.15) !important;
-    }
-
-    .copy-checkbox-container label:hover {
-      color: #2980b9 !important;
-    }
-
-    .copy-checkbox-container input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-      accent-color: #3498db;
-    }
-
-    .copy-checkbox-container span {
-      user-select: none;
-      font-size: 0.9rem;
-    }
-
-    /* Science Practicals styling */
-    .unit-section {
-      animation: slideIn 0.3s ease-out;
-    }
-
-    .unit-section input:focus {
-      outline: none;
-      border-color: #27ae60 !important;
-      box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
-    }
-
-    .practical-item input:focus {
-      outline: none;
-      border-color: #27ae60 !important;
-      box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.1);
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, #27ae60, #229954);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 12px rgba(39, 174, 96, 0.3);
-    }
-
-    .btn-success:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
-    }
-
     /* Mobile Responsive */
     @media (max-width: 768px) {
       body {
@@ -522,24 +465,6 @@
           <button type="button" class="btn btn-primary" onclick="addTheme()">+ Add Theme</button>
         </div>
 
-        <!-- Science Practicals Link -->
-        <div class="form-card" style="background: rgba(46, 204, 113, 0.1); border-left: 4px solid #2ecc71; margin-top: 2rem; text-align: center;">
-          <div style="margin-bottom: 1rem;">
-            <h3 style="color: #27ae60; margin: 0; font-size: 1.3rem; font-weight: 700;">
-              🧪 Science Practicals (Optional)
-            </h3>
-            <p style="color: #666; margin: 0.5rem 0;">Configure units and practicals separately</p>
-          </div>
-          
-          <div class="btn-group" style="justify-content: center;">
-            <a href="/sciencepracticalform?studentClass=<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" style="text-decoration: none;">
-              <button type="button" class="btn btn-success" style="padding: 1rem 2rem; font-size: 1rem;">
-                🧪 Configure Science Practicals
-              </button>
-            </a>
-          </div>
-        </div>
-
         <div class="submit-section" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
           <button type="submit" class="submit-btn">Save Configuration</button>
           <a href="/themefillupform" style="text-decoration: none;">
@@ -562,22 +487,11 @@
       themeDiv.className = 'theme-section';
       themeDiv.dataset.index = themeIndex;
 
-      // Show copy checkbox only if this is not the first theme
-      const copyCheckboxHtml = themeIndex > 0 ? `
-        <div class="copy-checkbox-container" style="margin-bottom: 1rem; padding: 10px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; border-left: 4px solid #3498db;">
-          <label style="display: flex; align-items: center; gap: 8px; font-weight: 500; color: #2c3e50; cursor: pointer;">
-            <input type="checkbox" id="copyAbove_${themeIndex}" onchange="copyFromPreviousTheme(${themeIndex})" style="margin: 0;">
-            <span>📋 Copy data from Theme ${themeIndex}</span>
-          </label>
-        </div>
-      ` : '';
-
       themeDiv.innerHTML = `
         <div class="theme-header">
           <h3>थीम ${themeIndex + 1}</h3>
           <button type="button" class="btn btn-danger" onclick="removeTheme(this)">Remove Theme</button>
         </div>
-        ${copyCheckboxHtml}
         <div class="form-group">
           <label for="themeName_${themeIndex}">Theme Name</label>
           <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" placeholder="Enter theme name" required>
@@ -675,121 +589,6 @@
     function removeIndicator(button, themeIdx, outcomeIdx) {
       button.closest('.indicator-group').remove();
       updateTotalMarks(themeIdx, outcomeIdx);
-    }
-
-    // Function to copy data from previous theme
-    function copyFromPreviousTheme(currentThemeIndex) {
-      const checkbox = document.getElementById(`copyAbove_${currentThemeIndex}`);
-      
-      if (!checkbox.checked) {
-        return; // If unchecked, don't copy
-      }
-
-      const previousThemeIndex = currentThemeIndex - 1;
-      
-      if (previousThemeIndex < 0) {
-        checkbox.checked = false;
-        alert('No previous theme to copy from!');
-        return;
-      }
-
-      // Copy theme name
-      const previousThemeName = document.getElementById(`themeName_${previousThemeIndex}`);
-      const currentThemeName = document.getElementById(`themeName_${currentThemeIndex}`);
-      
-      if (previousThemeName && currentThemeName) {
-        currentThemeName.value = previousThemeName.value;
-      }
-
-      // Get previous theme's outcomes container
-      const previousOutcomesContainer = document.getElementById(`outcomes-${previousThemeIndex}`);
-      const currentOutcomesContainer = document.getElementById(`outcomes-${currentThemeIndex}`);
-      
-      if (!previousOutcomesContainer || !currentOutcomesContainer) {
-        console.error('Could not find theme containers');
-        return;
-      }
-
-      // Clear current outcomes first
-      currentOutcomesContainer.innerHTML = '';
-
-      // Copy each outcome from previous theme
-      const previousOutcomes = previousOutcomesContainer.children;
-      
-      for (let outcomeIdx = 0; outcomeIdx < previousOutcomes.length; outcomeIdx++) {
-        // Add a new outcome to current theme
-        addOutcome(currentThemeIndex);
-        
-        // Get the learning outcome name from previous theme
-        const prevOutcomeName = document.getElementById(`outcomeName_${previousThemeIndex}_${outcomeIdx}`);
-        const currentOutcomeName = document.getElementById(`outcomeName_${currentThemeIndex}_${outcomeIdx}`);
-        
-        if (prevOutcomeName && currentOutcomeName) {
-          currentOutcomeName.value = prevOutcomeName.value;
-        }
-
-        // Copy indicators
-        const prevIndicatorsContainer = document.getElementById(`indicators-${previousThemeIndex}-${outcomeIdx}`);
-        const currentIndicatorsContainer = document.getElementById(`indicators-${currentThemeIndex}-${outcomeIdx}`);
-        
-        if (prevIndicatorsContainer && currentIndicatorsContainer) {
-          // Clear current indicators first (one is added by default)
-          currentIndicatorsContainer.innerHTML = '';
-          
-          // Copy each indicator
-          const prevIndicators = prevIndicatorsContainer.children;
-          
-          for (let indicatorIdx = 0; indicatorIdx < prevIndicators.length; indicatorIdx++) {
-            // Add new indicator
-            addIndicator(currentThemeIndex, outcomeIdx);
-            
-            // Get indicator inputs from previous theme
-            const prevIndicatorName = prevIndicators[indicatorIdx].querySelector('input[type="text"]');
-            const prevIndicatorMarks = prevIndicators[indicatorIdx].querySelector('input[type="number"]');
-            
-            // Get current indicator inputs
-            const currentIndicators = currentIndicatorsContainer.children;
-            const currentIndicator = currentIndicators[indicatorIdx];
-            
-            if (currentIndicator && prevIndicatorName && prevIndicatorMarks) {
-              const currentIndicatorName = currentIndicator.querySelector('input[type="text"]');
-              const currentIndicatorMarks = currentIndicator.querySelector('input[type="number"]');
-              
-              if (currentIndicatorName && currentIndicatorMarks) {
-                currentIndicatorName.value = prevIndicatorName.value;
-                currentIndicatorMarks.value = prevIndicatorMarks.value;
-              }
-            }
-          }
-          
-          // Update total marks for the current outcome
-          updateTotalMarks(currentThemeIndex, outcomeIdx);
-        }
-      }
-
-      // Show success message
-      const themeSection = document.querySelector(`[data-index="${currentThemeIndex}"]`);
-      if (themeSection) {
-        const successMsg = document.createElement('div');
-        successMsg.style.cssText = 'background: #d4edda; color: #155724; padding: 8px 12px; border-radius: 4px; margin: 10px 0; border: 1px solid #c3e6cb; font-size: 14px;';
-        successMsg.textContent = `✓ Data copied from Theme ${currentThemeIndex}`;
-        
-        // Insert after copy checkbox
-        const copyContainer = themeSection.querySelector('.copy-checkbox-container');
-        if (copyContainer) {
-          copyContainer.insertAdjacentElement('afterend', successMsg);
-          
-          // Remove success message after 3 seconds
-          setTimeout(() => {
-            if (successMsg.parentNode) {
-              successMsg.remove();
-            }
-          }, 3000);
-        }
-      }
-
-      // Uncheck the checkbox after copying
-      checkbox.checked = false;
     }
 
     // Add first theme by default

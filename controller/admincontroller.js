@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { rootDir } = require("../utils/path");
 const {marksheetSchema} = require("../model/masrksheetschema");
-const { classSchema, subjectSchema, terminalSchema,newsubjectSchema } = require("../model/adminschema");
+const { classSchema, subjectSchema, terminalSchema,newsubjectSchema ,marksheetsetupSchema} = require("../model/adminschema");
 const { adminSchema,superadminSchema, teacherSchema} = require("../model/admin");
 const { studentSchema } = require("../model/schema");
 const student = require("../routers/mainpage");
@@ -17,6 +17,7 @@ const newsubject = mongoose.model("newsubject", newsubjectSchema, "newsubject");
 const userlist = mongoose.model("userlist", teacherSchema, "users");
  const { studentrecordschema } = require("../model/adminschema");
 const modal = mongoose.model("studentrecord", studentrecordschema, "studentrecord");
+ const setupMarksheet = new mongoose.model("MarksheetSetup", marksheetsetupSchema,"marksheetSetting");
 const bcrypt = require("bcrypt");
 const {allowedSubjectData} = require("./controller");
 const {generateToken} = require("../middleware/auth");
@@ -1771,7 +1772,7 @@ exports.marksheet = async (req, res, next) => {
     
     // Render the marksheet page with sidenav data
    
-      const subjects = await newsubject.find({forClass:studentClass}, { _id: 0, newsubject: 1,forClass:1, theory: 1, practical: 1, total: 1, passingMarks: 1 });
+     let subjects = await newsubject.find({forClass:studentClass}, { _id: 0, newsubject: 1,forClass:1, theory: 1, practical: 1, total: 1, passingMarks: 1 });
       console.log("Subjects for class:", studentClass, subjects);
       const subjectlist = subjects.map(sub => sub.newsubject);
     for (const sub of subjectlist) {
@@ -2719,3 +2720,14 @@ reportofClass.push(
     
   }
 }
+exports.showmarksheetSetupForm = async (req, res) => {
+  res.render("admin/marksheetsetup", {
+    currentPage: 'marksheetsetup',
+  });
+};
+exports.savemarksheetSetupForm = async (req, res) => {
+
+  const savesetting = await setupMarksheet.create(req.body);
+
+  res.redirect("/marksheetsetup");
+};

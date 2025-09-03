@@ -1,9 +1,7 @@
 const express = require('express');
 const student  = require('./routers/mainpage');
 const fs = require('fs');
-const admincontrol = require('./controller/admincontroller');
-// Import the theme router
-const themeRouter = require('./routers/themerouter');
+const admincontrol = require('./controller/admincontroller')
 
 const app = express();
 const {verifytoken} = require('./middleware/auth');
@@ -69,30 +67,13 @@ const cookieParser = require("cookie-parser");
 app.set('view engine','ejs')
 app.set('views',path.join(__dirname,'views'))
 app.use(express.static(path.join(__dirname, 'public')));
-// Configure body parsers for different content types
-app.use(express.json({ limit: '50mb' }))
+app.use(express.json())
 app.use(cookieParser());
 app.use(express.urlencoded({
   extended: true,
-  limit: '50mb',
   // Allow dots in field names to be part of the field name and not create nested objects
   allowDots: true
 }))
-
-// Debug middleware to log request body for debugging form submission issues
-app.use('/theme/form', (req, res, next) => {
-  console.log('Theme Form Request:');
-  console.log('- Headers:', req.headers);
-  console.log('- Content-Type:', req.headers['content-type']);
-  console.log('- Body exists:', !!req.body);
-  console.log('- Body type:', typeof req.body);
-  console.log('- Method:', req.method);
-  if (req.body && typeof req.body === 'object') {
-    console.log('- Body keys:', Object.keys(req.body));
-    if (req.body.roll) console.log('- Roll present:', req.body.roll);
-  }
-  next();
-});
 
 // app.use(verifytoken); // Apply token verification middleware globally
 connection();
@@ -341,13 +322,9 @@ app.get('/convert-docx/:filename', (req, res) => {
   }
 });
 
-// Use the student routes
 app.use(student)
 
-// Use theme routes
-app.use('/theme', themeRouter)
-
 app.listen(3000,()=>{
-    console.log('Server is running on port 80')
+    console.log('Server is running on port 3000')
 
 })

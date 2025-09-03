@@ -547,6 +547,7 @@
       const originalText = button.innerHTML;
       button.innerHTML = '🔄 Loading...';
       button.classList.add('loading');
+      
 
       // Navigate to practical detail form
       const url = `/practicaldetailform?subject=${encodeURIComponent(subject)}&studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}&terminal=${encodeURIComponent(terminal)}`;

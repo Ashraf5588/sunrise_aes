@@ -4,142 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThemeWise Marks</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f5f5f5;
-    }
-    
-    .student-info {
-      background-color: #e3f2fd;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      text-align: center;
-    }
-    
-    .subject-title {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 18px;
-      margin: 20px 0 10px 0;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 30px;
-      background-color: white;
-    }
-    
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-    
-    th {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-    
-    .total-row {
-      background-color: #f0f0f0;
-      font-weight: bold;
-    }
-    
-    .grade-a { color: #4CAF50; font-weight: bold; }
-    .grade-b { color: #2196F3; font-weight: bold; }
-    .grade-c { color: #FF9800; font-weight: bold; }
-    .grade-d { color: #f44336; font-weight: bold; }
-  </style>
 </head>
 <body>
    <% themewisemarks.forEach((data)=>{ %>
-    <div class="student-info">
-      Data of student <%= data.name %> of class <%= data.studentClass %> section <%= data.section %>
-    </div>
-    
+    Data of student <%= data.name %> of class <%= data.studentClass %> section <%= data.section %>
     <% data.subjects.forEach((subject) => { %>
-      <div class="subject-title"><%= subject.name %></div>
+      <center><%= subject.name %></center>
+  <table cellspacing="0" border="1">
+    <tr>
+      <th>S.No</th>
+      <th>Theme Name</th>
+      <th>Total Learning Outcome</th>
+      <th>Total Obtained Marks after</th>
+      <th>Progress percentage</th>
+      <th>Remarks</th>
       
-      <table>
-        <tr>
-          <th>S.No</th>
-          <th>Theme Name</th>
-          <th>Total Learning Outcome</th>
-          <th>Total Obtained Marks After</th>
-          <th>Progress Percentage</th>
-          <th>Grade</th>
-        </tr>
-        <% subject.themes.forEach((theme, i) => { %>
-          <tr>
-            <td><%= i + 1 %></td>
-            <td><%= theme.themeName %></td>
-            <td><%= theme.learningOutcomes.length %></td>
-            <td><%= theme.overallTotalAfter %></td>
-           <td>
-  <%= (
-    theme.overallTotalAfter /
-    (theme.learningOutcomes.reduce((total, lo) => total + lo.indicators.length, 0))
-    * 100
-  ).toFixed(2) %> %
-</td>
-              <% const themePercentage =  (
-    theme.overallTotalAfter /
-    (theme.learningOutcomes.reduce((total, lo) => total + lo.indicators.length, 0))
-    * 100
-  ).toFixed(2) %> 
-              <% if (themePercentage >= 80) { %>
-                <span class="grade-a">A</span>
-              <% } else if (themePercentage >= 60) { %>
-                <span class="grade-b">B</span>
-              <% } else if (themePercentage >= 40) { %>
-                <span class="grade-c">C</span>
-              <% } else { %>
-                <span class="grade-d">D</span>
-              <% } %>
-            </td>
-          </tr>
-        <% }) %>
+    </tr>
+    <% subject.themes.forEach((theme,i=1)=>{ %>
+      <tr>
+        <td><%= i+1 %> <%i=i+1%></td>
+        <td><%= theme.themeName %></td>
+        <td><%= theme.learningOutcomes.length %></td>
+        <td><%= theme.overallTotalAfter %></td>
+        <td><%= (theme.overallTotalAfter / (4 * theme.learningOutcomes.length)) * 100 %> %</td>
         
-        <tr class="total-row">
-          <td colspan="2">Total</td>
-          <td><%= subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0) %></td>
-          <td><%= subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) %></td>
-          <td><%= (subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) / (4 * subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0))) * 100 %> %</td>
-          <td> 
-            <% const percentage = (subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) / (4 * subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0))) * 100; %>
-            <% if (percentage >= 90) { %>
-              <span class="grade-a">A+</span>
-            <% } else if (percentage >= 80) { %>
-              <span class="grade-a">A</span>
-            <% } else if (percentage >= 70) { %>
-              <span class="grade-b">B+</span>
-            <% } else if (percentage >= 60) { %>
-              <span class="grade-b">B</span>
-            <% } else if (percentage >= 50) { %>
-              <span class="grade-c">C+</span>
-            <% } else if (percentage >= 40) { %>
-              <span class="grade-c">C</span>
-            <% } else if (percentage >= 20) { %>
-              <span class="grade-d">D</span>
-            <% } else if (percentage >= 0) { %>
-              <span class="grade-d">E</span>
-            <% } else { %>
-              Invalid
-            <% } %>
-          </td>
-        </tr>
-      </table>
+      </tr>
+
+   <% }) %>
+   <td colspan="2">Total</td>
+   <td><%= subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0) %></td>
+   <td><%= subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) %></td>
+   <td><%= (subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) / (4 * subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0))) * 100 %> %</td>
+   <td> <% percentage = <%= (subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) / (4 * subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0))) * 100 %>
+    <% if (percentage >= 90 && percentage <= 100) { %>
+  <%= "A+" %>
+<% } else if (percentage >= 80 && percentage < 89) { %>
+  <%= "A" %>
+<% } else if (percentage >= 70 && percentage < 79) { %>
+  <%= "B+" %>
+<% } else if (percentage >= 60 && percentage < 69) { %>
+  <%= "B" %>
+<% } else if (percentage >= 50 && percentage < 59) { %>
+  <%= "C+" %>
+<% } else if (percentage >= 40 && percentage < 49) { %>
+  <%= "C" %>
+<% } else if (percentage >= 20 && percentage < 39) { %>
+  <%= "D" %>
+<% } else if (percentage >= 0 && percentage < 19) { %>
+  <%= "E" %>
+<% } else { %>
+  Invalid Percentage
+<% } %>
+
+     </td>
+      
+  
+  
+  </table>
     <% }) %>
   <% })%>
-</body>
-</html>
 </body>
 </html>

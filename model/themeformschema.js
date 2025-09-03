@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { terminal } = require('../controller/controller');
 
 // Custom schema type to handle potentially array values - takes first element if array
 const handleArrayOrSingle = function(value) {
@@ -208,20 +209,24 @@ const practicalSchema = new mongoose.Schema(
         mulyangkanAdhar: [
           {
 
-            unitName:{type:String, required:false},
-            practicalName:{type:String, required:false},
+            
             mulyangkanName:{type:String, required:false},
             prixyanPakxya: {type:String,required:false},
             praptaSuchak: {type:String, required:false},
             praptangka: {type:Number, required:false},
+            
+           
+
+              }
+            ],
+
           }
         ],
         totalObtained: {type:Number, required:false}
       },
     ],
     },
-  ],
-  }
+
 )
 // Export both the schema and model
 
@@ -236,9 +241,16 @@ const scienceprojectSchema = new mongoose.Schema({
     {
       projectWorkLesson: { type: String, required: false },
       projectName: { type: String, required: false },
-         projectAdhar: { type: String, required: false },
-  projectIndicator: { type: String, required: false },
-      projectMarks: { type: Number, required: false }
+      sanchalan: {
+        projectAdhar: { type: String, required: false },
+        projectIndicator: { type: String, required: false },
+        projectMarks: { type: Number, required: false }
+      },
+      abhilekh: {
+        projectAdhar: { type: String, required: false },
+        projectIndicator: { type: String, required: false },
+        projectMarks: { type: Number, required: false }
+      }
     }
   ],
     practical: [
@@ -251,9 +263,52 @@ const scienceprojectSchema = new mongoose.Schema({
     }
   ]
 });
+
+
+const practicalprojectSchema = new mongoose.Schema({
+  reg: {type: String, required:false},
+  roll: { type: String, required: false },
+  name: { type: String, required: false },
+  studentClass: { type: String, required: false },
+  section: { type: String, required: false },
+  subject: { type: String, required: false },
+  terminalName: {type:String, required: false},
+   
+      totalAttendance: { type: Number, required: false },
+      attendanceMarks: { type: Number, required: false },
+      theoryMarks: { type: Number, required: false },
+      terminalMarks: { type: Number, required: false },
+      participationMarks: { type: Number, required: false },
+    
+  unit: [
+    {
+      unitName: { type: String, required: false },
+      projectWorks: [
+        {
+          projectName: { type: String, required: false },
+          projectMarks: { type: Number, required: false },
+          projectIndicator:{type:String, required:false},
+          projectIndicatorMarks:{type:String, required:false}
+        
+        }
+      ],
+      practicals: [
+        {
+          practicalName: { type: String, required: false },
+          practicalMarks: { type: Number, required: false },
+          practicalIndicator:{type:String, required:false},
+          practicalIndicatorMarks:{type:String, required:false}
+       
+        }
+      ]
+    }
+  ],
+   
+})
 module.exports = {
   ThemeEvaluationSchema,
   practicalSchema,
-  scienceprojectSchema
+  scienceprojectSchema,
+  practicalprojectSchema
 
 };

@@ -10,6 +10,7 @@ const { rootDir } = require("../utils/path");
 const {marksheetSchema} = require("../model/masrksheetschema");
 const { classSchema, subjectSchema, terminalSchema,newsubjectSchema ,marksheetsetupSchema} = require("../model/adminschema");
 const { adminSchema,superadminSchema, teacherSchema} = require("../model/admin");
+const { FinalPracticalSlipSchema} = require('../model/themeschema')
 const { studentSchema } = require("../model/schema");
 const student = require("../routers/mainpage");
 const terminal = mongoose.model("terminal", terminalSchema, "terminal");
@@ -32,6 +33,13 @@ const fs = require('fs')
 // Configure storage with better file naming
 
 // Helper function to fetch sidenav data
+const getSubjectSlipModelForPractical = (subject, studentClass, section, terminal, year) => {
+  // to Check if model already exists
+  if (mongoose.models[`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`]) {
+    return mongoose.models[`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`];
+  }
+  return mongoose.model(`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`, FinalPracticalSlipSchema, `PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`);
+};
 const getSidenavData = async (req) => {
   try {
     const subjects = await newsubject.find({}).lean();
@@ -2098,7 +2106,6 @@ exports.practicalMarks = async (req, res, next) => {
     // ✅ Get sidenav data for dropdowns (always needed)
     const sidenavData = await getSidenavData(req);
 
-
     // ✅ Case 1: No query yet → just render empty page with selection
     if (!subjectinput || !studentClass || !section || !terminal) {
       return res.render("admin/practicalentry", {
@@ -2120,11 +2127,63 @@ exports.practicalMarks = async (req, res, next) => {
     const nepaliYear = academicyear || bs.ADToBS(`${year}`).slice(0, 4);
     console.log("Practical Marks Request:", { subjectinput, studentClass, section, terminal, academicyear: nepaliYear });
 
-    // First, check if theory marks collection exists (without creating it)
-    console.log(`Checking if collection exists: ${subjectinput}_${studentClass}_${section}_${terminal}`);
+    // ✅ Get students from studentrecord collection for this class and section
+    const { studentrecordschema } = require("../model/adminschema");
+    const studentRecordModel = mongoose.model("studentrecord", studentrecordschema, "studentrecord");
     
-    // Safely check if collection exists before creating a model
+    console.log(`Fetching students from studentrecord for Class: ${studentClass}, Section: ${section}`);
+    
+    let studentsFromRecord = [];
+    try {
+      studentsFromRecord = await studentRecordModel.find(
+        { 
+          studentClass: studentClass,
+          section: section
+        },
+        { _id: 0, roll: 1, name: 1, studentClass: 1, section: 1 }
+      ).lean();
+      
+      console.log(`Found ${studentsFromRecord.length} students in studentrecord collection`);
+      if (studentsFromRecord.length > 0) {
+        console.log(`Sample student from record:`, studentsFromRecord[0]);
+      }
+    } catch (error) {
+      console.error(`Error fetching students from studentrecord:`, error);
+      return res.render("admin/practicalentry", {
+        editing: false,
+        currentPage: "practicalMarks",
+        studentThData: [],
+        subjectinput,
+        studentClass,
+        section,
+        terminal,
+        academicyear: nepaliYear,
+        studentPrData: [],
+        message: `Error fetching students from studentrecord: ${error.message}`,
+        ...sidenavData
+      });
+    }
+
+    // ✅ If no students found in studentrecord collection
+    if (studentsFromRecord.length === 0) {
+      return res.render("admin/practicalentry", {
+        editing: false,
+        currentPage: "practicalMarks",
+        studentThData: [],
+        subjectinput,
+        studentClass,
+        section,
+        terminal,
+        academicyear: nepaliYear,
+        studentPrData: [],
+        message: `No students found in Class ${studentClass}, Section ${section}. Please add student records first.`,
+        ...sidenavData
+      });
+    }
+
+    // ✅ Check if theory collection exists to get existing theory marks
     let theoryModel = null;
+    let studentThData = [];
     
     // Check if the model is already registered in mongoose
     if (mongoose.models[`${subjectinput}_${studentClass}_${section}_${terminal}`]) {
@@ -2133,7 +2192,6 @@ exports.practicalMarks = async (req, res, next) => {
     } else {
       // Check if the collection exists in the database
       try {
-        // Get list of all collections
         const collections = await mongoose.connection.db.listCollections().toArray();
         const collectionExists = collections.some(
           col => col.name === `${subjectinput}_${studentClass}_${section}_${terminal}`
@@ -2148,75 +2206,77 @@ exports.practicalMarks = async (req, res, next) => {
           );
           console.log(`Collection exists, created model for ${subjectinput}_${studentClass}_${section}_${terminal}`);
         } else {
-          console.log(`⚠️ Collection ${subjectinput}_${studentClass}_${section}_${terminal} doesn't exist in database`);
-          // Do NOT create a model for non-existent collections
+          console.log(`⚠️ Collection ${subjectinput}_${studentClass}_${section}_${terminal} doesn't exist - will create new collection`);
         }
       } catch (error) {
         console.error(`Error checking if collection exists:`, error);
       }
     }
-    
-    console.log(`Theory model retrieved:`, theoryModel ? 'Yes' : 'No');
 
-    // ✅ If theory collection/model does NOT exist
-    if (!theoryModel) {
-      return res.render("admin/practicalentry", {
-        editing: false,
-        currentPage: "practicalMarks",
-        studentThData: [],
-        subjectinput,
-        studentClass,
-        section,
-        terminal,
-        academicyear: nepaliYear,
-        studentPrData: [],
-        message: `No theory collection found for ${subjectinput} ${studentClass}-${section} ${terminal}`,
-        ...sidenavData
-      });
-    }
-
-    // ✅ Fetch theory marks only if the model exists
-    let studentThData = [];
-    
+    // ✅ If theory collection exists, fetch existing theory marks
     if (theoryModel) {
-      console.log(`Collection name: ${theoryModel.collection.name}`);
-      console.log(`Attempting to fetch theory marks from collection: ${theoryModel.collection.name}`);
       try {
         studentThData = await theoryModel.find(
           {},
           { _id: 0, totalMarks: 1, name: 1, roll: 1, studentClass: 1, section: 1, terminal: 1 }
         ).lean();
         
-        console.log(`Found ${studentThData.length} students in theory data`);
-        if (studentThData.length > 0) {
-          console.log(`Sample student:`, studentThData[0]);
-        }
+        console.log(`Found ${studentThData.length} students with existing theory marks`);
       } catch (error) {
         console.error(`Error fetching theory marks:`, error);
-        // Don't throw error, handle gracefully
         studentThData = [];
       }
-    } else {
-      console.log(`⚠️ No theory model available for ${subjectinput}_${studentClass}_${section}_${terminal}`);
     }
 
-    // We already check for empty studentThData above, no need for another check here
+    // ✅ Merge student data: Use theory marks if available, otherwise use studentrecord data with 0 marks
+    const mergedStudentData = studentsFromRecord.map(student => {
+      // Try to find existing theory data for this student
+      const existingTheoryData = studentThData.find(th => th.roll === student.roll);
+      
+      return {
+        roll: student.roll,
+        name: student.name,
+        studentClass: student.studentClass || studentClass,
+        section: student.section || section,
+        terminal: terminal,
+        // Use existing theory marks if available, otherwise default to 0
+        totalMarks: existingTheoryData ? existingTheoryData.totalMarks : 0
+      };
+    });
 
-    // Only proceed with practical data if we have valid theory data
-    if (studentThData.length === 0) {
-      return res.render("admin/practicalentry", {
-        editing: false,
-        currentPage: "practicalMarks",
-        studentThData: [],
-        subjectinput,
-        studentClass,
-        section,
-        terminal,
-        academicyear: nepaliYear,
-        studentPrData: [],
-        message: `No theory marks found for ${subjectinput} in Class ${studentClass}, Section ${terminal}. Please enter theory marks first.`,
-        ...sidenavData
-      });
+    console.log(`Merged data for ${mergedStudentData.length} students`);
+
+    // ✅ If no theory collection exists, create it with initial data
+    if (!theoryModel && mergedStudentData.length > 0) {
+      console.log(`Creating new theory collection: ${subjectinput}_${studentClass}_${section}_${terminal}`);
+      
+      try {
+        // Create the theory model
+        theoryModel = mongoose.model(
+          `${subjectinput}_${studentClass}_${section}_${terminal}`, 
+          studentSchema, 
+          `${subjectinput}_${studentClass}_${section}_${terminal}`
+        );
+
+        // Initialize theory collection with student data (theory marks = 0)
+        const initialTheoryData = mergedStudentData.map(student => ({
+          roll: student.roll,
+          name: student.name,
+          studentClass: studentClass,
+          section: section,
+          terminal: terminal,
+          subject: subjectinput,
+          totalMarks: 0,
+          academicYear: nepaliYear
+        }));
+
+        await theoryModel.insertMany(initialTheoryData);
+        console.log(`✅ Created new theory collection with ${initialTheoryData.length} students`);
+        
+      } catch (error) {
+        console.error(`Error creating theory collection:`, error);
+        // Continue without creating theory collection - just use student record data
+      }
     }
     
     // ✅ Get the practical marks model (create if it doesn't exist)
@@ -2228,19 +2288,19 @@ exports.practicalMarks = async (req, res, next) => {
     
     console.log(`Found ${existingPracticalData.length} existing practical records`);
     
-    // ✅ Filter theory data to only include students without practical records
-    const newStudentsData = studentThData.filter(data => !existingRolls.has(data.roll));
+    // ✅ Filter merged student data to only include students without practical records
+    const newStudentsData = mergedStudentData.filter(data => !existingRolls.has(data.roll));
     
     console.log(`Found ${newStudentsData.length} students that need practical records created`);
     
-    // ✅ Initialize practical collection only for new students
+    // ✅ Initialize practical collection for new students
     if (newStudentsData.length > 0) {
       const practicalData = newStudentsData.map(data => ({
         roll: data.roll,
         name: data.name,
         studentClass: data.studentClass || studentClass,
         section: data.section || section,
-        theory: data.totalMarks || 0,
+        theory: data.totalMarks || 0,  // Use existing theory marks or 0
         practical: 0,
         totalmarks: data.totalMarks || 0, // Initial total = theory marks
         terminal: terminal,
@@ -2264,39 +2324,48 @@ exports.practicalMarks = async (req, res, next) => {
     // ✅ Fetch practical data (after ensuring it's created)
     const studentPrData = await prmodel.find({}).lean();
     
-    // ✅ Create a merged dataset with both theory and practical marks
-    const mergedData = studentThData.map(thStudent => {
+    // ✅ Create final merged dataset with both theory and practical marks
+    const finalMergedData = mergedStudentData.map(student => {
       // Find corresponding practical record
-      const prRecord = studentPrData.find(pr => pr.roll === thStudent.roll);
+      const prRecord = studentPrData.find(pr => pr.roll === student.roll);
       
       return {
-        roll: thStudent.roll,
-        name: thStudent.name,
-        studentClass: thStudent.studentClass,
-        section: thStudent.section,
-        terminal: thStudent.terminal,
-       
-        // Use practical record if available, otherwise default values
-        theory: thStudent.totalMarks || 0,
-        practical: prRecord?.practical || 0,
-        totalmarks: prRecord?.totalmarks || thStudent.totalMarks || 0
+        roll: student.roll,
+        name: student.name,
+        studentClass: student.studentClass,
+        section: student.section,
+        terminal: student.terminal,
+        // Use practical record if available, otherwise use merged student data
+        theory: prRecord ? prRecord.theory : student.totalMarks || 0,
+        practical: prRecord ? prRecord.practical : 0,
+        totalmarks: prRecord ? prRecord.totalmarks : student.totalMarks || 0
       };
     });
 
-    // ✅ Finally render table
-    return res.render("admin/practicalentry", {
+    console.log(`✅ Final merged data prepared for ${finalMergedData.length} students`);
+
+const FinalPracticalSlipModel = getSubjectSlipModelForPractical(subjectinput, studentClass, section, terminal, nepaliYear);
+
+const practicalData = await FinalPracticalSlipModel.find({}).lean();
+return res.render("admin/practicalentry", {
       editing: false,
       currentPage: "practicalMarks",
-      studentThData: mergedData, // Send merged data
+      studentThData: finalMergedData, // Send final merged data
       subjectinput,
       studentClass,
       section,
       terminal,
-       studentPrData,
+      studentPrData,
       academicyear: nepaliYear,
+      practicalData,
+      message: finalMergedData.length > 0 ? 
+        `Loaded ${finalMergedData.length} students. You can now enter theory and practical marks.` : 
+        null,
       ...sidenavData
-    });
+});
 
+
+  
   } catch (err) {
     console.error("Error in practicalMarks controller:", err);
     return res.status(500).send("Error loading practical marks page: " + err.message);

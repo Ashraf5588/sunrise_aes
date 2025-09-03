@@ -8,7 +8,7 @@
 <body>
   <h1>Practical Project Slip</h1>
 
-  <form action="/practicalslipsave?terminal=<%= terminal %>" method="POST">
+  <form action="/practicalslipsave?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>&academicYear=<%= marksheetSetting[0].academicYear %>" method="POST">
 
   
 
@@ -17,7 +17,6 @@
       <tr>
         <th>Roll</th>
        <th>Name</th>
-       
        <th>Class</th>
        <th>Section</th>
        <th>Attendance & Participation (4)</th>
@@ -81,38 +80,39 @@
             + (((totalObtainedAllProject)/8)*16)) / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks %></td>
            <td> <% if (totalPractical >= 90 && totalPractical <= 100) { %>
   A+
+  <% let grade = "A+" %>
 <% } else if (totalPractical >= 85 && totalPractical < 90) { %>
   A
+  <% let grade = "A" %>
 <% } else if (totalPractical >= 80 && totalPractical < 85) { %>
-  B+
+  B+ <% let grade = "B+" %>
 <% } else if (totalPractical >= 70 && totalPractical < 80) { %>
-  B
+  B<% let grade = "B" %>
 <% } else if (totalPractical >= 60 && totalPractical < 70) { %>
-  C+
+  C+ <% let grade = "C+" %>
 <% } else if (totalPractical >= 50 && totalPractical < 60) { %>
-  C
+  C <% let grade = "C" %>
 <% } else if (totalPractical >= 40 && totalPractical < 50) { %>
-  D
-<% } else { %>
-  E
+  D <% let grade = "D" %>
+  
 <% } %>
 
         </td>
-          <input type="hidden" name="slip[<%= index %>][roll]" value="<%= student.roll %>">
+        </tr>
+   
+     <input type="hidden" name="slip[<%= index %>][roll]" value="<%= student.roll %>">
         <input type="hidden" name="slip[<%= index %>][name]" value="<%= student.name %>">
         <input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student.studentClass %>">
         <input type="hidden" name="slip[<%= index %>][section]" value="<%= student.section %>">
         <input type="hidden" name="slip[<%= index %>][attendanceParticipation]" value="<%= (student.attendanceMarks + student.participationMarks) %>">
-        <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= projectPracticalMarks.toFixed(2) %>">
+        <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= totalPractical.toFixed(2) %>">
         <input type="hidden" name="slip[<%= index %>][terminal]" value="<%= student.terminalMarks %>">
-        <input type="hidden" name="slip[<%= index %>][total]" value="<%= totalMarks.toFixed(2) %>">
-        <input type="hidden" name="slip[<%= index %>][grade]" value="<%= grade %>">
-    
-      
-        </tr>
-    </table>
-    </form>
+        <input type="hidden" name="slip[<%= index %>][totalPractical]" value="<%= totalPractical.toFixed(2) %>">
+       
     <br><br>
   <% }) %>
+    </table>
+    <input type="submit">
+    </form>
 </body>
 </html>

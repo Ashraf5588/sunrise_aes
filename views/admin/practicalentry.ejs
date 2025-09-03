@@ -314,12 +314,7 @@
       display: block;
     }
 
-    .marks-input[data-type="theory"] {
-      background-color: var(--light-gray);
-      color: var(--light-brown);
-      cursor: not-allowed;
-      border-color: #D6D8DB;
-    }
+    
 
     .marks-input[data-type="practical"] {
       background-color: var(--white);
@@ -598,7 +593,7 @@
                   <th style="width: 50px;">Roll</th>
                   <th style="width: 60px;">Photo</th>
                   <th style="width: 180px;">Student Details</th>
-                  <th style="width: 70px;">Theory<br><small class="opacity-75">(readonly)</small></th>
+                  <th style="width: 70px;">Theory<br><small class="opacity-75"></small></th>
                   <th style="width: 70px;">Practical<br><small class="opacity-75">(editable)</small></th>
                   <th style="width: 70px;">Total<br><small class="opacity-75">(auto)</small></th>
                 </tr>
@@ -620,8 +615,8 @@
                              data-type="theory" 
                              name="th_<%= student.roll %>" 
                              value="<%= student.theory || '' %>" 
-                             readonly
-                             title="Theory marks (read-only)">
+                             
+                             >
                     </td>
                     <td class="text-center">
                       <input type="number" 

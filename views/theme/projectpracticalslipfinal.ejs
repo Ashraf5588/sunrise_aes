@@ -6,7 +6,7 @@
   <title>Practical Project Record</title>
 </head>
 <body>
-  <form action="/practicalslipsave" method="POST">
+  <form action="/practicalslipsave?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>&academicYear=<%= marksheetSetting[0].academicYear %>" method="POST">
     <h1>Practical Project Slip Final</h1>
       <% totalTerminal = marksheetSetting[0].totalTerminals; %>
    <%= totalTerminal || 3 %>

@@ -17,7 +17,8 @@ const newsubject = mongoose.model("newsubject", newsubjectSchema, "newsubject");
 const bcrypt = require("bcrypt");
 const terminal = mongoose.model("terminal", terminalSchema, "terminal");
 const {ThemeEvaluationSchema,practicalSchema,scienceprojectSchema, practicalprojectSchema} = require("../model/themeformschema");
-const {themeSchemaFor1,scienceSchema,FinalPracticalSlipSchema} = require("../model/themeschema")
+const {themeSchemaFor1,scienceSchema,FinalPracticalSlipSchema} = require("../model/themeschema");
+const { get } = require("http");
  const marksheetSetup = new mongoose.model("MarksheetSetup", marksheetsetupSchema,"marksheetSetting");
 
 
@@ -29,9 +30,17 @@ const scienceProjectModel = mongoose.model('scienceproject', scienceprojectSchem
 
 const practicalProjectModel = mongoose.model('practicalprojectscience', practicalprojectSchema, 'practicalprojectscience');
 
-const FinalPracticalSlipModel = mongoose.model('finalPracticalSlip', FinalPracticalSlipSchema, 'finalPracticalSlips');
 
 
+
+
+const getSubjectSlipModelForPractical = (subject, studentClass, section, terminal, year) => {
+  // to Check if model already exists
+  if (mongoose.models[`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`]) {
+    return mongoose.models[`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`];
+  }
+  return mongoose.model(`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`, FinalPracticalSlipSchema, `PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`);
+};
 app.set("view engine", "ejs");
 app.set("view", path.join(rootDir, "views"));
 const getSidenavData = async (req) => {
@@ -758,15 +767,15 @@ exports.savepracticalslip = async (req,res,next)=>
 {
    try {
     const slips = req.body.slip; // this will be an array of student slips
-
+const {studentClass,section,subject,terminal,academicYear} = req.query;
     // Example schema
     // slipModel = mongoose.model("Slip", new mongoose.Schema({
     //   roll: String, name: String, studentClass: String, section: String,
     //   attendanceParticipation: Number, practicalProject: Number,
     //   terminal: Number, total: Number, grade: String
     // }));
-
-    await FinalPracticalSlipModel.insertMany(slips);
+const model = getSubjectSlipModelForPractical(subject, studentClass, section, terminal, academicYear);
+    await model.insertMany(slips);
 
     res.send("Slip saved successfully!");
   } catch (err) {

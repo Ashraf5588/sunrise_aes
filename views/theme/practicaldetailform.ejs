@@ -6,7 +6,7 @@
   <title>Practical</title>
 </head>
 <body>
-  <form action="/practicaldetailform" method="POST">
+  <form action="/practicaldetailform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal.terminal %>" method="POST">
     <input type="text" name="roll" placeholder="Enter Roll">
     <input type="text" name="name" placeholder="Enter Name">
     <input type="text" name="studentClass" value="<%= studentClass %>" placeholder="Enter Student Class">

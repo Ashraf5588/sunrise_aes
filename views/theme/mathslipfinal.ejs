@@ -36,9 +36,10 @@
          <% let totalUnit = 0 %>
       <% lessonData.forEach((lesson) => { %>
         <% lesson.totalLessons.forEach((unit, uIndex) => { %>
-          <% totalUnit += unit.units.length; %>
+         <% totalUnit += unit.units.length; %>
 
         <% }) %>
+        
       <% }) %>
       
     
@@ -47,24 +48,24 @@
 
           <%let totalPracticalFinal=0;%>
           <%let totalProjectFinal=0 %>
-        <% let  totalPracticalProjectMarks%>
+        <% let  totalPracticalProjectMarks =0%>
     <% student.terminals.forEach(terminal => { %>
   
-    
+     
 <% terminal.unit.forEach(unitdata=>{%>
          <% unitdata.practicals.forEach(practicaldata=>{%>
-             <p><% ((practicaldata.practicalMarks / 10) * 20)/unitdata.practicals.length %></p>
+             <p><% ((practicaldata.practicalMarks / 20) * 20)/unitdata.practicals.length %></p>
 
-             <% totalPracticalFinal += (((practicaldata.practicalMarks / 10) * 20)/unitdata.practicals.length) %>
+             <% totalPracticalFinal += (((practicaldata.practicalMarks / 20) * 20)/unitdata.practicals.length) %>
            
 
 
           <%})%>
          
           <% unitdata.projectWorks.forEach(projectdata=>{%>
-            <p><% ((projectdata.projectMarks / 8) * 16)/unitdata.projectWorks.length %></p>
+            <p><% ((projectdata.projectMarks / 12) * 16)/unitdata.projectWorks.length %></p>
 
-            <% totalProjectFinal += (((projectdata.projectMarks / 8) * 16)/unitdata.projectWorks.length) %>
+            <% totalProjectFinal += (((projectdata.projectMarks / 12) * 16)/unitdata.projectWorks.length) %>
       <%})%>
       <%})%>
       <% totalPracticalProjectMarks = (totalPracticalFinal/totalUnit)+(totalProjectFinal/totalUnit) %>

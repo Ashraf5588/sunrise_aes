@@ -252,10 +252,7 @@ student.post('/practicaldetailform',verifytoken,authorized,practical410controlle
 student.get('/practicalslip',verifytoken,authorized,practical410controller.showpracticalSlip);
 
 // Science Practical Form Routes
-student.get('/sciencepracticalform', verifytoken, authorized, (req, res) => {
-  const studentClass = req.query.studentClass || '';
-  res.render('theme/sciencepracticalform', { studentClass });
-});
+student.get('/practicalform', verifytoken, authorized, practical410controller.sciencepracticalForm)
 
 student.post('/sciencepractical', verifytoken, authorized, practical410controller.saveSciencePractical);
 
@@ -270,7 +267,7 @@ student.post('/scienceData', verifytoken, authorized, practical410controller.sav
 student.post('/practicalprojectform', verifytoken, authorized, practical410controller.savepracticalprojectform);
 student.get('sciencepractical',verifytoken,authorized,practical410controller.sciencepracticalForm)
 student.post('/practicalslipsave', verifytoken, authorized, practical410controller.savepracticalslip);
-student.get('/marksheetsetup', verifytoken, authorized, admincontrol.showmarksheetSetupForm);
-student.post('/marksheetsetup', verifytoken, authorized, admincontrol.savemarksheetSetupForm);
+
+student.get('/choosesubject',verifytoken,authorized,practical410controller.choosesubject)
 
 module.exports = student;

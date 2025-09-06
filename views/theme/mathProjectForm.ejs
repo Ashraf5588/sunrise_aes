@@ -140,19 +140,15 @@
         <br>
  <input type="Number" name="unit[<%= idx %>][practicals][<%= prindx %>][practicalMarks]" value="0"  id="practical-total-<%= idx %>-<%= prindx %>" 
  placeholder="Total Obtained">
-    <%})%>
-  <%})%>
-  <%})%>
-  <% ScienceData.forEach((item) => { %>
-<% item.units.forEach((unit,idx)=>{ %>
-  <% unit.projectworks.forEach((project,prindx)=>{ %>
+    
+  
 
 <div class="right">
   <center><h1> <% if (subject === "SCIENCE") { %> Project Work Marks <% }else if(subject==="MATHEMATICS") { %> प्रयोगात्मक कार्य परियोजना कार्यको प्रस्तुतीकरण र अभिलेखीकरण अङ्कनको आधार  <% } %></h1></center>
   
-  <h1><%= unit.unitName%></h1> 
-  project-<%= prindx + 1 %>: <%= project %>
-   <input type="text" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectName]" value="<%= project %>">
+
+  
+   <input type="text" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectName]" value="">
   <table border="1" cellspacing="0" cellpadding="5">
   <tr>
     <th>आधार</th>
@@ -176,9 +172,8 @@
   
   <tr>
     <td>
-      तोकिएको अधिकांश प्रक्रिया पूरा गरी परियोजना कार्य सम्पन्न गरेको र 
-      अपेक्षित उद्देश्य धेरैजसो प्राप्त भएमा, धेरैजसो चरणहरु समेटेर 
-      क्रियाकलापको प्रस्तुतिकरण गरेको र धेरैजसो प्रश्नको तर्क दिन सकेमा
+     आफूले सम्पन्न गरेको कार्यको निर्धक्क र व्याख्यासहित
+प्रस्तुत गरेमा
     </td>
     <td>३ <input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
     <td></td>
@@ -186,9 +181,7 @@
   
   <tr>
     <td>
-      आंशिक प्रक्रिया पूरा गरी परियोजना कार्य गरेमा, आंशिक रूपमा 
-      क्रियाकलापको प्रस्तुतिकरण गर्ने प्रयास मात्र गरेमा र केही प्रश्नको 
-      मात्र तर्क दिन सकेमा
+    आफूले सम्पन्न गरेको कार्यको व्याख्यासहित प्रस्तुत गरेमा
     </td>
     <td>२ <input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
     <td></td>
@@ -196,18 +189,16 @@
   
   <tr>
     <td>
-      परियोजना कार्य गर्न प्रयास मात्र गरेमा, प्रस्तुतिकरण गर्ने प्रयास मात्र गरेमा 
-      र कुनै तर्कसंगतता नभएमा
+    आफूले सम्पन्न गरेको कार्य प्रस्तुत मात्र गरेमा
     </td>
     <td>१ <input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
     <td></td>
   </tr>
   
   <tr>
-    <td rowspan="4">अभिलेखीकरण</td>
+    <td rowspan="4">प्रश्नोत्तरमा सहभागिता</td>
     <td>
-      तोकिएको समयमा परियोजना कार्य सम्पन्न गरी सही, सफा, 
-      तोकिएको ढाँचामा र क्रमबद्ध तरिकाले अभिलेख राखेमा
+    शिक्षक र सबै साथीहरूका प्रश्नको सही उत्तर दिएमा 
     </td>
     <td>४ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="4" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
     <td></td>
@@ -215,9 +206,8 @@
   
   <tr>
     <td>
-      तोकिएको समयमा परियोजना कार्य सम्पन्न गरी आंशिक कार्य सम्पन्न गरे पनि 
-      अभिलेख सही नभएमा, सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा 
-      कुनै तीन आधारमा अभिलेख राखेमा
+    शिक्षक र केही साथीहरूका मात्र प्रश्नको सही उत्तर
+दिएमा 
     </td>
     <td>३ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
     <td></td>
@@ -225,8 +215,8 @@
   
   <tr>
     <td>
-      तोकिएको समयमा दुर्बल ढंगले परियोजना कार्य सम्पन्न गरी सही नभएमा, 
-      सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा कुनै दुई आधारमा अभिलेख राखेमा
+    शिक्षक र केही साथीहरूको प्रश्नको आंशिक सही उत्तर
+दिएमा
     </td>
     <td>२ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
     <td></td>
@@ -234,11 +224,48 @@
   
   <tr>
     <td>
-      तोकिएको समयमा सही ढंग नभए ढिलाइ गरी समय लगाई परियोजना कार्य सम्पन्न 
-      गरी सही नभएमा, सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा कुनै एक आधारमा 
-      अभिलेख राखेमा
+     शिक्षक र साथीहरूको अधिकांश प्रश्नको गलत उत्तर
+दिएमा 
     </td>
     <td>१ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
+    <td></td>
+  </tr>
+
+
+    <tr>
+    <td rowspan="4">अभिलेखीकरण </td>
+    <td>
+कार्यप्रव्रिया र नतिजा स्पष्ट र चरणबद्घ रूपमा सजिलैसँग
+बुझ्न सक्ने गरी अभिलेखीकरण गरेमा 
+    </td>
+    <td>४ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="4" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
+    <td></td>
+  </tr>
+  
+  <tr>
+    <td>
+    कार्यप्रव्रिया र नतिजा स्पष्ट रूपमा बुझ्न सक्ने गरी
+अभिलेखीकरण गरेमा
+    </td>
+    <td>३ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
+    <td></td>
+  </tr>
+  
+  <tr>
+    <td>
+    कार्यप्रव्रिया र नतिजा आंशिक रूपमा बुझ्न सक्ने गरी
+अभिलेखीकरण गरेमा 
+    </td>
+    <td>२ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
+    <td></td>
+  </tr>
+  
+  <tr>
+    <td>
+     कार्यप्रव्रिया र नतिजा बुझ्न कठिन हुने गरी
+अभिलेखीकरण गरेमा
+    </td>
+    <td>१ <input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')"></td>
     <td></td>
   </tr>
 </table>
@@ -284,10 +311,10 @@ function calculateTerminalMarks() {
     
     const terminalValue = terminalParams.get('terminal');
   
-    if(terminalValue != "FINAL")
+    if(terminalValue === "FIRST-2082")
   {
     const theoryMarks = parseFloat(document.getElementById('theoryMarks').value);
-    document.getElementById('obtainedconvertedmarks').value = (theoryMarks/50)*10;
+    document.getElementById('obtainedconvertedmarks').value = 0.1 * theoryMarks;
   }
 }
 

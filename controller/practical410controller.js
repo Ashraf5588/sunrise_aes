@@ -28,7 +28,7 @@ const { get } = require("http");
 const ScienceModel = mongoose.model('sciencepractical', scienceSchema, 'sciencepracticals');
 const scienceProjectModel = mongoose.model('scienceproject', scienceprojectSchema, 'scienceprojects');
 
-const practicalProjectModel = mongoose.model('practicalprojectscience', practicalprojectSchema, 'practicalprojectscience');
+
 
 
 
@@ -36,11 +36,19 @@ const practicalProjectModel = mongoose.model('practicalprojectscience', practica
 
 const getSubjectSlipModelForPractical = (subject, studentClass, section, terminal, year) => {
   // to Check if model already exists
-  if (mongoose.models[`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`]) {
-    return mongoose.models[`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`];
+  if (mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`]) {
+    return mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`];
   }
-  return mongoose.model(`PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`, FinalPracticalSlipSchema, `PracticalSlip_${subject}_${studentClass}_${section}_${terminal}_${year}`);
+  return mongoose.model(`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`, FinalPracticalSlipSchema, `Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`);
 };
+const getPracticalProjectModel = (subject, studentClass, section, terminal, year) => {
+  // to Check if model already exists
+  if (mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`]) {
+    return mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`];
+  }
+  return mongoose.model(`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`, practicalprojectSchema, `Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`);
+};
+
 app.set("view engine", "ejs");
 app.set("view", path.join(rootDir, "views"));
 const getSidenavData = async (req) => {
@@ -149,13 +157,17 @@ exports.chooseClass = async (req, res) => {
   
   res.render("theme/class", {...await getSidenavData(req),editing: false});
 };
+exports.choosesubject = async (req,res)=>
+  {
+    res.render("theme/choosesubject",{...await getSidenavData(req),editing: false})
+  }
 exports.evaluationForm = async (req, res) => {
-  const {studentClass,section} = req.query;
+  const {studentClass,section,subject,terminal} = req.query;
   console.log(studentClass,section);
   if(studentClass==='1' || studentClass==='2' || studentClass==='3') {
     return res.render("theme/theme", {...await getSidenavData(req),editing: false, studentClass, section});
   } else {
-     return res.render("theme/practicalform410pannel", {...await getSidenavData(req),editing: false, studentClass, section});
+     return res.render("theme/practicalform410pannel", {...await getSidenavData(req),editing: false, studentClass, section,subject,terminal});
   }
 };
 exports.showpracticalDetailForm = async (req, res) => {
@@ -185,14 +197,12 @@ exports.showpracticalDetailForm = async (req, res) => {
     
     console.log('=== CHECKING SUBJECT TYPE ===');
     console.log('Subject value:', `"${subject}"`);
-    console.log('Subject type:', typeof subject);
+
     console.log('Subject === "SCIENCE":', subject === "SCIENCE");
     console.log('Subject.toUpperCase() === "SCIENCE":', subject && subject.toUpperCase() === "SCIENCE");
     
-    if (subject === "SCIENCE") {
-      console.log('🔬 === SCIENCE SUBJECT DETECTED ===');
-      console.log('Proceeding with science flow...');
-      
+    if (subject === "SCIENCE" ) {
+      console.log('🔬 === SUBJECT DETECTED ===');      
       console.log('=== SEARCHING FOR SCIENCE DATA ===');
       console.log('ScienceModel:', typeof ScienceModel);
       
@@ -219,14 +229,14 @@ exports.showpracticalDetailForm = async (req, res) => {
         console.log('⚠️  NO SCIENCE DATA FOUND');
         console.log('Let me check what science data exists...');
         
-        const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
-        console.log('Total science records in database:', allScienceData.length);
-         console.log(allScienceData)
-        if (allScienceData.length > 0) {
-          console.log('Available science data:');
-          allScienceData.forEach((data, index) => {
-            console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
-          });
+          const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
+          console.log('Total science records in database:', allScienceData.length);
+          console.log(allScienceData)
+          if (allScienceData.length > 0) {
+            console.log('Available science data:');
+            allScienceData.forEach((data, index) => {
+              console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
+            });
         } else {
           console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
         }
@@ -241,10 +251,70 @@ exports.showpracticalDetailForm = async (req, res) => {
         section, 
         subject, 
         practicalFormatData, 
-        ScienceData
+        ScienceData,
+        terminal
       });
+
       
-    } else {
+    } 
+   else if (subject === "MATHEMATICS" ) {
+      console.log('🔬 === SUBJECT DETECTED ===');      
+      console.log('=== SEARCHING FOR SCIENCE DATA ===');
+      console.log('ScienceModel:', typeof ScienceModel);
+      
+      const ScienceData = await ScienceModel.find({
+        studentClass: studentClass,
+        terminal: terminal,
+        subject: subject
+      }).lean();
+      
+      console.log('✅ Science data query completed');
+      console.log('Science data found:', ScienceData.length, 'records');
+      
+      if (ScienceData.length > 0) {
+        console.log('📊 Science data preview:');
+        ScienceData.forEach((data, index) => {
+          console.log(`Record ${index + 1}:`, {
+            id: data._id,
+            studentClass: data.studentClass,
+            subject: data.subject,
+            unitsCount: data.units ? data.units.length : 0
+          });
+        });
+      } else {
+        console.log('⚠️  NO SCIENCE DATA FOUND');
+        console.log('Let me check what science data exists...');
+        
+          const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
+          console.log('Total science records in database:', allScienceData.length);
+          console.log(allScienceData)
+          if (allScienceData.length > 0) {
+            console.log('Available science data:');
+            allScienceData.forEach((data, index) => {
+              console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
+            });
+        } else {
+          console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
+        }
+      }
+      
+      console.log('🎨 Rendering practicalprojectform...');
+
+      return res.render("theme/mathProjectForm", {
+        ...await getSidenavData(req),
+        editing: false,
+        studentClass,
+        section,
+        subject,
+        practicalFormatData, 
+        ScienceData,
+        terminal
+      });
+
+      
+    } 
+    else 
+      {
       console.log('📝 === NON-SCIENCE SUBJECT ===');
       console.log('Subject is not SCIENCE, rendering regular form');
       console.log('Subject value was:', `"${subject}"`);
@@ -256,7 +326,8 @@ exports.showpracticalDetailForm = async (req, res) => {
         studentClass, 
         section, 
         subject, 
-        practicalFormatData
+        practicalFormatData,
+        terminal
       });
     }
     
@@ -384,13 +455,17 @@ try
   {
     if(terminal==="FINAL")
     {
+      const marksheetSetting = await marksheetSetup.find();
+      acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+        
 
-
-     const sciencepracticaldata = await practicalProjectModel.aggregate([
+     const sciencepracticaldata = await model.aggregate([
        {
          $match: {
            studentClass: studentClass,
-           section: section
+           section: section,
+           subject: subject,
          }
        },
        {
@@ -416,27 +491,93 @@ try
          }
        }
      ]);
-const marksheetSetting = await marksheetSetup.find();
+
 console.log(marksheetSetting)
      console.log("projectdata",sciencepracticaldata);
      console.log("lesson Data", lessonData)
       res.render("theme/projectpracticalslipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
     }
+    
     else
     { 
-        const sciencepracticaldata = await practicalProjectModel.find({studentClass:studentClass,terminalName:terminal});
-     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal});
-     const marksheetSetting = await marksheetSetup.find({});
+      const marksheetSetting = await marksheetSetup.find();
+      acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+
+    
      console.log("projectdata",sciencepracticaldata);
      console.log("lesson Data", lessonData)
       res.render("theme/projectpracticalslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
 
     }
   }
+
+   else if(subject==="MATHEMATICS")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+      acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/mathslipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+      acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+
+    
+     
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/mathslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+
+    }
+  }
 else
 {
-
-
   const practicalDetail = getStudentThemeData(studentClass);
   const practicalDetailData = await practicalDetail.find().lean();
 
@@ -457,7 +598,9 @@ exports.sciencepracticalForm = async (req,res,next)=>
 {
   try
   {
-    res.render("theme/sciencepracticalform")
+const { studentClass, section, subject,terminal } = req.query;
+    console.log(studentClass,section,subject,terminal)
+    res.render("theme/sciencepracticalform",{studentClass,section,subject,terminal});
 
   }catch(err)
   {
@@ -749,11 +892,60 @@ try{
     subject,
     terminal
   });
-  const data = await practicalProjectModel.create(req.body);
+
+req.body.unit.forEach(unit => {
+  unit.practicals = unit.practicals || [];
+  unit.projectWorks = unit.projectWorks || [];
+
+  // --- PRACTICALS ---
+  unit.practicals.forEach(practical => {
+    if (!practical.criteria) {
+      practical.criteria = []; // nothing selected
+      return;
+    }
+
+    // Convert object-of-arrays into clean array
+    practical.criteria = Object.values(practical.criteria).flatMap(row =>
+      Object.values(row).map(v => {
+        const [marks, indicator, adhar] = v.split("||");
+        return {
+          practicalIndicatorMarks: Number(marks),
+          practicalIndicator: indicator,
+          practicalAdhar: adhar
+        };
+      })
+    );
+  });
+
+  // --- PROJECTS ---
+  unit.projectWorks.forEach(project => {
+    if (!project.criteria) {
+      project.criteria = [];
+      return;
+    }
+
+    project.criteria = Object.values(project.criteria).map(v => {
+      const [marks, indicator, adhar] = v.split("||");
+      return {
+        projectIndicatorMarks: Number(marks),
+        projectIndicator: indicator,
+        projectAdhar: adhar
+      };
+    });
+  });
+});
+
+const marksheetSetting = await marksheetSetup.find();
+      acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+
+const doc = new model(req.body);
+await doc.save();
+
     return res.status(201).json({
         success: true,
         message: 'Science student record created successfully',
-        data: data
+        data: doc
       });
 
 }catch(err)

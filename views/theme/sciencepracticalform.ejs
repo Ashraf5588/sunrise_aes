@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Science Practicals Configuration</title>
+  <title>Practicals Configuration</title>
   <style>
     * {
       margin: 0;
@@ -320,11 +320,11 @@
 <body>
   <div class="container">
     <div class="header-card">
-      <h2><span class="science-icon">🧪</span>Science Practicals Configuration</h2>
+      <h2><span class="science-icon"></span><%= subject %> Practicals/Project Configuration</h2>
       <p>Set up units and practicals for science evaluation</p>
       <% if (typeof studentClass !== 'undefined') { %>
         <div style="background-color: #d5f4e6; padding: 10px; margin-top: 15px; border-radius: 8px; font-weight: bold; color: #27ae60;">
-          Configuring Science Practicals for Class <%= studentClass %>
+          Configuring <%= subject %> Practicals for Class <%= studentClass %>
         </div>
       <% } %>
     </div>
@@ -336,17 +336,14 @@
             <label for="studentClass">Student Class</label>
             <input type="text" name="studentClass" id="studentClass" value="<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" readonly>
           </div>
-          <div class="form-group">
-            <label for="section">Section (Optional)</label>
-            <input type="text" name="section" id="section" placeholder="Enter section (optional)">
-          </div>
+         
           <div class="form-group">
             <label for="subject">Subject</label>
-            <input type="text" name="subject" id="subject" placeholder="Enter subject name (e.g., Science)" required>
+            <input type="text" name="subject" id="subject" placeholder="Enter subject name (e.g., Science)" value="<%=subject%>" required>
           </div>
           <div class="form-group">
             <label for="academicYear">Terminal</label>
-            <input type="text" name="terminal" id="academicYear" placeholder="Enter Terminal example: First, Second, Third" required>
+            <input type="text" name="terminal" id="academicYear" placeholder="Enter Terminal example: First, Second, Third" required value="<%=terminal%>">
           </div>
         </div>
 
@@ -388,20 +385,22 @@
         
         <div class="form-group" style="margin-bottom: 1rem;">
           <label for="unitName_${unitIndex}">Unit Name</label>
-          <input type="text" name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name (e.g., Scientific Learning)" required>
+          <input type="text" name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name" required>
         </div>
         
         <!-- Practicals Section -->
         <div style="margin-bottom: 1.5rem;">
           <h4 style="color: #27ae60; margin-bottom: 0.75rem; font-size: 1.1rem; display: flex; align-items: center;">
-            🧪 <span style="margin-left: 0.5rem;">Practicals</span>
+           <span style="margin-left: 0.5rem;">
+            <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %>
+            </span>
           </h4>
           <div class="practicals-container" id="practicals-${unitIndex}"></div>
           <div class="btn-group" style="justify-content: flex-start; margin-top: 0.5rem;">
-            <button type="button" class="btn btn-success" onclick="addPractical(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add Practical</button>
+            <button type="button" class="btn btn-success" onclick="addPractical(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add    <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %></button>
           </div>
         </div>
-        
+        <% if (subject==="SCIENCE"){%>
         <!-- Project Work Section -->
         <div style="margin-bottom: 1rem;">
           <h4 style="color: #3498db; margin-bottom: 0.75rem; font-size: 1.1rem; display: flex; align-items: center;">
@@ -412,7 +411,11 @@
             <button type="button" class="btn btn-success" onclick="addProjectWork(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem; background: linear-gradient(135deg, #3498db, #2980b9);">+ Add Project Work</button>
           </div>
         </div>
+        <%}else{%>
+        <p></p>
+      <%}%>
       `;
+      
 
       unitsContainer.appendChild(unitDiv);
       addPractical(unitIndex); // Add one practical by default

@@ -457,10 +457,16 @@
           <div class="compact-action-title">View Marks</div>
         </a>
 
-        <a href="/themefillupform?studentClass=<%= studentClass %>&section=<%= section %>" target="_blank" class="compact-action-card">
+        <a href="/themefillupform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
           <div class="compact-action-icon">⚙️</div>
-          <div class="compact-action-title">Configure</div>
+          <div class="compact-action-title">Configure Indicator</div>
         </a>
+        <% if(subject==="SCIENCE" || subject==="MATHEMATICS"){%>
+         <a href="/practicalform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
+          <div class="compact-action-icon">⚙️</div>
+          <div class="compact-action-title">Configure Practical </div>
+        </a>
+        <%}%>
 
         <a href="/themeslip?studentClass=<%= studentClass %>&section=<%= section %>" class="compact-action-card">
           <div class="compact-action-icon">📋</div>
@@ -473,30 +479,8 @@
   
   
 
-      <div class="selector-group">
-        <label for="subject">📖 Subject</label>
-        <select name="subject" id="subject" class="ios-select">
-          <option value="" disabled selected>-- Choose subject --</option>
-          <% uniqueSubjects = new Set(newsubjectList.map(item => item.newsubject)); %>
-          <% uniqueSubjects.forEach(function(subject) { %>
-            <option value="<%= subject %>" <%= editing && subjectedit.subject === subject ? 'selected' : '' %>>
-              <%= subject %>
-            </option>
-          <% }); %>
-        </select>
-      </div>
-         <div class="selector-group">
-        <label for="terminal"> Terminal</label>
-        <select name="terminal" id="terminal" class="ios-select">
-          <option value="" disabled selected>-- Choose terminal --</option>
-
-          <% terminals.forEach(function(terminal) { %>
-            <option value="<%= terminal.terminal %>" <%= editing && subjectedit.terminal === terminal.terminal ? 'selected' : '' %>>
-              <%= terminal.terminal %>
-            </option>
-          <% }); %>
-        </select>
-      </div>
+    
+    
 
       <button class="load-button" onclick="themeform()">
         🚀 Load Form
@@ -521,24 +505,25 @@
 
     function themeform() {
      
-      const subjectSelector = document.getElementById('subject');
+      
 
 
-      const studentClass = document.getElementById('studentClass').value;
-      const section = document.getElementById('section').value;
-      const subject = subjectSelector.value;
-      const terminal = document.getElementById('terminal').value;
-
+   
+      const urlParams = new URLSearchParams(window.location.search);
+const subject = urlParams.get('subject')
+const studentClass = urlParams.get('studentClass')
+const section = urlParams.get('section')
+const terminal = urlParams.get('terminal')
       // Validation
       if (!studentClass || !section) {
         showAlert('Please select a class and section');
-        classSelector.focus();
+        
         return;
       }
 
       if (!subject) {
         showAlert('Please select a subject');
-        subjectSelector.focus();
+        
         return;
       }
 

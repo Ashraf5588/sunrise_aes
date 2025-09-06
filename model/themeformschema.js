@@ -287,8 +287,12 @@ const practicalprojectSchema = new mongoose.Schema({
         {
           projectName: { type: String, required: false },
           projectMarks: { type: Number, required: false },
+          criteria: [{
+          projectAdhar: {type:String,required:false},
           projectIndicator:{type:String, required:false},
           projectIndicatorMarks:{type:String, required:false}
+          }]
+          
         
         }
       ],
@@ -296,10 +300,12 @@ const practicalprojectSchema = new mongoose.Schema({
         {
           practicalName: { type: String, required: false },
           practicalMarks: { type: Number, required: false },
+          criteria: [{
           practicalIndicator:{type:String, required:false},
+          practicalAdhar: {type:String,required:false},
           practicalIndicatorMarks:{type:String, required:false}
-       
-        }
+       }]
+      }
       ]
     }
   ],

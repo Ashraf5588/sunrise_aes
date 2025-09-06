@@ -408,6 +408,24 @@
       opacity: 0.7;
       pointer-events: none;
     }
+    
+    .form-loading {
+      position: relative;
+    }
+    
+    .form-loading::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     /* Animation for adding elements */
     .theme-section, .outcome-section, .indicator-group {
@@ -423,6 +441,25 @@
         opacity: 1;
         transform: translateY(0);
       }
+    }
+
+    /* Save status indicator styles */
+    .save-status {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-left: 4px solid;
+      font-family: inherit;
+    }
+    
+    .save-status-success {
+      border-left-color: #4CAF50;
+    }
+    
+    .save-status-error {
+      border-left-color: #f44336;
+    }
+    
+    .save-status-info {
+      border-left-color: #2196F3;
     }
   </style>
 </head>
@@ -486,8 +523,13 @@
 
   <script>
     let themeIndex = 0;
+    let autoSaveTimeout;
+    let isLoading = false;
 
-    function addTheme() {
+    // Load existing data if available
+    const existingData = <%- typeof existingData !== 'undefined' && existingData ? JSON.stringify(existingData) : 'null' %>;
+
+    function addTheme(themeData = null) {
       const themesContainer = document.getElementById('themes-container');
 
       const themeDiv = document.createElement('div');
@@ -501,7 +543,10 @@
         </div>
         <div class="form-group">
           <label for="themeName_${themeIndex}"><% if(studentClass<=3){ %>Theme Name<% }else{ %>मुल्याङ्कन आधारको नाम (Evaluation Criteria Name)<% } %></label>
-          <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" placeholder="<% if(studentClass<=3){ %>Enter Theme Name<% }else{ %>Enter मुल्याङ्कन आधारको नाम (Enter Evaluation Criteria Name)<% } %>" required>
+          <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" 
+                 placeholder="<% if(studentClass<=3){ %>Enter Theme Name<% }else{ %>Enter मुल्याङ्कन आधारको नाम (Enter Evaluation Criteria Name)<% } %>" 
+                 required value="${themeData ? themeData.themeName || '' : ''}" 
+                 oninput="scheduleAutoSave()">
         </div>
         <div class="outcomes-container" id="outcomes-${themeIndex}"></div>
         <div class="btn-group">
@@ -510,11 +555,20 @@
       `;
 
       themesContainer.appendChild(themeDiv);
-      addOutcome(themeIndex);
+      
+      // Add existing outcomes or create a default one
+      if (themeData && themeData.learningOutcome && themeData.learningOutcome.length > 0) {
+        themeData.learningOutcome.forEach(outcomeData => {
+          addOutcome(themeIndex, outcomeData);
+        });
+      } else {
+        addOutcome(themeIndex);
+      }
+      
       themeIndex++;
     }
 
-    function addOutcome(themeIdx) {
+    function addOutcome(themeIdx, outcomeData = null) {
       const outcomesContainer = document.getElementById(`outcomes-${themeIdx}`);
       const outcomeIndex = outcomesContainer.children.length;
 
@@ -531,24 +585,38 @@
           <label for="outcomeName_${themeIdx}_${outcomeIndex}"><% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %></label>
           <input type="text" name="themes[${themeIdx}][learningOutcome][${outcomeIndex}][learningOutcomeName]" 
                  id="outcomeName_${themeIdx}_${outcomeIndex}" 
-                 placeholder="Enter <% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %>" required>
+                 placeholder="Enter <% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %>" 
+                 required value="${outcomeData ? outcomeData.learningOutcomeName || '' : ''}"
+                 oninput="scheduleAutoSave()">
         </div>
         <div class="indicators-container" id="indicators-${themeIdx}-${outcomeIndex}"></div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
           <button type="button" class="btn btn-primary" onclick="addIndicator(${themeIdx}, ${outcomeIndex})">+ Add Indicator</button>
           <div class="total-display">
             <label>कुल अंक (Total Marks):</label>
-            <input type="number" readonly id="totalMarks-${themeIdx}-${outcomeIndex}" style="border: none; background: transparent; text-align: center; font-weight: bold;">
-            <input type="hidden" name="themes[${themeIdx}][learningOutcome][${outcomeIndex}][totalMarks]" id="totalMarksInput-${themeIdx}-${outcomeIndex}">
+            <input type="number" readonly id="totalMarks-${themeIdx}-${outcomeIndex}" 
+                   style="border: none; background: transparent; text-align: center; font-weight: bold;"
+                   value="${outcomeData ? outcomeData.totalMarks || 0 : 0}">
+            <input type="hidden" name="themes[${themeIdx}][learningOutcome][${outcomeIndex}][totalMarks]" 
+                   id="totalMarksInput-${themeIdx}-${outcomeIndex}" 
+                   value="${outcomeData ? outcomeData.totalMarks || 0 : 0}">
           </div>
         </div>
       `;
 
       outcomesContainer.appendChild(outcomeDiv);
-      addIndicator(themeIdx, outcomeIndex);
+      
+      // Add existing indicators or create a default one
+      if (outcomeData && outcomeData.indicators && outcomeData.indicators.length > 0) {
+        outcomeData.indicators.forEach(indicatorData => {
+          addIndicator(themeIdx, outcomeIndex, indicatorData);
+        });
+      } else {
+        addIndicator(themeIdx, outcomeIndex);
+      }
     }
 
-    function addIndicator(themeIdx, outcomeIdx) {
+    function addIndicator(themeIdx, outcomeIdx, indicatorData = null) {
       const container = document.getElementById(`indicators-${themeIdx}-${outcomeIdx}`);
       const indicatorIndex = container.children.length;
 
@@ -557,11 +625,14 @@
 
       group.innerHTML = `
         <input type="text" name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][indicators][${indicatorIndex}][indicatorName]" 
-               placeholder="Enter indicator name (सूचक)" required>
+               placeholder="Enter indicator name (सूचक)" required 
+               value="${indicatorData ? indicatorData.indicatorName || '' : ''}"
+               oninput="scheduleAutoSave()">
         <input type="number" class="indicator-marks" 
                name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][indicators][${indicatorIndex}][indicatorsMarks]" 
                placeholder="Marks" required min="0"
-               oninput="updateTotalMarks(${themeIdx}, ${outcomeIdx})">
+               value="${indicatorData ? indicatorData.indicatorsMarks || '' : ''}"
+               oninput="updateTotalMarks(${themeIdx}, ${outcomeIdx}); scheduleAutoSave()">
         <button type="button" class="btn btn-danger" onclick="removeIndicator(this, ${themeIdx}, ${outcomeIdx})">Remove</button>
       `;
 
@@ -584,23 +655,255 @@
     function removeTheme(button) {
       if (confirm('Are you sure you want to remove this theme?')) {
         button.closest('.theme-section').remove();
+        scheduleAutoSave();
       }
     }
 
     function removeOutcome(button) {
       if (confirm('Are you sure you want to remove this learning outcome?')) {
         button.closest('.outcome-section').remove();
+        scheduleAutoSave();
       }
     }
 
     function removeIndicator(button, themeIdx, outcomeIdx) {
       button.closest('.indicator-group').remove();
       updateTotalMarks(themeIdx, outcomeIdx);
+      scheduleAutoSave();
     }
 
-    // Add first theme by default
+    // Auto-save functionality
+    function scheduleAutoSave() {
+      if (isLoading) return;
+      
+      clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        performAutoSave();
+      }, 1000); // Save after 1 second of inactivity
+    }
+
+    async function performAutoSave() {
+      const studentClass = document.getElementById('studentClass').value;
+      const subject = document.getElementById('subject').value;
+      const credit = document.getElementById('credit').value;
+      
+      if (!studentClass || !subject) {
+        return; // Don't save if required fields are missing
+      }
+
+      try {
+        const formData = collectFormData();
+        
+        // Show saving indicator
+        showSaveStatus('Saving...', 'info');
+        
+        const response = await fetch('/theme/autosave', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            studentClass: studentClass,
+            subject: subject,
+            credit: credit,
+            themes: formData.themes,
+            outcomes: formData.outcomes,
+            indicators: formData.indicators
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          showSaveStatus(result.action === 'updated' ? 'Updated' : 'Saved', 'success');
+        } else {
+          showSaveStatus('Save failed', 'error');
+          console.error('Auto-save failed:', result.message);
+        }
+      } catch (error) {
+        showSaveStatus('Save failed', 'error');
+        console.error('Auto-save error:', error);
+      }
+    }
+
+    function collectFormData() {
+      const themes = [];
+      const outcomes = [];
+      const indicators = [];
+      
+      document.querySelectorAll('.theme-section').forEach((themeSection, themeIdx) => {
+        const themeName = themeSection.querySelector(`[name="themes[${themeIdx}][themeName]"]`)?.value || '';
+        
+        const themeOutcomes = [];
+        themeSection.querySelectorAll('.outcome-section').forEach((outcomeSection, outcomeIdx) => {
+          const outcomeName = outcomeSection.querySelector(`[name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][learningOutcomeName]"]`)?.value || '';
+          const totalMarks = outcomeSection.querySelector(`[name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][totalMarks]"]`)?.value || 0;
+          
+          const outcomeIndicators = [];
+          outcomeSection.querySelectorAll('.indicator-group').forEach((indicatorGroup, indicatorIdx) => {
+            const indicatorName = indicatorGroup.querySelector(`[name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][indicators][${indicatorIdx}][indicatorName]"]`)?.value || '';
+            const indicatorMarks = indicatorGroup.querySelector(`[name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][indicators][${indicatorIdx}][indicatorsMarks]"]`)?.value || 0;
+            
+            if (indicatorName || indicatorMarks) {
+              outcomeIndicators.push({
+                indicatorName: indicatorName,
+                indicatorsMarks: indicatorMarks
+              });
+            }
+          });
+          
+          if (outcomeName || outcomeIndicators.length > 0) {
+            themeOutcomes.push({
+              learningOutcomeName: outcomeName,
+              totalMarks: totalMarks,
+              indicators: outcomeIndicators
+            });
+          }
+        });
+        
+        if (themeName || themeOutcomes.length > 0) {
+          themes.push({
+            themeName: themeName,
+            learningOutcome: themeOutcomes
+          });
+        }
+      });
+      
+      return { themes, outcomes, indicators };
+    }
+
+    function showSaveStatus(message, type) {
+      // Remove existing status
+      const existingStatus = document.querySelector('.save-status');
+      if (existingStatus) {
+        existingStatus.remove();
+      }
+      
+      // Create new status indicator
+      const status = document.createElement('div');
+      status.className = `save-status save-status-${type}`;
+      status.textContent = message;
+      status.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        ${type === 'success' ? 'background-color: #4CAF50; color: white;' : ''}
+        ${type === 'error' ? 'background-color: #f44336; color: white;' : ''}
+        ${type === 'info' ? 'background-color: #2196F3; color: white;' : ''}
+      `;
+      
+      document.body.appendChild(status);
+      
+      // Auto-remove after 3 seconds for success/error, 1 second for info
+      setTimeout(() => {
+        if (status.parentNode) {
+          status.style.opacity = '0';
+          setTimeout(() => status.remove(), 300);
+        }
+      }, type === 'info' ? 1000 : 3000);
+    }
+
+    // Load existing data on page load
+    function loadExistingData() {
+      // Don't load any data by default - wait for subject selection
+      addTheme(); // Just add empty theme
+    }
+
+    // Load data for specific subject
+    async function loadSubjectData(subject) {
+      if (!subject) {
+        clearForm();
+        return;
+      }
+
+      const studentClass = document.getElementById('studentClass').value;
+      
+      try {
+        showSaveStatus('Loading...', 'info');
+        
+        const response = await fetch(`/theme/getData?studentClass=${encodeURIComponent(studentClass)}&subject=${encodeURIComponent(subject)}`);
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          // Clear existing form
+          clearForm();
+          
+          isLoading = true;
+          
+          // Populate credit if available  
+          if (result.data.credit) {
+            const creditInput = document.getElementById('credit');
+            creditInput.value = result.data.credit;
+          }
+          
+          // Load themes
+          if (result.data.themes && result.data.themes.length > 0) {
+            result.data.themes.forEach(themeData => {
+              addTheme(themeData);
+            });
+          } else {
+            addTheme(); // Add empty theme if no data
+          }
+          
+          isLoading = false;
+          showSaveStatus('Data loaded', 'success');
+        } else {
+          // No existing data for this subject
+          clearForm();
+          addTheme(); // Add empty theme
+          showSaveStatus('No existing data', 'info');
+        }
+        
+      } catch (error) {
+        console.error('Error loading subject data:', error);
+        showSaveStatus('Failed to load data', 'error');
+        clearForm();
+        addTheme(); // Add empty theme as fallback
+      }
+    }
+
+    // Clear form function
+    function clearForm() {
+      // Clear credit
+      document.getElementById('credit').value = '';
+      
+      // Clear all themes
+      const themesContainer = document.getElementById('themes-container');
+      themesContainer.innerHTML = '';
+      
+      // Reset theme index
+      themeIndex = 0;
+    }
+
+    // Handle subject change
+    function onSubjectChange() {
+      const subjectSelect = document.getElementById('subject');
+      const selectedSubject = subjectSelect.value;
+      
+      if (selectedSubject) {
+        loadSubjectData(selectedSubject);
+      } else {
+        clearForm();
+        addTheme(); // Add empty theme
+      }
+    }
+
+    // Initialize on page load
     window.onload = () => {
-      addTheme();
+      loadExistingData();
+      
+      // Add event listeners for subject and credit changes
+      document.getElementById('subject').addEventListener('change', function() {
+        onSubjectChange();
+        scheduleAutoSave();
+      });
+      document.getElementById('credit').addEventListener('input', scheduleAutoSave);
     };
 
     // Form validation

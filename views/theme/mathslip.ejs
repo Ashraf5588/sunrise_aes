@@ -74,21 +74,21 @@
         <% }) %>
       <% }) %>
 
-<% totalPracticalproject = (((((totalObtainedAllPractical/10)*20) + (((totalObtainedAllProject)/8)*16))) / lessonData[0].units.length) %>
+<% totalPracticalproject = (((((totalObtainedAllPractical/20)*20) + (((totalObtainedAllProject)/12)*16))) / lessonData[0].units.length) %>
  
-           <td><%= (((((totalObtainedAllPractical/10)*20) + (((totalObtainedAllProject)/8)*16))) / lessonData[0].units.length)%></td>
+           <td><%= (((((totalObtainedAllPractical/20)*20) + (((totalObtainedAllProject)/12)*16))) / lessonData[0].units.length)%></td>
 
            <td><%= student.terminalMarks %></td>
            <% totalPractical = (student.attendanceMarks+student.participationMarks+
-           ((((totalObtainedAllPractical/10)*20)) + (((totalObtainedAllProject)/8)*16)) / lessonData[0].units.length
+           ((((totalObtainedAllPractical/20)*20)) + (((totalObtainedAllProject)/12)*16)) / lessonData[0].units.length
            +student.attendanceMarks+student.terminalMarks)/50*100 %>
            <td><%=student.attendanceMarks+student.participationMarks+
-            (((((totalObtainedAllPractical/10)*20)) 
-            + (((totalObtainedAllProject)/8)*16)) / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks %></td>
+            (((((totalObtainedAllPractical/20 )*20)) 
+            + (((totalObtainedAllProject)/12)*16)) / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks %></td>
            <td> 
             <% totalPractical = ((student.attendanceMarks+student.participationMarks+
-            (((((totalObtainedAllPractical/10)*20)) 
-            + (((totalObtainedAllProject)/8)*16)) / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks)/50*100)
+            (((((totalObtainedAllPractical/20)*20)) 
+            + (((totalObtainedAllProject)/12)*16)) / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks)/50*100)
            %>
             <% if (totalPractical >= 90 && totalPractical <= 100) { %>
   A+

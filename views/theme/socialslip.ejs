@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical Project Record</title>
+</head>
+<body>
+  <h1>Practical Project Slip</h1>
+
+  <form action="/practicalslipsave?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>&academicYear=<%= marksheetSetting[0].academicYear %>" method="POST">
+
+  
+
+
+    <table border="1" cellspacing="0" cellpadding="5">
+      <tr>
+        <th>Roll</th>
+       <th>Name</th>
+       <th>Class</th>
+       <th>Section</th>
+       <th>Attendance & Participation (4)</th>
+       <th>Project Work & Practical Work (36)</th>
+       <th>Terminal Exam Marks (10)</th>
+       <th>Total</th>
+       <th>Grade</th>
+      </tr>
+  <% sciencepracticaldata.forEach((student, index) => { %>
+       <% let totalGivenAllPractical = 0; %>
+      <% let totalGivenAllProject = 0; %>
+      <% let totalObtainedAllPractical = 0; %>
+      <% let totalObtainedAllProject = 0; %>
+      <% let totalDoneAllPractical = 0; %>
+      <% let totalDoneAllProject = 0; %>
+       <% let totalPractical =0%>
+       <% let totalPracticalproject = 0 %>
+    <tr>
+      <td><%=student.roll %></td>
+       <td><%=student.name %></td>
+        <td><%=student.studentClass %></td>
+         <td><%=student.section %></td>
+          <td><%=student.attendanceMarks+student.participationMarks %></td>
+            <!-- Hidden inputs -->
+      <% lessonData.forEach((lesson) => { %>
+        <% lesson.units.forEach((unit, uIndex) => { 
+          // Find corresponding unit in student data safely
+          const studentUnit = student.unit?.find(u => u.unitName === unit.unitName) || { practicals: [], projectWorks: [] };
+
+          // Practical counts & marks
+          const totalPracticalGiven = unit.practicals?.length || 0;
+          const totalPracticalDone = studentUnit.practicals?.length || 0;
+          const obtainedPracticalMarks = studentUnit.practicals?.reduce((sum, p) => sum + (p.practicalMarks || 0), 0);
+
+          // Project counts & marks
+          const totalProjectGiven = unit.projectworks?.length || 0;
+          const totalProjectDone = studentUnit.projectWorks?.length || 0;
+          const obtainedProjectMarks = studentUnit.projectWorks?.reduce((sum, p) => sum + (p.projectMarks || 0), 0);
+        %>
+<% totalGivenAllPractical += totalPracticalGiven; %>
+<% totalGivenAllProject += totalProjectGiven; %>
+<% totalObtainedAllPractical += obtainedPracticalMarks; %>
+<% totalObtainedAllProject += obtainedProjectMarks; %>
+<% totalDoneAllPractical += totalPracticalDone; %>
+<% totalDoneAllProject += totalProjectDone; %>
+
+        <% }) %>
+      <% }) %>
+
+<% totalPracticalproject = ((((totalObtainedAllPractical/18)*36) )/ lessonData[0].units.length) %>
+ 
+           <td><%= ((((totalObtainedAllPractical/18)*36) ) / lessonData[0].units.length)%></td>
+
+           <td><%= student.terminalMarks %></td>
+           <% totalPractical = ((student.attendanceMarks+student.participationMarks+
+           ((((totalObtainedAllPractical/18)*36))) / lessonData[0].units.length
+           +student.attendanceMarks+student.terminalMarks)/50)*100 %>
+           <td><%=student.attendanceMarks+student.participationMarks+
+            ((((totalObtainedAllPractical/18)*36)) 
+             / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks %></td>
+           <td> 
+            <% totalPractical = (((student.attendanceMarks+student.participationMarks+
+            ((((totalObtainedAllPractical/18)*36)) 
+              / lessonData[0].units.length)+student.attendanceMarks+student.terminalMarks)/50)*100)
+           %>
+            <% if (totalPractical >= 90 && totalPractical <= 100) { %>
+  A+
+  <% let grade = "A+" %>
+<% } else if (totalPractical >= 85 && totalPractical < 90) { %>
+  A
+  <% let grade = "A" %>
+<% } else if (totalPractical >= 80 && totalPractical < 85) { %>
+  B+ <% let grade = "B+" %>
+<% } else if (totalPractical >= 70 && totalPractical < 80) { %>
+  B<% let grade = "B" %>
+<% } else if (totalPractical >= 60 && totalPractical < 70) { %>
+  C+ <% let grade = "C+" %>
+<% } else if (totalPractical >= 50 && totalPractical < 60) { %>
+  C <% let grade = "C" %>
+<% } else if (totalPractical >= 40 && totalPractical < 50) { %>
+  D <% let grade = "D" %>
+  
+<% } %>
+
+        </td>
+        </tr>
+   
+    
+         <input type="hidden" name="slip[<%= index %>][roll]" value="<%= student.roll %>">
+  <input type="hidden" name="slip[<%= index %>][name]" value="<%= student.name %>">
+  <input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student.studentClass %>">
+  <input type="hidden" name="slip[<%= index %>][section]" value="<%= student.section %>">
+  <input type="hidden" name="slip[<%= index %>][attendanceParticipation]" value="<%= student.attendanceMarks + student.participationMarks %>">
+  <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= totalPracticalproject %>">
+  <input type="hidden" name="slip[<%= index %>][terminal]" value="<%= student.terminalMarks %>">
+  <input type="hidden" name="slip[<%= index %>][total]" value="<%= ((totalPracticalproject + student.terminalMarks) +student.attendanceMarks  ) %>">
+    <br><br>
+  <% }) %>
+    </table>
+    <input type="submit">
+    </form>
+</body>
+</html>

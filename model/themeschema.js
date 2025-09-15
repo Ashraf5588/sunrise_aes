@@ -41,6 +41,7 @@ const scienceSchema = new mongoose.Schema(
     units: [
       {
         unitName: { type: String, required: false },
+        portion: { type: String, required: false },
         practicals: [{ type: String, required: false}],
         projectworks: [{ type: String, required: false}]
       }

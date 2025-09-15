@@ -41,12 +41,12 @@ const getSubjectSlipModelForPractical = (subject, studentClass, section, termina
   }
   return mongoose.model(`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`, FinalPracticalSlipSchema, `Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`);
 };
-const getPracticalProjectModel = (subject, studentClass, section, terminal, year) => {
+const getPracticalProjectModel = (subject, studentClass, section, year) => {
   // to Check if model already exists
-  if (mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`]) {
-    return mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`];
+  if (mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${year}`]) {
+    return mongoose.models[`Practicalproject_${subject}_${studentClass}_${section}_${year}`];
   }
-  return mongoose.model(`Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`, practicalprojectSchema, `Practicalproject_${subject}_${studentClass}_${section}_${terminal}_${year}`);
+  return mongoose.model(`Practicalproject_${subject}_${studentClass}_${section}_${year}`, practicalprojectSchema, `Practicalproject_${subject}_${studentClass}_${section}_${year}`);
 };
 
 app.set("view engine", "ejs");
@@ -313,6 +313,118 @@ exports.showpracticalDetailForm = async (req, res) => {
 
       
     } 
+    else if (subject === "SOCIAL" ) {
+      console.log('🔬 === SUBJECT DETECTED ===');      
+      console.log('=== SEARCHING FOR SCIENCE DATA ===');
+      console.log('ScienceModel:', typeof ScienceModel);
+      
+      const ScienceData = await ScienceModel.find({
+        studentClass: studentClass,
+        terminal: terminal,
+        subject: subject
+      }).lean();
+      
+      console.log('✅ Science data query completed');
+      console.log('Science data found:', ScienceData.length, 'records');
+      
+      if (ScienceData.length > 0) {
+        console.log('📊 Science data preview:');
+        ScienceData.forEach((data, index) => {
+          console.log(`Record ${index + 1}:`, {
+            id: data._id,
+            studentClass: data.studentClass,
+            subject: data.subject,
+            unitsCount: data.units ? data.units.length : 0
+          });
+        });
+      } else {
+        console.log('⚠️  NO SCIENCE DATA FOUND');
+        console.log('Let me check what science data exists...');
+        
+          const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
+          console.log('Total science records in database:', allScienceData.length);
+          console.log(allScienceData)
+          if (allScienceData.length > 0) {
+            console.log('Available science data:');
+            allScienceData.forEach((data, index) => {
+              console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
+            });
+        } else {
+          console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
+        }
+      }
+      
+      console.log('🎨 Rendering practicalprojectform...');
+
+      return res.render("theme/socialProjectForm", {
+        ...await getSidenavData(req),
+        editing: false,
+        studentClass,
+        section,
+        subject,
+        practicalFormatData, 
+        ScienceData,
+        terminal
+      });
+
+      
+    } 
+    else if (subject === "HEALTH" ) {
+      console.log('🔬 === SUBJECT DETECTED ===');      
+      console.log('=== SEARCHING FOR SCIENCE DATA ===');
+      console.log('ScienceModel:', typeof ScienceModel);
+      
+      const ScienceData = await ScienceModel.find({
+        studentClass: studentClass,
+        terminal: terminal,
+        subject: subject
+      }).lean();
+      
+      console.log('✅ Science data query completed');
+      console.log('Science data found:', ScienceData.length, 'records');
+      
+      if (ScienceData.length > 0) {
+        console.log('📊 Science data preview:');
+        ScienceData.forEach((data, index) => {
+          console.log(`Record ${index + 1}:`, {
+            id: data._id,
+            studentClass: data.studentClass,
+            subject: data.subject,
+            unitsCount: data.units ? data.units.length : 0
+          });
+        });
+      } else {
+        console.log('⚠️  NO SCIENCE DATA FOUND');
+        console.log('Let me check what science data exists...');
+        
+          const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
+          console.log('Total science records in database:', allScienceData.length);
+          console.log(allScienceData)
+          if (allScienceData.length > 0) {
+            console.log('Available science data:');
+            allScienceData.forEach((data, index) => {
+              console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
+            });
+        } else {
+          console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
+        }
+      }
+      
+      console.log('🎨 Rendering practicalprojectform...');
+
+      return res.render("theme/healthProjectForm", {
+        ...await getSidenavData(req),
+        editing: false,
+        studentClass,
+        section,
+        subject,
+        practicalFormatData, 
+        ScienceData,
+        terminal
+      });
+
+      
+    } 
     else 
       {
       console.log('📝 === NON-SCIENCE SUBJECT ===');
@@ -456,8 +568,8 @@ try
     if(terminal==="FINAL")
     {
       const marksheetSetting = await marksheetSetup.find();
-      acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
         
 
      const sciencepracticaldata = await model.aggregate([
@@ -501,8 +613,8 @@ console.log(marksheetSetting)
     else
     { 
       const marksheetSetting = await marksheetSetup.find();
-      acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+      const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -519,8 +631,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-      acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,acadamicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -563,8 +675,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-      acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -573,6 +685,68 @@ console.log(marksheetSetting)
      console.log("projectdata",sciencepracticaldata);
      console.log("lesson Data", lessonData)
       res.render("theme/mathslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+
+    }
+  }
+   else if(subject==="SOCIAL")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/socialslipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else 
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+
+    
+     
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/socialslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
 
     }
   }
@@ -599,8 +773,17 @@ exports.sciencepracticalForm = async (req,res,next)=>
   try
   {
 const { studentClass, section, subject,terminal } = req.query;
+if(subject==="HEALTH")
+{
+  return res.render("theme/healthpracticalform",{studentClass,section,subject,terminal});
+}
+else
+{
+
+
     console.log(studentClass,section,subject,terminal)
     res.render("theme/sciencepracticalform",{studentClass,section,subject,terminal});
+}
 
   }catch(err)
   {
@@ -621,6 +804,7 @@ const { studentClass, section, subject,terminal } = req.query;
       units = units.map(unit => {
         const processedUnit = {
           unitName: unit.unitName,
+          portion: unit.portion || '',
           practicals: unit.practicals || [],
           projectworks: unit.projectworks || []
         };
@@ -659,6 +843,7 @@ const { studentClass, section, subject,terminal } = req.query;
       unitsDetail: units ? units.map((unit, index) => ({
         unitIndex: index,
         unitName: unit.unitName,
+        portion: unit.portion || '',
         practicals: unit.practicals ? unit.practicals.length : 0,
         projectworks: unit.projectworks ? unit.projectworks.length : 0,
         practicalsData: unit.practicals,
@@ -936,8 +1121,8 @@ req.body.unit.forEach(unit => {
 });
 
 const marksheetSetting = await marksheetSetup.find();
-      acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, terminal, acadamicYear);
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
 
 const doc = new model(req.body);
 await doc.save();
@@ -975,3 +1160,235 @@ const model = getSubjectSlipModelForPractical(subject, studentClass, section, te
     res.status(500).send("Error saving slip");
   }
 }
+exports.internalReport = async (req, res) => {
+  const {studentClass, section, subject, terminal} = req.query;
+
+  if(subject==="SCIENCE")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/scienceinternalReportFinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+      const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+      res.render("theme/scienceinternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+  }
+
+
+  else if(subject==="MATHEMATICS")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/mathinternalReportFinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+      const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+      res.render("theme/MathinternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+  }
+  else if(subject==="SOCIAL")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/socialinternalReportFinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+      const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+      res.render("theme/socialinternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+  }
+  else if(subject==="HEALTH")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/healthinternalReportFinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+      const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+      res.render("theme/healthInternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+  }
+
+  }
+

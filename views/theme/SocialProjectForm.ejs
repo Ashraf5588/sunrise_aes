@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mathematics Project Evaluation Form</title>
+  <title>Social Project Evaluation Form</title>
   <style>
     * {
       margin: 0;
@@ -427,22 +427,24 @@
                   <tr>
                     <td rowspan="4">सक्रियता र सहभागिता</td>
                     <td>सर्वोत्कृष्ट</td>
-                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा सक्रियतापूर्वक भाग लिएको</td>
+                    <td>सिकाइमा जिज्ञासा राख्ने, अन्तव्र्रिmयामा भाग लिने, आफ्नो विचार प्रस्तुत
+गर्ने, दिइएको कार्य (कक्षा कार्य, समूह कार्य वा अन्य कार्य) पूरा गर्ने
+गरेमा </td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="2" id="part2"> <label for="part2">२</label></div></td>
                   </tr>
                   <tr>
                     <td>उत्कृष्ट</td>
-                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा कम सक्रियतापूर्वक भाग लिएको</td>
+                    <td>उल्लिखित मध्ये कुनै ३ ओटा कार्य गरेमा </td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="1.5" id="part1_5"> <label for="part1_5">१.५</label></div></td>
                   </tr>
                   <tr>
                     <td>मध्यम</td>
-                    <td>सिकाइमा कम जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा निर्देशानुसार भाग लिएको</td>
+                    <td>उल्लिखित मध्ये कुनै २ ओटा कार्य गरेमा </td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="1" id="part1"> <label for="part1">१</label></div></td>
                   </tr>
                   <tr>
                     <td>सामान्य</td>
-                    <td>सिकाइप्रति उदासीन रहेमा, समूह छलफल र अन्तरक्रियामा सक्रियता नदेखाएको</td>
+                    <td>उल्लिखित मध्ये कुनै १ ओटा कार्य गरेमा</td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="0.5" id="part0_5"> <label for="part0_5">०.५</label></div></td>
                   </tr>
                 </tbody>
@@ -485,7 +487,7 @@
                       <!-- Practical <%= prindx + 1 %> -->
                       <div class="practical-section">
                         <div class="practical-header">
-                          Practical/Project कार्य सञ्चालन र कार्यसम्पादन <%= prindx + 1 %>: <%= practical %>
+                          Practical/Project मूल्याङ्कन (रुब्रिक्स)<%= prindx + 1 %>: <%= practical %>
                           <input type="hidden" name="unit[<%= idx %>][practicals][<%= prindx %>][practicalName]" value="<%= practical %>">
                         </div>
                         <div class="practical-content">
@@ -552,85 +554,7 @@
                         </div>
                       </div>
 
-                      <!-- Project Work <%= prindx + 1 %> -->
-                      <div class="project-section">
-                        <div class="project-header">
-                        प्रस्तुतीकरण र अभिलेखीकरण <%= prindx + 1 %>
-                          <input type="hidden" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectName]" value="">
-                        </div>
-                        <div class="project-content">
-                          <div class="table-container">
-                            <table>
-                              <thead>
-                                <tr>
-                                  <th>आधार</th>
-                                  <th>सूचक</th>
-                                  <th>अंक</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td rowspan="4">प्रस्तुतीकरण</td>
-                                  <td>आफूले सम्पन्न गरेको कार्यको निर्धक्क र तर्कसहित प्रस्तुत गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="4" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_4"> <label for="pres_<%= idx %>_<%= prindx %>_4">४</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>आफूले सम्पन्न गरेको कार्यको निर्धक्क र व्याख्यासहित प्रस्तुत गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_3"> <label for="pres_<%= idx %>_<%= prindx %>_3">३</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>आफूले सम्पन्न गरेको कार्यको व्याख्यासहित प्रस्तुत गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_2"> <label for="pres_<%= idx %>_<%= prindx %>_2">२</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>आफूले सम्पन्न गरेको कार्य प्रस्तुत मात्र गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_1"> <label for="pres_<%= idx %>_<%= prindx %>_1">१</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td rowspan="4">प्रश्नोत्तरमा सहभागिता</td>
-                                  <td>शिक्षक र सबै साथीहरूका प्रश्नको सही उत्तर दिएमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="4" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="qa_<%= idx %>_<%= prindx %>_4"> <label for="qa_<%= idx %>_<%= prindx %>_4">४</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>शिक्षक र केही साथीहरूका मात्र प्रश्नको सही उत्तर दिएमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="qa_<%= idx %>_<%= prindx %>_3"> <label for="qa_<%= idx %>_<%= prindx %>_3">३</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>शिक्षक र केही साथीहरूको प्रश्नको आंशिक सही उत्तर दिएमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="qa_<%= idx %>_<%= prindx %>_2"> <label for="qa_<%= idx %>_<%= prindx %>_2">२</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>शिक्षक र साथीहरूको अधिकांश प्रश्नको गलत उत्तर दिएमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="qa_<%= idx %>_<%= prindx %>_1"> <label for="qa_<%= idx %>_<%= prindx %>_1">१</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td rowspan="4">अभिलेखीकरण</td>
-                                  <td>कार्यप्रव्रिया र नतिजा स्पष्ट र चरणबद्घ रूपमा सजिलैसँग बुझ्न सक्ने गरी अभिलेखीकरण गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="4" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_4"> <label for="record_<%= idx %>_<%= prindx %>_4">४</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>कार्यप्रव्रिया र नतिजा स्पष्ट रूपमा बुझ्न सक्ने गरी अभिलेखीकरण गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_3"> <label for="record_<%= idx %>_<%= prindx %>_3">३</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>कार्यप्रव्रिया र नतिजा आंशिक रूपमा बुझ्न सक्ने गरी अभिलेखीकरण गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_2"> <label for="record_<%= idx %>_<%= prindx %>_2">२</label></div></td>
-                                </tr>
-                                <tr>
-                                  <td>कार्यप्रव्रिया र नतिजा बुझ्न कठिन हुने गरी अभिलेखीकरण गरेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेख" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_1"> <label for="record_<%= idx %>_<%= prindx %>_1">१</label></div></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                          <div class="total-display">
-                            <label>Total Project Marks: <span id="total-<%= idx %>-<%= prindx %>">0</span></label>
-                            <input type="hidden" id="totalInput-<%= idx %>-<%= prindx %>" 
-                                   name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectMarks]" 
-                                   value="0">
-                          </div>
-                        </div>
-                      </div>
+                      
                     <% }) %>
                   </div>
                 </div>

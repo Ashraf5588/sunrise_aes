@@ -3,142 +3,439 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Practical</title>
+  <title>Practical Detail Form</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e8f4fd 0%, #c3dafe 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .form-container {
+      padding: 30px;
+    }
+
+    .section {
+      background: #fafcff;
+      border: 2px solid #c3dafe;
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .section-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .section-content {
+      padding: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2d3748;
+      font-size: 14px;
+    }
+
+    .form-control {
+      padding: 12px 15px;
+      border: 2px solid #c3dafe;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-control:readonly {
+      background: #f0f7ff;
+      color: #4a5568;
+    }
+
+    /* Enhanced Table Styles */
+    .evaluation-table, table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border: 2px solid #c3dafe;
+    }
+
+    .evaluation-table th, table th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 16px;
+      border: 2px solid #5a67d8;
+      border-bottom: 2px solid #4c51bf;
+    }
+
+    .evaluation-table td, table td {
+      padding: 12px 15px;
+      border: 1px solid #c3dafe;
+      vertical-align: middle;
+      font-size: 15px;
+      line-height: 1.6;
+      border-right: 1px solid #c3dafe;
+    }
+
+    .evaluation-table tr:hover, table tr:hover {
+      background-color: #f0f7ff;
+    }
+
+    .evaluation-table tr:nth-child(even), table tr:nth-child(even) {
+      background-color: #fafcff;
+    }
+
+    .evaluation-table td:last-child, table td:last-child {
+      border-right: 2px solid #c3dafe;
+    }
+
+    .radio-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0;
+      justify-content: center;
+    }
+
+    .radio-group input[type="radio"] {
+      margin-right: 8px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      transform: scale(1.2);
+    }
+
+    .radio-group label {
+      margin: 0;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 16px;
+      color: #2d3748;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      background: #f0f7ff;
+      border: 1px solid #c3dafe;
+    }
+
+    .radio-group label:hover {
+      background: #e1f0ff;
+      border-color: #a3c3ff;
+    }
+
+    .radio-group input[type="radio"]:checked + label {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: #5a67d8;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 30px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .total-display {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .total-display label {
+      font-weight: 600;
+      font-size: 16px;
+      color: #1976d2;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .container {
+        margin: 10px;
+        border-radius: 10px;
+      }
+      
+      .header h1 {
+        font-size: 24px;
+      }
+      
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <form action="/practicaldetailform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal.terminal %>" method="POST">
-    <input type="text" name="roll" placeholder="Enter Roll">
-    <input type="text" name="name" placeholder="Enter Name">
-    <input type="text" name="studentClass" value="<%= studentClass %>" placeholder="Enter Student Class">
-    <input type="text" name="section" value="<%= section %>" placeholder="Enter Section">
-    <input type="text" name="terminal[0][subject][0][subjectName]" value="<%= subject %>" placeholder="Enter Subject"> <br>
-     <input type="text"  id="terminal" name="terminal[0][terminalName]" placeholder="Enter Terminal"> <br>
-   <center><h1>Attendance Marks </h1></center> 
-   <input type="number" name="terminal[0][totalAttendance]" placeholder="Enter Total attendance" id="attendanceDays" oninput="calculateAttendanceMarks()">
-   <input type="number" name="terminal[0][attendanceMarks]" placeholder="attendanceMarks" readonly id="attendanceMarks" step="0.1"> <br>
-   <center><h1>Participation Marks
-    <table border="1" cellspacing="0" cellpadding="0">
-  <tr>
-    <th>आधार </th>
-    <th>स्तर</th>
-    <th>अंक</th>
-  </tr>
-  <tr>
-    <td rowspan="4">सक्रियता र सहभागिता</td>
-    <td>
-      सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा सक्रियतापूर्वक भाग लिएको, 
-      आफ्ना विचार निर्वाध र स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका सम्पूर्ण कार्य स्वयंमले पूरा गरेको
+  <div class="container">
+    <div class="header">
+      <h1>Practical Detail Evaluation Form</h1>
+      <p>Student Assessment and Evaluation System</p>
+    </div>
+    
+    <div class="form-container">
+      <form action="/practicaldetailform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal.terminal %>" method="POST">
+        
+        <!-- Student Information Section -->
+        <div class="section">
+          <div class="section-header">Student Information</div>
+          <div class="section-content">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="roll">Roll Number</label>
+                <input type="text" name="roll" id="roll" class="form-control" placeholder="Enter Roll Number">
+              </div>
+              <div class="form-group">
+                <label for="name">Student Name</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Enter Student Name">
+              </div>
+              <div class="form-group">
+                <label for="studentClass">Class</label>
+                <input type="text" name="studentClass" id="studentClass" value="<%= studentClass %>" class="form-control" readonly>
+              </div>
+              <div class="form-group">
+                <label for="section">Section</label>
+                <input type="text" name="section" id="section" value="<%= section %>" class="form-control" readonly>
+              </div>
+              <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" name="terminal[0][subject][0][subjectName]" id="subject" value="<%= subject %>" class="form-control" readonly>
+              </div>
+              <div class="form-group">
+                <label for="terminal">Terminal</label>
+                <input type="text" id="terminal" name="terminal[0][terminalName]" class="form-control" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    </td>
-    <td>सर्वोत्कृष्ट</td>
-    <td>२ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="2"></td>
-  </tr>
-  <tr>
-    <td>
-      सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा कम सक्रियतापूर्वक भाग लिएको, 
-      आफ्ना विचार स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका अधिकांश कार्य पूरा गरेको
-    </td>
-    <td>उत्कृष्ट</td>
-    <td>१.५ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="1.5"></td>
-  </tr>
-  <tr>
-    <td>
-      सिकाइमा कम जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा निर्देशानुसार भाग लिएको, 
-      आफ्ना विचार आंशिक रूपमा मात्र प्रस्तुत गरेको, दिइएका कार्य आधा मात्र पूरा गरेको
-    </td>
-    <td>मध्यम</td>
-    <td>१ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="1"></td>
-  </tr>
-  <tr>
-    <td>
-      सिकाइप्रति उदासीन रहेमा, समूह छलफल र अन्तरक्रियामा सक्रियता नदेखाएको, 
-      आफ्ना विचार प्रस्तुत गर्न साथी वा शिक्षकको सहयोग चाहिएको, अरुको सहयोगमा दिइएको कार्य पूरा गरेको
-    </td>
-    <td>सामान्य</td>
-    <td>०.५ <input type="radio" name="[terminal][0][subject][0][participationMarks]" value="0.5"></td>
-  </tr>
-</table>
+        <!-- Attendance Section -->
+        <div class="section">
+          <div class="section-header">Attendance Evaluation</div>
+          <div class="section-content">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="attendanceDays">Total Attendance Days</label>
+                <input type="number" name="terminal[0][totalAttendance]" id="attendanceDays" class="form-control" placeholder="Enter Total Attendance Days" oninput="calculateAttendanceMarks()">
+              </div>
+              <div class="form-group">
+                <label for="attendanceMarks">Attendance Marks</label>
+                <input type="number" name="terminal[0][attendanceMarks]" id="attendanceMarks" class="form-control" readonly step="0.1">
+              </div>
+            </div>
+          </div>
+        </div>
 
-   </h1></center>
-   <center><h1>Terminal Marks</h1></center>
-   <input type="number" name="terminal[0][subject][0][theoryMarks]" placeholder="Terminal Marks"  id="theoryMarks" step="0.1" oninput="calculateTerminalMarks()">    
-   <input type="number" name="terminal[0][subject][0][terminalMarks]" placeholder="Obtained Converted Marks" readonly id="obtainedconvertedmarks" step="0.1"> <br>
-     <center><h1>Practical/Project Work Marks</h1></center> <br>
-  
-     <div class="sciencecontainer" style="display: flex;">
-<div class="left">
-
-
-
-        <table border="1" cellspacing="0">
-          <tr>
-            <th>S.No</th>
-            <th>मुल्याङ्कनका आधार (Theme)</th>
-            <th>परिक्षण पक्ष (Learning Outcome)</th>
-            <th>सूचक (Indicator)</th>
-            <th>Obtained Marks</th>
-            <th>Remarks</th>
-          </tr>
-
-          <% iIndex = 0 %>
-          <% practicalFormatData.forEach(function(doc) { %>
-            <% doc.themes.forEach(function(theme) { %>
-              <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
-              <% let firstThemeRow = true; %>
-
-              <% theme.learningOutcome.forEach(function(lo) { %>
-                <% let loRowspan = lo.indicators.length; %>
-                <% let mulyIndex = iIndex; %>
-
-                <% lo.indicators.forEach(function(ind, indIndex) { %>
+        <!-- Participation Section -->
+        <div class="section">
+          <div class="section-header">Participation Evaluation</div>
+          <div class="section-content">
+            <div class="table-container">
+              <table>
+                <thead>
                   <tr>
-                    <% if(firstThemeRow && indIndex === 0) { %>
-                      <td rowspan="<%= themeRowspan %>"><%= iIndex+1 %></td>
-                      <td rowspan="<%= themeRowspan %>"><%= theme.themeName %></td>
-                      <% firstThemeRow = false; %>
-                    <% } %>
-
-                    <% if(indIndex === 0) { %>
-                      <td rowspan="<%= loRowspan %>"><%= lo.learningOutcomeName %></td>
-                    <% } %>
-
-                    <td><%= ind.indicatorName %></td>
-                    <td>
-                      <%= ind.indicatorsMarks %>
-                      <input type="radio" 
-                             name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][praptangka]" 
-                             value="<%= ind.indicatorsMarks %>" 
-                             onclick="document.getElementById('prapta<%= mulyIndex %>').value='<%= ind.indicatorName %>'">
-                    </td>
-
-                    <% if(indIndex === 0) { %>
-                      <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][mulyangkanName]" value="<%= theme.themeName %>">
-                      <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][parixyanPakxhya]" value="<%= lo.learningOutcomeName %>">
-                      <input type="hidden" id="prapta<%= mulyIndex %>" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][praptaSuchak]" value="">
-                  
-                     
-                    <% } %>
+                    <th>आधार</th>
+                    <th>सूचक</th>
+                    <th>स्तर</th>
+                    <th>अंक</th>
                   </tr>
-                <% }) %>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="4">सक्रियता र सहभागिता</td>
+                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा सक्रियतापूर्वक भाग लिएको, आफ्ना विचार निर्वाध र स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका सम्पूर्ण कार्य स्वयंमले पूरा गरेको</td>
+                    <td>सर्वोत्कृष्ट</td>
+                    <td><div class="radio-group"><input type="radio" name="[terminal][0][subject][0][participationMarks]" value="2" id="part2"> <label for="part2">२</label></div></td>
+                  </tr>
+                  <tr>
+                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा कम सक्रियतापूर्वक भाग लिएको, आफ्ना विचार स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका अधिकांश कार्य पूरा गरेको</td>
+                    <td>उत्कृष्ट</td>
+                    <td><div class="radio-group"><input type="radio" name="[terminal][0][subject][0][participationMarks]" value="1.5" id="part1_5"> <label for="part1_5">१.५</label></div></td>
+                  </tr>
+                  <tr>
+                    <td>सिकाइमा कम जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा निर्देशानुसार भाग लिएको, आफ्ना विचार आंशिक रूपमा मात्र प्रस्तुत गरेको, दिइएका कार्य आधा मात्र पूरा गरेको</td>
+                    <td>मध्यम</td>
+                    <td><div class="radio-group"><input type="radio" name="[terminal][0][subject][0][participationMarks]" value="1" id="part1"> <label for="part1">१</label></div></td>
+                  </tr>
+                  <tr>
+                    <td>सिकाइप्रति उदासीन रहेमा, समूह छलफल र अन्तरक्रियामा सक्रियता नदेखाएको, आफ्ना विचार प्रस्तुत गर्न साथी वा शिक्षकको सहयोग चाहिएको, अरुको सहयोगमा दिइएको कार्य पूरा गरेको</td>
+                    <td>सामान्य</td>
+                    <td><div class="radio-group"><input type="radio" name="[terminal][0][subject][0][participationMarks]" value="0.5" id="part0_5"> <label for="part0_5">०.५</label></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-                <% iIndex++ %>
-              <% }) %>
-            <% }) %>
-          <% }) %>
-        </table>
-        <br>
+        <!-- Terminal Marks Section -->
+        <div class="section">
+          <div class="section-header">Terminal Marks Evaluation</div>
+          <div class="section-content">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="theoryMarks">Terminal Marks</label>
+                <input type="number" name="terminal[0][subject][0][theoryMarks]" id="theoryMarks" class="form-control" placeholder="Enter Terminal Marks" step="0.1" oninput="calculateTerminalMarks()">
+              </div>
+              <div class="form-group">
+                <label for="obtainedconvertedmarks">Converted Terminal Marks</label>
+                <input type="number" name="terminal[0][subject][0][terminalMarks]" id="obtainedconvertedmarks" class="form-control" readonly step="0.1">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Practical/Project Work Section -->
+        <div class="section">
+          <div class="section-header">Practical/Project Work Evaluation</div>
+          <div class="section-content">
+            <div class="table-container">
+              <table class="evaluation-table">
+                <thead>
+                  <tr>
+                    <th>S.No</th>
+                    <th>मुल्याङ्कनका आधार (Theme)</th>
+                    <th>परिक्षण पक्ष (Learning Outcome)</th>
+                    <th>सूचक (Indicator)</th>
+                    <th>अंक</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% iIndex = 0 %>
+                  <% practicalFormatData.forEach(function(doc) { %>
+                    <% doc.themes.forEach(function(theme) { %>
+                      <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
+                      <% let firstThemeRow = true; %>
 
+                      <% theme.learningOutcome.forEach(function(lo) { %>
+                        <% let loRowspan = lo.indicators.length; %>
+                        <% let mulyIndex = iIndex; %>
 
-  
+                        <% lo.indicators.forEach(function(ind, indIndex) { %>
+                          <tr>
+                            <% if(firstThemeRow && indIndex === 0) { %>
+                              <td rowspan="<%= themeRowspan %>"><%= iIndex+1 %></td>
+                              <td rowspan="<%= themeRowspan %>"><%= theme.themeName %></td>
+                              <% firstThemeRow = false; %>
+                            <% } %>
 
+                            <% if(indIndex === 0) { %>
+                              <td rowspan="<%= loRowspan %>"><%= lo.learningOutcomeName %></td>
+                            <% } %>
 
+                            <td><%= ind.indicatorName %></td>
+                            <td>
+                              <div class="radio-group">
+                                <input type="radio" 
+                                       name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][praptangka]" 
+                                       value="<%= ind.indicatorsMarks %>" 
+                                       onclick="document.getElementById('prapta<%= mulyIndex %>').value='<%= ind.indicatorName %>'"
+                                       id="radio_<%= mulyIndex %>_<%= indIndex %>">
+                                <label for="radio_<%= mulyIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
+                              </div>
+                            </td>
+                            <td>
+                              <% if(indIndex === 0) { %>
+                                <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][mulyangkanName]" value="<%= theme.themeName %>">
+                                <input type="hidden" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][parixyanPakxhya]" value="<%= lo.learningOutcomeName %>">
+                                <input type="hidden" id="prapta<%= mulyIndex %>" name="terminal[0][subject][0][mulyangkanAdhar][<%= mulyIndex %>][praptaSuchak]" value="">
+                              <% } %>
+                            </td>
+                          </tr>
+                        <% }) %>
+                        <% iIndex++ %>
+                      <% }) %>
+                    <% }) %>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-<input type="Submit">
- 
-
-
-
-  </form>
+        <button type="submit" class="submit-btn">Submit Evaluation Form</button>
+      </form>
+    </div>
+  </div>
 
   
 

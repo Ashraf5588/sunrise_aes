@@ -40,7 +40,7 @@
       <% lessonData.forEach((lesson) => { %>
         <% lesson.units.forEach((unit, uIndex) => { 
           // Find corresponding unit in student data safely
-          const studentUnit = student.terminal?.[0]?.unit?.find(u => u.unitName === unit.unitName) || { practicals: [], projectWorks: [] };
+          const studentUnit = student.unit?.find(u => u.unitName === unit.unitName) || { practicals: [], projectWorks: [] };
 
           // Practical counts & marks
           const totalPracticalGiven = unit.practicals?.length || 0;
@@ -91,13 +91,14 @@
           <td>Average</td>
           <td></td>
           <td></td>
-          <td><%= totalObtainedAllPractical / lessonData[0].units.length %></td>
+          <td><%= (((totalObtainedAllPractical)/10)*20) / lessonData[0].units.length %></td>
           <td></td>
           <td></td>
-          <td><%= totalObtainedAllProject / lessonData[0].units.length %></td>
+          <td><%= ((totalObtainedAllProject)/8)*16 / lessonData[0].units.length %></td>
         </tr>
     </table>
     <br><br>
   <% }) %>
 </body>
 </html>
+

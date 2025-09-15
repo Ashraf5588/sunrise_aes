@@ -270,4 +270,5 @@ student.post('/practicalslipsave', verifytoken, authorized, practical410controll
 
 student.get('/choosesubject',verifytoken,authorized,practical410controller.choosesubject)
 
+student.get('/internalreport',verifytoken,authorized,practical410controller.internalReport)
 module.exports = student;

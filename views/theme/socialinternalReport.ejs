@@ -16,17 +16,15 @@
       <tr>
         <th rowspan="2">SN</th>
         <th rowspan="2">Unit</th>
-        <th colspan="3">Practical</th>
-        <th colspan="3">Project</th>
+        <th colspan="3">Practical/Project</th>
+   
         <th>Remarks</th>
       </tr>
       <tr>
         <th>Total Practical Given</th>
         <th>Total Practical Done</th>
         <th>Obtained Practical Marks</th>
-        <th>Total Project Given</th>
-        <th>Total Project Done</th>
-        <th>Obtained Project Marks</th>
+      
       </tr>
 
       <% let totalGivenAllPractical = 0; %>
@@ -65,10 +63,8 @@
           <td><%= unit.unitName %></td>
           <td><%= totalPracticalGiven %></td>
           <td><%= totalPracticalDone %></td>
-          <td><%= ((obtainedPracticalMarks)/20)*20%></td>
-          <td><%= totalProjectGiven %></td>
-          <td><%= totalProjectDone %></td>
-          <td><%= ((obtainedProjectMarks)/12)*16 %></td>
+          <td><%= ((obtainedPracticalMarks)/18)*36%></td>
+       
           <td></td>
         </tr>
      
@@ -80,21 +76,18 @@
       
           <td><%= totalGivenAllPractical %></td>
           <td><%= totalDoneAllPractical %></td>
-           <td><%= ((totalObtainedAllPractical)/20)*20 %></td>
-          <td><%= totalGivenAllProject %></td>
-          <td><%= totalDoneAllProject %></td>
-
-          <td><%= ((totalObtainedAllProject)/12)*16 %></td>
+           <td><%= ((totalObtainedAllPractical)/18)*36 %></td>
+     
         </tr>
         <tr>
           <td></td>
           <td>Average</td>
           <td></td>
           <td></td>
-          <td><%= (((totalObtainedAllPractical)/20)*20) / lessonData[0].units.length %></td>
+          <td><%= (((totalObtainedAllPractical)/18)*36) / lessonData[0].units.length %></td>
           <td></td>
           <td></td>
-          <td><%= ((totalObtainedAllProject)/12)*16 / lessonData[0].units.length %></td>
+         
         </tr>
     </table>
     <br><br>

@@ -750,6 +750,68 @@ console.log(marksheetSetting)
 
     }
   }
+  else if(subject==="HEALTH")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/healthslipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else 
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+
+    
+     
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/healthslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+
+    }
+  }
 else
 {
   const practicalDetail = getStudentThemeData(studentClass);
@@ -761,7 +823,8 @@ else
 }
 }catch(err)
 {
-
+console.log(err);
+res.status(500).json({error:"Internal server error",details: err.message});
 }
 
 

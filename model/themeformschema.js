@@ -283,6 +283,7 @@ const practicalprojectSchema = new mongoose.Schema({
   unit: [
     {
       unitName: { type: String, required: false },
+      portion: { type: String, required: false },
       projectWorks: [
         {
           projectName: { type: String, required: false },

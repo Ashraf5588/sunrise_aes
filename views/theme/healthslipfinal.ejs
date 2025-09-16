@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical Project Record</title>
+</head>
+<body>
+  <h1>Practical Project Slip</h1>
+
+  <form action="/practicalslipsave?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>&academicYear=<%= marksheetSetting[0].academicYear %>" method="POST">
+
+    <table border="1" cellspacing="0" cellpadding="5">
+      <tr>
+        <th>Roll</th>
+        <th>Name</th>
+        <th>Class</th>
+        <th>Section</th>
+        <th>Attendance & Participation</th>
+        <th>Project Work & Practical Work</th>
+        <th>Terminal Exam Marks</th>
+        <th>Total (This Terminal)</th>
+        <th>Final Average (All Terminals)</th>
+      </tr>
+
+      <% sciencepracticaldata.forEach((student, index) => { %>
+        <% 
+          let terminalTotals = [];
+
+          student.terminals.forEach(term => {
+            let attendance = term.attendanceMarks || 0;
+            let participation = term.participationMarks || 0;
+
+            // Group project works by portion
+            let portionGroups = {};
+            (term.unit || []).forEach(u => {
+              if (!portionGroups[u.portion]) portionGroups[u.portion] = [];
+              (u.projectWorks || []).forEach(p => {
+                portionGroups[u.portion].push(p.projectMarks || 0);
+              });
+            });
+
+            // Average project marks per portion
+            let projectTotal = Object.values(portionGroups).reduce((sum, arr) => {
+              if (arr.length === 0) return sum;
+              return sum + (arr.reduce((a, b) => a + b, 0) / arr.length);
+            }, 0);
+
+            let terminalMarks = term.terminalMarks || 0;
+
+            // Terminal total
+            let terminalTotal = attendance + participation + projectTotal + terminalMarks;
+            terminalTotals.push(terminalTotal);
+          });
+
+          // Final average of all terminals
+          let finalAverage = terminalTotals.length > 0 
+            ? (terminalTotals.reduce((a, b) => a + b, 0) / terminalTotals.length) 
+            : 0;
+        %>
+
+        <tr>
+          <td><%= student._id.roll %></td>
+          <td><%= student._id.name %></td>
+          <td><%= student._id.studentClass %></td>
+          <td><%= student._id.section %></td>
+          <td><%= (student.terminals[0]?.attendanceMarks || 0) + (student.terminals[0]?.participationMarks || 0) %></td>
+          <td>
+            <% 
+              // Show project total of the first terminal (current)
+              let firstTerm = student.terminals[0];
+              let firstProjects = {};
+              (firstTerm?.unit || []).forEach(u => {
+                if (!firstProjects[u.portion]) firstProjects[u.portion] = [];
+                (u.projectWorks || []).forEach(p => {
+                  firstProjects[u.portion].push(p.projectMarks || 0);
+                });
+              });
+              let projectTotalFirst = Object.values(firstProjects).reduce((sum, arr) => {
+                if (arr.length === 0) return sum;
+                return sum + (arr.reduce((a, b) => a + b, 0) / arr.length);
+              }, 0);
+            %>
+            <%= projectTotalFirst %>
+          </td>
+          <td><%= student.terminals[0]?.terminalMarks || 0 %></td>
+          <td><%= terminalTotals[0] || 0 %></td>
+          <td><%= finalAverage.toFixed(2) %></td>
+        </tr>
+
+        <!-- Hidden inputs for saving -->
+        <input type="hidden" name="slip[<%= index %>][roll]" value="<%= student._id.roll %>">
+        <input type="hidden" name="slip[<%= index %>][name]" value="<%= student._id.name %>">
+        <input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student._id.studentClass %>">
+        <input type="hidden" name="slip[<%= index %>][section]" value="<%= student._id.section %>">
+        <input type="hidden" name="slip[<%= index %>][finalAverage]" value="<%= finalAverage.toFixed(2) %>">
+
+      <% }) %>
+    </table>
+
+    <br>
+    <input type="submit" value="Save Slip">
+  </form>
+</body>
+</html>

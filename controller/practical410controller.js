@@ -176,18 +176,8 @@ exports.showpracticalDetailForm = async (req, res) => {
   
   try {
     const { studentClass, section, subject,terminal } = req.query;
-    
-    console.log('=== QUERY PARAMETERS ===');
-    console.log('studentClass:', studentClass);
-    console.log('section:', section);
-    console.log('subject:', subject);
-    console.log('All query params:', JSON.stringify(req.query, null, 2));
-    
-    console.log('=== GETTING PRACTICAL FORMAT ===');
+    const studentData = await studentRecord.find({studentClass:studentClass,section:section}).lean();
     const practicalFormat = getThemeFormat(studentClass);
-    console.log('practicalFormat model created');
-    
-    console.log('=== SEARCHING FOR PRACTICAL FORMAT DATA ===');
     const practicalFormatData = await practicalFormat.find({
       studentClass: studentClass,
       subject: subject
@@ -252,7 +242,8 @@ exports.showpracticalDetailForm = async (req, res) => {
         subject, 
         practicalFormatData, 
         ScienceData,
-        terminal
+        terminal,
+        studentData,
       });
 
       
@@ -1455,3 +1446,37 @@ console.log(marksheetSetting)
 
   }
 
+exports.getPracticalData = async (req, res, next) => 
+{
+  try
+  {
+
+const { studentClass, section, subject, terminal,roll,reg } = req.query;
+console.log(studentClass, section, subject, terminal,roll,reg,subject);
+
+
+if(roll && reg)
+{
+  const model = getPracticalProjectModel(subject, studentClass, section, req.query.academicYear);
+
+  console.log("searching in model:", model);
+  const response = await model.findOne({ studentClass:studentClass, section:section, subject:subject, terminalName:terminal, roll:roll, reg:reg });
+  console.log("Found response:", response);
+  if(response)
+  {
+     res.json(response);
+  }
+  else
+  {
+    res.json(null)
+  }
+}
+
+  }catch(err)
+  {
+    res.status(500).json({error:"Internal server error",details: err.message});
+  }
+
+
+
+}

@@ -273,4 +273,6 @@ student.get('/choosesubject',verifytoken,authorized,practical410controller.choos
 student.get('/internalreport',verifytoken,authorized,practical410controller.internalReport)
 
 student.get('/getPracticalData', verifytoken, authorized, practical410controller.getPracticalData);
+student.get('/projectrubrikscreate', verifytoken, authorized, practical410controller.projectrubrikscreate);
+student.post('/projectrubrikscreatesave',verifytoken,authorized,practical410controller.projectrubrikscreatesave)
 module.exports = student;

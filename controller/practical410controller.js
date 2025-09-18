@@ -139,6 +139,19 @@ const getThemeFormat = (studentClass) => {
   // Create model with practicalSchema for configuration
   return mongoose.model(collectionName, themeSchemaFor1, collectionName);
 };
+const getProjectThemeFormat = (studentClass) => {
+  // Collection name: ProjectRubriksFor{class}
+  const collectionName = `ProjectRubriksFor${studentClass}`;
+  console.log(`Getting project theme format model for class ${studentClass} using collection ${collectionName}`);
+  
+  // Check if model already exists
+  if (mongoose.models[collectionName]) {
+    return mongoose.models[collectionName];
+  }
+
+  // Create model with practicalSchema for configuration
+  return mongoose.model(collectionName, themeSchemaFor1, collectionName);
+};
 const getStudentThemeData = (studentClass) => {
   // Collection name: themeForStudent{class}
   const collectionName = `PracticalForStudent${studentClass}`;
@@ -182,11 +195,14 @@ exports.showpracticalDetailForm = async (req, res) => {
       studentClass: studentClass,
       subject: subject
     }).lean();
+    const projectFormat = getProjectThemeFormat(studentClass)
+    const projectFormatData = await projectFormat.find({
+      studentClass: studentClass,
+      subject: subject
+    }).lean();
     
-    console.log('practicalFormatData found:', practicalFormatData.length, 'records');
+   
     
-    console.log('=== CHECKING SUBJECT TYPE ===');
-    console.log('Subject value:', `"${subject}"`);
 
     console.log('Subject === "SCIENCE":', subject === "SCIENCE");
     console.log('Subject.toUpperCase() === "SCIENCE":', subject && subject.toUpperCase() === "SCIENCE");
@@ -241,6 +257,7 @@ exports.showpracticalDetailForm = async (req, res) => {
         section, 
         subject, 
         practicalFormatData, 
+        projectFormatData,
         ScienceData,
         terminal,
         studentData,
@@ -298,6 +315,7 @@ exports.showpracticalDetailForm = async (req, res) => {
         section,
         subject,
         practicalFormatData, 
+        projectFormatData,
         ScienceData,
         terminal
       });
@@ -1479,4 +1497,107 @@ if(roll && reg)
 
 
 
+}
+
+exports.projectrubrikscreate = async (req, res, next) => {
+  try {
+  try {
+    const { studentClass: classParam } = req.query;
+    
+    // If studentClass is provided, render the form for that class
+    if (classParam) {
+      const subjects = await newsubject.find({});
+      
+      // Don't load any specific subject data by default
+      // Let the frontend handle loading data when subject is selected
+      return res.render("theme/projectrubrik", { 
+        studentClass: classParam,
+        subjects,
+        existingData: null // Always start with null, let frontend load per subject
+      });
+    }
+
+    // If no class provided, render the class selection page first
+    const studentClassdata = await studentClass.find({}).lean();
+    return res.render("theme/themefillerclassselect", { 
+      studentClassdata,
+      ...await getSidenavData(req)
+    });
+  } catch(err) {
+    console.error("Error in theme controller:", err);
+    res.status(500).send("Internal Server Error");
+  }
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error", details: err.message });
+  }
+}
+exports.projectrubrikscreatesave = async (req, res) => {
+  try {
+    // Get studentClass from query or body
+    const studentClass = req.query.studentClass || req.body.studentClass;
+    
+    if (!studentClass) {
+      return res.status(400).json({
+        success: false,
+        message: "Student class is required"
+      });
+    }
+    
+    // Log the incoming data for debugging
+    console.log(`Theme data received for class ${studentClass}:`, JSON.stringify(req.body, null, 2));
+    console.log(`Request headers:`, req.headers['content-type']);
+    console.log(`Form data keys:`, Object.keys(req.body));
+    
+    // Validate required fields exist
+    if (!req.body.subject || !req.body.credit) {
+      console.error("Missing required fields - subject or credit");
+      console.error("Available fields:", Object.keys(req.body));
+      return res.status(400).json({
+        success: false,
+        message: "Subject and credit are required"
+      });
+    }
+    
+    // Check if themes data exists and is in the right format
+    if (!req.body.themes) {
+      console.error("No themes data found in request body");
+      return res.status(400).json({
+        success: false,
+        message: "No themes data provided"
+      });
+    }
+    
+    console.log("Themes data type:", typeof req.body.themes);
+    console.log("Themes data structure:", JSON.stringify(req.body.themes, null, 2));
+    
+    // Prepare data for saving - extract the required fields
+    const themeData = {
+      studentClass: studentClass,
+      subject: req.body.subject,
+      credit: parseInt(req.body.credit) || req.body.credit,
+      themes: req.body.themes || []
+    };
+    
+    console.log(`Processed theme data for saving:`, JSON.stringify(themeData, null, 2));
+
+    // This is for project theme format, so use getProjectThemeFormat
+    const model = getProjectThemeFormat(studentClass);
+    console.log(`Using model for collection: ProjectRubriksFor${studentClass}`);
+
+    const result = await model.create(themeData);
+    console.log(`Theme filled successfully for class ${studentClass}. Document ID: ${result._id}`);
+    console.log(`Saved document structure:`, Object.keys(result.toObject()));
+    const subjects = await newsubject.find({})
+    // Send a more user-friendly response
+    return res.render("theme/theme-success", {
+      message: `Theme configuration for Class ${studentClass} was created successfully!`,
+      studentClass: studentClass,
+      backUrl: "/theme"
+    });
+  } catch(err) {
+    console.error("Error in theme controller:", err);
+    console.error("Error details:", err.message);
+    console.error("Stack trace:", err.stack);
+    res.status(500).send("Internal Server Error: " + err.message);
+  }
 }

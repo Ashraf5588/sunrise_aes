@@ -492,7 +492,7 @@
                                               <input type="radio" 
                                                      value="<%= ind.indicatorsMarks %> || <%= ind.indicatorName %> || <%= lo.learningOutcomeName %> " 
                                                      class="marks-radio"
-                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>] %>"
+                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>] "
                                                      data-practical="<%= idx %>-<%= prindx %>"
                                                      id="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
                                               <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
@@ -541,6 +541,7 @@
                             <table>
                               <thead>
                                 <tr>
+                                  <th>SN</th>
                                   <th>आधार</th>
                                   <th>सूचक</th>
                                   <th>जम्मा अंक</th>
@@ -548,70 +549,57 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr>
-                                  <td rowspan="4">
-                                    <% if (subject === "SCIENCE") { %> 
-                                      परियोजना कार्य सञ्चालन र प्रस्तुतिकरण 
-                                    <% } else if(subject==="MATHEMATICS") { %>  
-                                      प्रस्तुतीकरण 
-                                    <% } %>
-                                  </td>
-                                  <td>
-                                    <% if (subject === "SCIENCE") { %> 
-                                      तोकिएको प्रक्रिया पूरा गरी परियोजना कार्य सम्पन्न गरेको र अपेक्षित उद्देश्य प्राप्त भएमा, चरणबद्ध रूपमा क्रियाकलापको प्रस्तुतिकरण गरेको र सोसँगै सोधिएका सबै प्रश्नको तर्क दिन सकेमा 
-                                    <% } else if (subject==="MATHEMATICS") { %>  
-                                      आफूले सम्पन्न गरेको कार्यको निर्धक्क र तर्कसहित प्रस्तुत गरेमा 
-                                    <% } %>
-                                  </td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="4" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_4"> <label for="pres_<%= idx %>_<%= prindx %>_4">४</label></div></td>
-                                  <td></td>
-                                </tr>
-                                <tr>
-                                  <td>तोकिएको अधिकांश प्रक्रिया पूरा गरी परियोजना कार्य सम्पन्न गरेको र अपेक्षित उद्देश्य धेरैजसो प्राप्त भएमा, धेरैजसो चरणहरु समेटेर क्रियाकलापको प्रस्तुतिकरण गरेको र धेरैजसो प्रश्नको तर्क दिन सकेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_3"> <label for="pres_<%= idx %>_<%= prindx %>_3">३</label></div></td>
-                                  <td></td>
-                                </tr>
-                                <tr>
-                                  <td>आंशिक प्रक्रिया पूरा गरी परियोजना कार्य गरेमा, आंशिक रूपमा क्रियाकलापको प्रस्तुतिकरण गर्ने प्रयास मात्र गरेमा र केही प्रश्नको मात्र तर्क दिन सकेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_2"> <label for="pres_<%= idx %>_<%= prindx %>_2">२</label></div></td>
-                                  <td></td>
-                                </tr>
-                                <tr>
-                                  <td>परियोजना कार्य गर्न प्रयास मात्र गरेमा, प्रस्तुतिकरण गर्ने प्रयास मात्र गरेमा र कुनै तर्कसंगतता नभएमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="pres_<%= idx %>_<%= prindx %>_1"> <label for="pres_<%= idx %>_<%= prindx %>_1">१</label></div></td>
-                                  <td></td>
-                                </tr>
-                                <tr>
-                                  <td rowspan="4">अभिलेखीकरण</td>
-                                  <td>तोकिएको समयमा परियोजना कार्य सम्पन्न गरी सही, सफा, तोकिएको ढाँचामा र क्रमबद्ध तरिकाले अभिलेख राखेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="4" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_4"> <label for="record_<%= idx %>_<%= prindx %>_4">४</label></div></td>
-                                  <td></td>
-                                </tr>
-                                <tr>
-                                  <td>तोकिएको समयमा परियोजना कार्य सम्पन्न गरी आंशिक कार्य सम्पन्न गरे पनि अभिलेख सही नभएमा, सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा कुनै तीन आधारमा अभिलेख राखेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="3" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_3"> <label for="record_<%= idx %>_<%= prindx %>_3">३</label></div></td>
-                                  <td></td>
-                                </tr>
-                                <tr>
-                                  <td>तोकिएको समयमा दुर्बल ढंगले परियोजना कार्य सम्पन्न गरी सही नभएमा, सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा कुनै दुई आधारमा अभिलेख राखेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="2" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_2"> <label for="record_<%= idx %>_<%= prindx %>_2">२</label></div></td>
-                                  <td></td>
-                                </tr>
-                                <tr>
-                                  <td>तोकिएको समयमा सही ढंग नभए ढिलाइ गरी समय लगाई परियोजना कार्य सम्पन्न गरी सही नभएमा, सफा नभएमा वा क्रमबद्ध तरिकाले नभएमा कुनै एक आधारमा अभिलेख राखेमा</td>
-                                  <td><div class="radio-group"><input type="radio" name="<%= idx %>-project-<%= prindx %>-अभिलेखीकरण" value="1" onchange="calcTotal('<%= idx %>','<%= prindx %>')" id="record_<%= idx %>_<%= prindx %>_1"> <label for="record_<%= idx %>_<%= prindx %>_1">१</label></div></td>
-                                  <td></td>
-                                </tr>
+                                <% let iIndex = 0 %>
+                                <% projectFormatData.forEach(function(doc) { %>
+                                  <% doc.themes.forEach(function(theme) { %>
+                                    <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
+                                    <% let firstThemeRow = true; %>
+
+                                    <% theme.learningOutcome.forEach(function(lo,loIdx) { %>
+                                      <% let loRowspan = lo.indicators.length; %>
+                                      <% let mulyIndex = iIndex; %>
+
+                                      <% lo.indicators.forEach(function(ind, indIndex) { %>
+                                        <tr>
+                                          <% if(firstThemeRow && indIndex === 0) { %>
+                                            <td rowspan="<%= themeRowspan %>"><%= iIndex+1 %></td>
+                                            <td rowspan="<%= themeRowspan %>"><%= theme.themeName %></td>
+                                            <% firstThemeRow = false; %>
+                                          <% } %>
+
+                                          <% if(indIndex === 0) { %>
+                                            <td rowspan="<%= loRowspan %>"><%= lo.learningOutcomeName %></td>
+                                          <% } %>
+
+                                          <td><%= ind.indicatorName %></td>
+                                          <td>
+                                            <div class="radio-group">
+                                              <input type="radio" 
+                                                     value="<%= ind.indicatorsMarks %> || <%= ind.indicatorName %> || <%= lo.learningOutcomeName %> " 
+                                                     class="marks-radio"
+                                                     name="unit[<%= idx %>][projectWorks][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>] "
+                                                     data-practical="<%= idx %>-<%= prindx %>"
+                                                     id="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
+                                              <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
+                                            </div>
+                                          </td>
+                                          <td></td>
+                                        </tr>
+                                      <% }) %>
+                                      <% iIndex++ %>
+                                    <% }) %>
+                                  <% }) %>
+                                <% }) %>
                               </tbody>
                             </table>
+                              <div class="total-display">
+                            <label>Total Project Marks</label>
+                            <input type="number" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectMarks]" 
+                                   value="0" id="project-total-<%= idx %>-<%= prindx %>" 
+                                   class="form-control" readonly>
                           </div>
-                          <div class="total-display">
-                            <label>Total Project Marks: <span id="total-<%= idx %>-<%= prindx %>">0</span></label>
-                            <input type="hidden" 
-                                   id="totalInput-<%= idx %>-<%= prindx %>" 
-                                   name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectMarks]" 
-                                   value="0">
                           </div>
+                         
                         </div>
                       </div>
                     </div>
@@ -759,21 +747,20 @@ function calcTotal(unitIdx, projectIdx) {
             // Populate practical marks
             if(unit.practicals && Array.isArray(unit.practicals)) {
               unit.practicals.forEach((practical, practicalIdx) => {
-                if(practical.criteria) {
-                  Object.keys(practical.criteria).forEach(themeKey => {
-                    const loObj = practical.criteria[themeKey];
-                    Object.keys(loObj).forEach(loKey => {
-                      const radioName = `unit[${unitIdx}][practicals][${practicalIdx}][criteria][${themeKey}][${loKey}]`;
-                      const selectedValue = loObj[loKey];
-                      if(selectedValue) {
-                        const radio = document.querySelector(`input[name="${radioName}"][value="${selectedValue.split(' || ')[0]} || ${selectedValue.split(' || ')[1]} || ${selectedValue.split(' || ')[2]} "]`);
-                        if(radio) {
-                          radio.checked = true;
-                        }
-                      }
-                    });
-                  });
-                }
+              if (practical.criteria && Array.isArray(practical.criteria)) {
+  practical.criteria.forEach(c => {
+    let mark = c.practicalIndicatorMarks;
+    // Find radios for this practical
+    let radios = document.querySelectorAll(
+      `input[data-practical="${unitIdx}-${practicalIdx}"]`
+    );
+    radios.forEach(radio => {
+      if (radio.value.trim().startsWith(mark)) {
+        radio.checked = true;
+      }
+    });
+  });
+}
                 // Update total for this practical
                 let totalInput = document.getElementById(`practical-total-${unitIdx}-${practicalIdx}`);
                 let checked = document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]:checked`);

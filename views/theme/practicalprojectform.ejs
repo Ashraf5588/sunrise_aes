@@ -576,10 +576,10 @@
                                             <div class="radio-group">
                                               <input type="radio" 
                                                      value="<%= ind.indicatorsMarks %> || <%= ind.indicatorName %> || <%= lo.learningOutcomeName %> " 
-                                                     class="marks-radio"
+                                                     class="marks-radio-project"
                                                      name="unit[<%= idx %>][projectWorks][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>] "
-                                                     data-practical="<%= idx %>-<%= prindx %>"
-                                                     id="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
+                                                     data-project="<%= idx %>-<%= prindx %>"
+                                                     id="project_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
                                               <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
                                             </div>
                                           </td>
@@ -686,6 +686,20 @@ document.querySelectorAll(".marks-radio").forEach(radio => {
 
     // सबै radio जसमा data-practical = यो group छ, र checked
     let checked = document.querySelectorAll(`input[data-practical="${group}"]:checked`);
+    let total = Array.from(checked).reduce((sum, r) => sum + parseInt(r.value), 0);
+
+    totalInput.value = total;
+  });
+});
+  </script>
+   <script>
+document.querySelectorAll(".marks-radio-project").forEach(radio => {
+  radio.addEventListener("change", e => {
+    let group = e.target.dataset.project;   // e.g. "0-1"
+    let totalInput = document.getElementById("project-total-" + group);
+
+    // सबै radio जसमा data-practical = यो group छ, र checked
+    let checked = document.querySelectorAll(`input[data-project="${group}"]:checked`);
     let total = Array.from(checked).reduce((sum, r) => sum + parseInt(r.value), 0);
 
     totalInput.value = total;

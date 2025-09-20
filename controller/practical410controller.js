@@ -1152,7 +1152,7 @@ try{
 
 req.body.unit.forEach(unit => {
   unit.practicals = unit.practicals || [];
-  unit.projectWorks = unit.projectWorks || [];
+  unit.projectworks = unit.projectworks || [];
 
   // --- PRACTICALS ---
   unit.practicals.forEach(practical => {
@@ -1175,7 +1175,7 @@ req.body.unit.forEach(unit => {
   });
 
   // --- PROJECTS ---
-  unit.projectWorks.forEach(project => {
+  unit.projectworks.forEach(project => {
     if (!project.criteria) {
       project.criteria = [];
       return;

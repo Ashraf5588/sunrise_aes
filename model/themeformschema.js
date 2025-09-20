@@ -284,18 +284,17 @@ const practicalprojectSchema = new mongoose.Schema({
     {
       unitName: { type: String, required: false },
       portion: { type: String, required: false },
+      
       projectWorks: [
         {
           projectName: { type: String, required: false },
           projectMarks: { type: Number, required: false },
           criteria: [{
-          projectAdhar: {type:String,required:false},
           projectIndicator:{type:String, required:false},
+          projectAdhar: {type:String,required:false},
           projectIndicatorMarks:{type:String, required:false}
-          }]
-          
-        
-        }
+       }]
+      }
       ],
       practicals: [
         {

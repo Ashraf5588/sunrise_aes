@@ -257,9 +257,9 @@ exports.showpracticalDetailForm = async (req, res) => {
         section, 
         subject, 
         practicalFormatData, 
-        projectFormatData,
         ScienceData,
         terminal,
+        projectFormatData,
         studentData,
       });
 
@@ -315,9 +315,10 @@ exports.showpracticalDetailForm = async (req, res) => {
         section,
         subject,
         practicalFormatData, 
-        projectFormatData,
         ScienceData,
-        terminal
+        terminal,
+        projectFormatData,
+        studentData,
       });
 
       
@@ -373,7 +374,9 @@ exports.showpracticalDetailForm = async (req, res) => {
         subject,
         practicalFormatData, 
         ScienceData,
-        terminal
+        terminal,
+        projectFormatData,
+        studentData,
       });
 
       
@@ -429,7 +432,9 @@ exports.showpracticalDetailForm = async (req, res) => {
         subject,
         practicalFormatData, 
         ScienceData,
-        terminal
+        terminal,
+        projectFormatData,
+        studentData,
       });
 
       
@@ -448,7 +453,9 @@ exports.showpracticalDetailForm = async (req, res) => {
         section, 
         subject, 
         practicalFormatData,
-        terminal
+        terminal,
+        projectFormatData,
+        studentData,
       });
     }
     
@@ -1137,80 +1144,84 @@ exports.saveScienceData = async (req,res,next)=>
   }
 }
 
-exports.savepracticalprojectform = async (req,res,next)=>
-{
+exports.savepracticalprojectform = async (req, res, next) => {
+  try {
+    const { studentClass, section, subject, terminal } = req.query;
+    const { reg, roll } = req.body; // important for unique identification
 
-try{
-
-  const {  studentClass, section, subject, terminal } = req.query;
-  console.log('Received practical project form data:', {
-    studentClass,
-    section,
-    subject,
-    terminal
-  });
-
-req.body.unit.forEach(unit => {
-  unit.practicals = unit.practicals || [];
-  unit.projectworks = unit.projectworks || [];
-
-  // --- PRACTICALS ---
-  unit.practicals.forEach(practical => {
-    if (!practical.criteria) {
-      practical.criteria = []; // nothing selected
-      return;
-    }
-
-    // Convert object-of-arrays into clean array
-    practical.criteria = Object.values(practical.criteria).flatMap(row =>
-      Object.values(row).map(v => {
-        const [marks, indicator, adhar] = v.split("||");
-        return {
-          practicalIndicatorMarks: Number(marks),
-          practicalIndicator: indicator,
-          practicalAdhar: adhar
-        };
-      })
-    );
-  });
-
-  // --- PROJECTS ---
-  unit.projectworks.forEach(project => {
-    if (!project.criteria) {
-      project.criteria = [];
-      return;
-    }
-
-    project.criteria = Object.values(project.criteria).map(v => {
-      const [marks, indicator, adhar] = v.split("||");
-      return {
-        projectIndicatorMarks: Number(marks),
-        projectIndicator: indicator,
-        projectAdhar: adhar
-      };
+    console.log('Received practical project form data:', {
+      studentClass,
+      section,
+      subject,
+      terminal,
+      roll,
+      reg
     });
-  });
-});
 
-const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+    // Process criteria for practicals and projects
+    req.body.unit.forEach(unit => {
+      unit.practicals = unit.practicals || [];
+      unit.projectWorks = unit.projectWorks || [];
 
-const doc = new model(req.body);
-await doc.save();
+      // --- PRACTICALS ---
+      unit.practicals.forEach(practical => {
+        if (!practical.criteria) {
+          practical.criteria = [];
+          return;
+        }
 
-    return res.status(201).json({
-        success: true,
-        message: 'Science student record created successfully',
-        data: doc
+        practical.criteria = Object.values(practical.criteria).flatMap(row =>
+          Object.values(row).map(v => {
+            const [marks, indicator, adhar] = v.split("||");
+            return {
+              practicalIndicatorMarks: Number(marks),
+              practicalIndicator: indicator,
+              practicalAdhar: adhar
+            };
+          })
+        );
       });
 
-}catch(err)
-{
-  console.log(err)
-  res.status(500).json({error:'Internal server error',details:err.message});
-}
-}
+      // --- PROJECTS ---
+      unit.projectWorks.forEach(project => {
+        if (!project.criteria) {
+          project.criteria = [];
+          return;
+        }
+
+        project.criteria = [].concat(project.criteria).map(v => {
+          const [marks, indicator, adhar] = v.split("||");
+          return {
+            projectIndicator: indicator,
+            projectAdhar: adhar,
+            projectIndicatorMarks: Number(marks)
+          };
+        });
+      });
+    });
+
+    // Get the model for this subject/class/section/year
+    const marksheetSetting = await marksheetSetup.find();
+    const acadamicYear = marksheetSetting[0].acadamicYear;
+    const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+
+    // --- UPSERT: update if exists, otherwise insert ---
+    const filter = { reg, roll, studentClass, section, subject, terminalName: terminal };
+    const update = req.body;
+    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+    const doc = await model.findOneAndUpdate(filter, update, options);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Science student record saved successfully',
+      data: doc
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
+};
 
 exports.savepracticalslip = async (req,res,next)=>
 {

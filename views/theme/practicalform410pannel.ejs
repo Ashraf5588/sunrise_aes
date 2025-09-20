@@ -459,11 +459,21 @@
 
         <a href="/themefillupform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
           <div class="compact-action-icon">⚙️</div>
-          <div class="compact-action-title">Create Practical Rubriks</div>
+          <div class="compact-action-title">
+            <%if (subject==="SCIENCE") { %>
+             Create Practical Rubriks
+              <% }else if(subject==="MATHEMATICS"){%>
+                Create कार्य सञ्चालन र कार्यसम्पादन Rubriks (20 marks)
+              <%}%>
+            </div>
         </a>
         <a href="/projectrubrikscreate?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
           <div class="compact-action-icon">⚙️</div>
-          <div class="compact-action-title">Create Project Work Rubriks</div>
+          <div class="compact-action-title"> <%if (subject==="SCIENCE") { %>
+             Create ProjectWork Rubriks
+              <% }else if(subject==="MATHEMATICS"){%>
+                Create प्रस्तुतीकरण र अभिलेखीकरण Rubriks (12 marks)
+              <%}%></div>
         </a>
         <% if(subject==="SCIENCE" || subject==="MATHEMATICS" || subject==="SOCIAL" || subject==="HEALTH"){%>
          <a href="/practicalform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">

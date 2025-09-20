@@ -574,13 +574,16 @@
                                           <td><%= ind.indicatorName %></td>
                                           <td>
                                             <div class="radio-group">
+                                              
+     
+
                                               <input type="radio" 
-                                                     value="<%= ind.indicatorsMarks %> || <%= ind.indicatorName %> || <%= lo.learningOutcomeName %> " 
+                                                     value="<%= ind.indicatorsMarks %>||<%= ind.indicatorName %>||<%= lo.learningOutcomeName %> " 
                                                      class="marks-radio-project"
-                                                     name="unit[<%= idx %>][projectWorks][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>] "
+                                                     name="unit[<%= idx %>][projectWorks][<%= prindx %>][criteria][<%= iIndex %>]"
                                                      data-project="<%= idx %>-<%= prindx %>"
                                                      id="project_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
-                                              <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
+                                              <label for="project_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
                                             </div>
                                           </td>
                                           <td></td>
@@ -706,24 +709,10 @@ document.querySelectorAll(".marks-radio-project").forEach(radio => {
   });
 });
   </script>
-<!-- Project total calculation -->
- <script>
-function calcTotal(unitIdx, projectIdx) {
-  let total = 0;
 
-  // get selected value of "operation" outcome
-  let op = document.querySelector(`input[name="${unitIdx}-project-${projectIdx}-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण"]:checked`);
-  if(op) total += parseInt(op.value);
+ 
+  
 
-  // get selected value of "recording" outcome
-  let rec = document.querySelector(`input[name="${unitIdx}-project-${projectIdx}-अभिलेखीकरण"]:checked`);
-  if(rec) total += parseInt(rec.value);
-
-  // update display + hidden input
-  document.getElementById(`total-${unitIdx}-${projectIdx}`).innerText = total;
-  document.getElementById(`totalInput-${unitIdx}-${projectIdx}`).value = total;
-}
-</script>
 <script>
   async function fill(roll,name,reg) {
     document.getElementById('roll').value = roll;
@@ -736,11 +725,14 @@ function calcTotal(unitIdx, projectIdx) {
       const practicalData = await response.json();
       console.log("Fetched data:", practicalData);
 
-      if(practicalData) {
-        
+        if(practicalData.participationMarks) {
+          document.querySelector(`input[name="participationMarks"][value="${practicalData.participationMarks}"]`).checked = true;
 
-        // Populate attendance
-      }  if(practicalData.totalAttendance) {
+        } else {
+          document.querySelectorAll(`input[name="participationMarks"]`).forEach(radio => radio.checked = false);
+        }
+
+      if(practicalData.totalAttendance) {
           document.getElementById('attendanceDays').value = practicalData.totalAttendance || 0;
           calculateAttendanceMarks();
 
@@ -761,20 +753,41 @@ function calcTotal(unitIdx, projectIdx) {
             // Populate practical marks
             if(unit.practicals && Array.isArray(unit.practicals)) {
               unit.practicals.forEach((practical, practicalIdx) => {
-              if (practical.criteria && Array.isArray(practical.criteria)) {
-  practical.criteria.forEach(c => {
-    let mark = c.practicalIndicatorMarks;
-    // Find radios for this practical
-    let radios = document.querySelectorAll(
-      `input[data-practical="${unitIdx}-${practicalIdx}"]`
-    );
-    radios.forEach(radio => {
-      if (radio.value.trim().startsWith(mark)) {
-        radio.checked = true;
+              // ...existing code...
+if (practical.criteria && Array.isArray(practical.criteria)) {
+  // Get all radios for this practical
+  let allRadios = document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]`);
+  
+  // Group radios by their name attribute
+  let radioGroups = {};
+  allRadios.forEach(radio => {
+    if (!radioGroups[radio.name]) {
+      radioGroups[radio.name] = [];
+    }
+    radioGroups[radio.name].push(radio);
+  });
+  
+  // Match criteria with radio groups (assuming they are in the same order)
+  let groupNames = Object.keys(radioGroups);
+  practical.criteria.forEach((c, criteriaIdx) => {
+    if (criteriaIdx < groupNames.length) {
+      let mark = c.practicalIndicatorMarks.toString().trim();
+      let radiosInGroup = radioGroups[groupNames[criteriaIdx]];
+      
+      // Find and check the matching radio in this group
+      let matchingRadio = radiosInGroup.find(radio => 
+        radio.value.split('||')[0].trim() === mark
+      );
+      
+      if (matchingRadio) {
+        matchingRadio.checked = true;
       }
-    });
+    }
   });
 }
+// ...existing code...
+
+
                 // Update total for this practical
                 let totalInput = document.getElementById(`practical-total-${unitIdx}-${practicalIdx}`);
                 let checked = document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]:checked`);
@@ -784,28 +797,50 @@ function calcTotal(unitIdx, projectIdx) {
             }
 
             // Populate project marks
-            if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
-              unit.projectWorks.forEach((project, projectIdx) => {
-                let total = 0;
+            // Populate project marks
+// ...existing code...
+if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
+  unit.projectWorks.forEach((project, projectIdx) => {
+    if (project.criteria && Array.isArray(project.criteria)) {
+      // Get all radios for this project
+      let allRadios = document.querySelectorAll(`input[data-project="${unitIdx}-${projectIdx}"]`);
+      
+      // Group radios by their name attribute
+      let radioGroups = {};
+      allRadios.forEach(radio => {
+        if (!radioGroups[radio.name]) {
+          radioGroups[radio.name] = [];
+        }
+        radioGroups[radio.name].push(radio);
+      });
+      
+      // Match criteria with radio groups (in order)
+      let groupNames = Object.keys(radioGroups);
+      project.criteria.forEach((c, criteriaIdx) => {
+        if (criteriaIdx < groupNames.length) {
+          let mark = c.projectIndicatorMarks.toString().trim();
+          let radiosInGroup = radioGroups[groupNames[criteriaIdx]];
+          
+          // Find and check the matching radio in this specific group
+          let matchingRadio = radiosInGroup.find(radio => 
+            radio.value.split('||')[0].trim() === mark
+          );
+          
+          if (matchingRadio) {
+            matchingRadio.checked = true;
+          }
+        }
+      });
+    }
 
-                // Set selected value of "operation" outcome
-                if(project['परियोजना कार्य सञ्चालन र प्रस्तुतिकरण']) {
-                  let opRadio = document.querySelector(`input[name="${unitIdx}-project-${projectIdx}-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण"][value="${project['परियोजना कार्य सञ्चालन र प्रस्तुतिकरण']}"]`);
-                  if(opRadio) opRadio.checked = true;
-                  total += parseInt(project['परियोजना कार्य सञ्चालन र प्रस्तुतिकरण']);
-                }
-
-                // Set selected value of "recording" outcome
-                if(project['अभिलेखीकरण']) {
-                  let recRadio = document.querySelector(`input[name="${unitIdx}-project-${projectIdx}-अभिलेखीकरण"][value="${project['अभिलेखीकरण']}"]`);
-                  if(recRadio) recRadio.checked = true;
-                  total += parseInt(project['अभिलेखीकरण']);
-                }
-                // Update total display + hidden input
-                document.getElementById(`total-${unitIdx}-${projectIdx}`).innerText = total
-                document.getElementById(`totalInput-${unitIdx}-${projectIdx}`).value = total;
-              });
-            }
+    // Update total
+    let totalInput = document.getElementById(`project-total-${unitIdx}-${projectIdx}`);
+    let checked = document.querySelectorAll(`input[data-project="${unitIdx}-${projectIdx}"]:checked`);
+    let total = Array.from(checked).reduce((sum, r) => sum + parseInt(r.value), 0);
+    totalInput.value = total;
+  });
+}
+// ...existing code...
           });
         }
       } else {
@@ -817,19 +852,25 @@ function calcTotal(unitIdx, projectIdx) {
 
         // Clear practical marks
         ScienceData.forEach((item) => {
-          item.units.forEach((unit,unitIdx)=> {
-            unit.practicals.forEach((practical,practicalIdx)=> {
-              document.getElementById(`practical-total-${unitIdx}-${practicalIdx}`).value = '0';
-              document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]`).forEach(radio => radio.checked = false);
-            });
-            unit.projectworks.forEach((project,projectIdx)=> {
-              document.getElementById(`total-${unitIdx}-${projectIdx}`).innerText = '0';
-              document.getElementById(`totalInput-${unitIdx}-${projectIdx}`).value = '0';
-              document.querySelectorAll(`input[name="${unitIdx}-project-${projectIdx}-परियोजना कार्य सञ्चालन र प्रस्तुतिकरण"]`).forEach(radio => radio.checked = false);
-              document.querySelectorAll(`input[name="${unitIdx}-project-${projectIdx}-अभिलेखीकरण"]`).forEach(radio => radio.checked = false);
-            });
-          });
-        });
+  item.units.forEach((unit,unitIdx)=> {
+    // Clear practicals
+    unit.practicals.forEach((practical,practicalIdx)=> {
+      document.getElementById(`practical-total-${unitIdx}-${practicalIdx}`).value = '0';
+      document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]`).forEach(radio => {
+        radio.checked = false;
+      });
+    });
+
+    // Clear projects
+    unit.projectWorks.forEach((project, projectIdx) => {
+      document.getElementById(`project-total-${unitIdx}-${projectIdx}`).value = '0';
+      document.querySelectorAll(`input[data-project="${unitIdx}-${projectIdx}"]`).forEach(radio => {
+        radio.checked = false;
+      });
+    });
+  });
+});
+
       }
     }
   

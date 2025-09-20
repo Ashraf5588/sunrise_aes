@@ -367,7 +367,7 @@
             <% studentData.forEach((studentname) => { %>
               <input type="button" name="" id="studentData<%= studentname.roll %>" value="<%= studentname.name %>" style="background-color:#2196f3; color:white; border-radius: 7px; margin:1%; padding:5px; border:none; font-weight: bold; font-size: 16px;" onclick="fill('<%= studentname.roll %>','<%= studentname.name %>','<%= studentname.reg %>')">
             <% }); %>
-          </div>
+          </div><input type="hidden" name="reg" >
             <div class="form-row">
               <div class="form-group">
                 <label for="roll">Roll Number</label>
@@ -675,7 +675,7 @@ function calculateTerminalMarks() {
     if(terminalValue === "FIRST-2082")
   {
     const theoryMarks = parseFloat(document.getElementById('theoryMarks').value);
-    document.getElementById('obtainedconvertedmarks').value = 0.1 * theoryMarks;
+    document.getElementById('obtainedconvertedmarks').value = (( theoryMarks)/50*10).toFixed(2);
   }
 }
 

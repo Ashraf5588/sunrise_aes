@@ -465,7 +465,11 @@
               <% }else if(subject==="MATHEMATICS"){%>
                 Create कार्य सञ्चालन र कार्यसम्पादन Rubriks (20 marks)
               <%}else if(subject==="SOCIAL"){%>
-              
+                Create Practical/ProjectWork Rubriks
+              <%}else if(subject==="HEALTH"){%>
+               
+
+               Create प्रयोगात्मक कार्य (शारीरिक र सिर्जनात्मक कला) को मूल्याङ्कन (रुब्रिक्स)
               <%}%>
             </div>
         </a>
@@ -477,7 +481,11 @@
                 Create प्रस्तुतीकरण र अभिलेखीकरण Rubriks (12 marks)
               <%}else if(subject==="SOCIAL"){%>
                 Create Practical/ProjectWork Rubriks
-              <%}%></div>
+              <%}else if(subject==="HEALTH"){%>
+                Create परियोजना कार्य (स्वास्थ्य) को मूल्याङ्कन (रुब्रिक्स) 
+              <%}%>
+              
+            </div>
         </a>
         <% if(subject==="SCIENCE" || subject==="MATHEMATICS" || subject==="SOCIAL" || subject==="HEALTH"){%>
          <a href="/practicalform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">

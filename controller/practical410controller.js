@@ -1512,7 +1512,7 @@ if(roll && reg)
 exports.projectrubrikscreate = async (req, res, next) => {
   try {
   try {
-    const { studentClass: classParam } = req.query;
+    const { studentClass: classParam ,subject} = req.query;
     
     // If studentClass is provided, render the form for that class
     if (classParam) {
@@ -1523,6 +1523,7 @@ exports.projectrubrikscreate = async (req, res, next) => {
       return res.render("theme/projectrubrik", { 
         studentClass: classParam,
         subjects,
+        subject,
         existingData: null // Always start with null, let frontend load per subject
       });
     }

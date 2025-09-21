@@ -377,7 +377,7 @@ exports.themeformSave = async (req, res) => {
 
 exports.themefillupform = async (req, res) => {
   try {
-    const { studentClass: classParam } = req.query;
+    const { studentClass: classParam ,subject} = req.query;
     
     // If studentClass is provided, render the form for that class
     if (classParam) {
@@ -388,6 +388,7 @@ exports.themefillupform = async (req, res) => {
       return res.render("theme/themefiller", { 
         studentClass: classParam,
         subjects,
+        subject,
         existingData: null // Always start with null, let frontend load per subject
       });
     }

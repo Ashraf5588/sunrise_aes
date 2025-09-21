@@ -316,6 +316,10 @@
         <!-- Student Information Section -->
         <div class="section">
           <div class="section-header">Student Information</div>
+           <% studentData.forEach((studentname) => { %>
+              <input type="button" name="" id="studentData<%= studentname.roll %>" value="<%= studentname.name %>" style="background-color:#2196f3; color:white; border-radius: 7px; margin:1%; padding:5px; border:none; font-weight: bold; font-size: 16px;" onclick="fill('<%= studentname.roll %>','<%= studentname.name %>','<%= studentname.reg %>')">
+            <% }); %>
+          </div><input type="hidden" name="reg" id="reg">
           <div class="section-content">
             <div class="form-row">
               <div class="form-group">
@@ -697,6 +701,177 @@ function calcTotal(unitIdx, projectIdx) {
   document.getElementById(`total-${unitIdx}-${projectIdx}`).innerText = total;
   document.getElementById(`totalInput-${unitIdx}-${projectIdx}`).value = total;
 }
+</script>
+
+<script>
+  async function fill(roll,name,reg) {
+     const buttons = document.querySelectorAll("[id^='studentData']");
+    buttons.forEach(btn => {
+        btn.style.backgroundColor = '#2196f3'; // default color
+        btn.style.color = 'white';
+    });
+    const clickedBtn = document.getElementById('studentData' + roll);
+    clickedBtn.style.backgroundColor = 'darkblue'; // selected color
+    clickedBtn.style.color = 'white';
+    document.getElementById('roll').value = roll;
+    document.getElementById('name').value = name;
+    document.querySelector('input[name="reg"]').value = reg;
+
+    if(roll && name && reg) {
+      // Fetch existing data from server
+      const response = await fetch(`/getPracticalData?roll=${roll}&reg=${reg}&studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>`);
+      const practicalData = await response.json();
+      console.log("Fetched data:", practicalData);
+
+        if(practicalData.participationMarks) {
+          document.querySelector(`input[name="participationMarks"][value="${practicalData.participationMarks}"]`).checked = true;
+
+        } else {
+          document.querySelectorAll(`input[name="participationMarks"]`).forEach(radio => radio.checked = false);
+        }
+
+      if(practicalData.totalAttendance) {
+          document.getElementById('attendanceDays').value = practicalData.totalAttendance || 0;
+          calculateAttendanceMarks();
+
+        } else {
+          document.getElementById('attendanceDays').value = '';
+          document.getElementById('attendanceMarks').value = '';
+        }
+        if(practicalData.theoryMarks) {
+          document.getElementById('theoryMarks').value = practicalData.theoryMarks;
+          calculateTerminalMarks();
+        } else {
+          document.getElementById('theoryMarks').value = '';
+          document.getElementById('obtainedconvertedmarks').value = '';
+        }
+        // Populate practical marks
+        if(practicalData.unit && Array.isArray(practicalData.unit)) {
+          practicalData.unit.forEach((unit, unitIdx) => {
+            // Populate practical marks
+            if(unit.practicals && Array.isArray(unit.practicals)) {
+              unit.practicals.forEach((practical, practicalIdx) => {
+              // ...existing code...
+if (practical.criteria && Array.isArray(practical.criteria)) {
+  // Get all radios for this practical
+  let allRadios = document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]`);
+  
+  // Group radios by their name attribute
+  let radioGroups = {};
+  allRadios.forEach(radio => {
+    if (!radioGroups[radio.name]) {
+      radioGroups[radio.name] = [];
+    }
+    radioGroups[radio.name].push(radio);
+  });
+  
+  // Match criteria with radio groups (assuming they are in the same order)
+  let groupNames = Object.keys(radioGroups);
+  practical.criteria.forEach((c, criteriaIdx) => {
+    if (criteriaIdx < groupNames.length) {
+      let mark = c.practicalIndicatorMarks.toString().trim();
+      let radiosInGroup = radioGroups[groupNames[criteriaIdx]];
+      
+      // Find and check the matching radio in this group
+      let matchingRadio = radiosInGroup.find(radio => 
+        radio.value.split('||')[0].trim() === mark
+      );
+      
+      if (matchingRadio) {
+        matchingRadio.checked = true;
+      }
+    }
+  });
+}
+// ...existing code...
+
+
+                // Update total for this practical
+                let totalInput = document.getElementById(`practical-total-${unitIdx}-${practicalIdx}`);
+                let checked = document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]:checked`);
+                let total = Array.from(checked).reduce((sum, r) => sum + parseInt(r.value), 0);
+                totalInput.value = total;
+              });
+            }
+
+            // Populate project marks
+            // Populate project marks
+// ...existing code...
+if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
+  unit.projectWorks.forEach((project, projectIdx) => {
+    if (project.criteria && Array.isArray(project.criteria)) {
+      // Get all radios for this project
+      let allRadios = document.querySelectorAll(`input[data-project="${unitIdx}-${projectIdx}"]`);
+      
+      // Group radios by their name attribute
+      let radioGroups = {};
+      allRadios.forEach(radio => {
+        if (!radioGroups[radio.name]) {
+          radioGroups[radio.name] = [];
+        }
+        radioGroups[radio.name].push(radio);
+      });
+      
+      // Match criteria with radio groups (in order)
+      let groupNames = Object.keys(radioGroups);
+      project.criteria.forEach((c, criteriaIdx) => {
+        if (criteriaIdx < groupNames.length) {
+          let mark = c.projectIndicatorMarks.toString().trim();
+          let radiosInGroup = radioGroups[groupNames[criteriaIdx]];
+          
+          // Find and check the matching radio in this specific group
+          let matchingRadio = radiosInGroup.find(radio => 
+            radio.value.split('||')[0].trim() === mark
+          );
+          
+          if (matchingRadio) {
+            matchingRadio.checked = true;
+          }
+        }
+      });
+    }
+
+    // Update total
+    let totalInput = document.getElementById(`project-total-${unitIdx}-${projectIdx}`);
+    let checked = document.querySelectorAll(`input[data-project="${unitIdx}-${projectIdx}"]:checked`);
+    let total = Array.from(checked).reduce((sum, r) => sum + parseInt(r.value), 0);
+    totalInput.value = total;
+  });
+}
+// ...existing code...
+          });
+        }
+      } else {
+        // Clear form if no data
+        document.getElementById('attendanceDays').value = '';
+        document.getElementById('attendanceMarks').value = '';
+        document.getElementById('theoryMarks').value = '';
+        document.getElementById('obtainedconvertedmarks').value = '';
+
+        // Clear practical marks
+        ScienceData.forEach((item) => {
+  item.units.forEach((unit,unitIdx)=> {
+    // Clear practicals
+    unit.practicals.forEach((practical,practicalIdx)=> {
+      document.getElementById(`practical-total-${unitIdx}-${practicalIdx}`).value = '0';
+      document.querySelectorAll(`input[data-practical="${unitIdx}-${practicalIdx}"]`).forEach(radio => {
+        radio.checked = false;
+      });
+    });
+
+    // Clear projects
+    unit.projectWorks.forEach((project, projectIdx) => {
+      document.getElementById(`project-total-${unitIdx}-${projectIdx}`).value = '0';
+      document.querySelectorAll(`input[data-project="${unitIdx}-${projectIdx}"]`).forEach(radio => {
+        radio.checked = false;
+      });
+    });
+  });
+});
+
+      }
+    }
+  
 </script>
 </body>
 </html>

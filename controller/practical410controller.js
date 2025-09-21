@@ -363,9 +363,8 @@ exports.showpracticalDetailForm = async (req, res) => {
           console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
         }
       }
-      
-      console.log('🎨 Rendering practicalprojectform...');
 
+      console.log('🎨 Rendering Social project form...');
       return res.render("theme/socialProjectForm", {
         ...await getSidenavData(req),
         editing: false,

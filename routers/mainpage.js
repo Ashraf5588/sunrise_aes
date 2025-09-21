@@ -243,7 +243,8 @@ student.get('/themewisemarks', verifytoken, authorized, themecontroller.themewis
 student.get('/themeslip', verifytoken, authorized, themecontroller.themeslip);
 student.get('/theme/previous-data', verifytoken, authorized, themecontroller.getPreviousThemeData);
 student.get('/theme/student-themes', verifytoken, authorized, themecontroller.getStudentThemes);
-
+student.get('/showmarksheetSetupForm',verifytoken,authorized,admincontrol.showmarksheetSetupForm);
+student.post('/admin/marksheetsetup',verifytoken,authorized,admincontrol.savemarksheetSetupForm);
 student.get('/class',verifytoken,authorized,practical410controller.chooseClass);
 student.get('/evaluationform',verifytoken,authorized,practical410controller.evaluationForm);
 student.get('/practicaldetailform',verifytoken,authorized,practical410controller.showpracticalDetailForm);

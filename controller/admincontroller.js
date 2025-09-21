@@ -300,9 +300,10 @@ exports.admin = async (req, res, next) => {
     const subjects = await subject.find({});
     
     const studentClasslist = await studentClass.find({});
-    const terminal = req.params.terminal; // Get terminal from params
+     const terminals = await terminal.find({}).lean();    
+     const currentTerminal = req.params.terminal || null;
+   
     
-    console.log(`🔍 Processing admin data for terminal: ${terminal}`);
     console.log(`📚 Found ${subjects.length} subjects`);
     console.log(`🏫 Found ${studentClasslist.length} class-sections`);
 
@@ -467,7 +468,8 @@ subjectMappings.forEach(sub => {
       studentClasslist,
       entryArray,
       pivotedData,
-     
+      terminals,
+      terminal:currentTerminal,
       studentClassdata,
       ...sidenavData
     });

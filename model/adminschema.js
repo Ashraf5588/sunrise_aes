@@ -61,7 +61,12 @@ const marksheetsetupSchema = new mongoose.Schema({
   "website": { type: String, required: false },
   "academicYear": { type: String, required: false },
   "totalTerminals": { type: Number, required: false },
-
+  terminals: [
+    {
+      name: { type: String, required: false },
+      workingDays: { type: Number, required: false }
+    }
+  ],
 })
 module.exports = {subjectSchema,classSchema,terminalSchema,studentrecordschema,newsubjectSchema, marksheetsetupSchema};
 

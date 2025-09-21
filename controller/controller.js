@@ -561,6 +561,8 @@ exports.saveForm = async (req, res, next) => {
 
 exports.findData = async (req, res) => {
   try {
+    console.log("===== STARTING DATA ANALYSIS =====");
+    console.log("Request received for analysis...");
 
     const {
       subjectinput,
@@ -602,16 +604,18 @@ for (const key in subjectData) {
     const hasSubparts = subjectData[`${key}_has_subparts`] === "on";
     const subpartsCount = parseInt(subjectData[`${key}_subparts_count`] || 0);
     const marksPerSubpart = parseFloat(subjectData[`${key}_marks_per_subpart`] || 0);
-    const marks = parseFloat(subjectData[key]);
+    const marks = parseFloat(subjectData[key] || 0);
 
-    if (hasSubparts && subpartsCount > 0) {
+    // Validate that we have valid numbers before proceeding
+    if (hasSubparts && subpartsCount > 0 && !isNaN(marksPerSubpart) && marksPerSubpart > 0) {
       for (let i = 0; i < subpartsCount; i++) {
         const subKey = `${key}_${roman[i]}`;
         keyValues[subKey] = marksPerSubpart;
       }
-    } else {
+    } else if (!hasSubparts && !isNaN(marks) && marks > 0) {
       keyValues[key] = marks;
     }
+    // Skip any keys that don't have valid marks to avoid NaN errors
   }
 }
 
@@ -626,6 +630,8 @@ for (const key in subjectData) {
 
     console.log("===== RETRIEVING DATA =====");
     console.log("Looking for data with subparts...");
+    console.log("KeyValues generated:", Object.keys(keyValues).length, "valid questions");
+    console.log("Processing analysis for", Object.keys(keyValues).length, "questions...");
    
 
 
@@ -676,10 +682,16 @@ if (sub && sub.length > 0) {
 
 
 // Build result array for DataTable with question-wise statistics
+console.log("📊 Analyzing question-wise performance...");
 for ( const key in keyValues) {
   const questionKey = key;
   const fullMarks = keyValues[key];
 
+  // Skip if fullMarks is not a valid number
+  if (isNaN(fullMarks) || fullMarks <= 0) {
+    console.log(`Skipping question ${questionKey} due to invalid marks: ${fullMarks}`);
+    continue;
+  }
     
     // Get the total marks for this question
     const questionTotal = total.find(t => t.qno === questionKey);
@@ -732,10 +744,17 @@ for ( const key in keyValues) {
 
 // Sort result by wrong count (most wrong first)
 result.sort((a, b) => b.wrong - a.wrong);
+console.log("🔄 Processing detailed student data...");
 let s= 0;
 for (const key in keyValues) {
       const fullMarks = keyValues[key];
       const questionKey = key;
+
+      // Skip if fullMarks is not a valid number
+      if (isNaN(fullMarks) || fullMarks <= 0) {
+        console.log(`Skipping question ${questionKey} in data processing due to invalid marks: ${fullMarks}`);
+        continue;
+      }
   
            
              
@@ -828,6 +847,12 @@ for (const key in keyValues) {
   const questionKey = key;
   const fullMarks = keyValues[key];
 
+  // Skip if fullMarks is not a valid number
+  if (isNaN(fullMarks) || fullMarks <= 0) {
+    console.log(`Skipping question ${questionKey} in allArr processing due to invalid marks: ${fullMarks}`);
+    continue;
+  }
+
   const incorrectStudentData = await model.find({subject:`${subjectinput}`,section:`${section}`,terminal:`${terminal}`,studentClass:`${studentClass}`,[questionKey]:0})
 allArr.push({
   questionNo: questionKey,
@@ -843,6 +868,7 @@ allArr.push({
 
 try {
 
+console.log("📄 Loading question paper information...");
 const paper = await subjectlist.findOne({ subject: `${subjectinput}`, forClass: `${studentClass}` }, { questionPaperOfClass: 1,_id:0 });
 
 let file = 'default.pdf'; // Default fallback
@@ -906,6 +932,7 @@ const classList = mongoose.model("studentClass", classSchema, "classlist");
 const classlisttotal = await classList.find({}).lean();
 const classlistData = new Set(classlisttotal.map(item => item.studentClass));
 
+console.log("✅ Analysis complete! Rendering results...");
     res.render("analysis", {
       results: result,
       totalcountmarks,
@@ -1223,9 +1250,7 @@ exports.studentrecord = async (req, res, next) => {
 
   try{
 
-
 const regex = new RegExp(`^${dbSection}\\s*`, 'i');
-
 
       const record = await studentRecord.find({section:regex,
     roll: roll,studentClass:studentClass})

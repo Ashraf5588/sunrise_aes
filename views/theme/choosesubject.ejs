@@ -166,9 +166,11 @@
         <select name="terminal" id="terminal">
           <option value="" disabled selected>Select Terminal</option>
           <% terminals.forEach(function(terminal) { %>
-            <option value="<%= terminal.terminal %>" <%= editing && subjectedit.terminal === terminal.terminal ? 'selected' : '' %>>
-              <%= terminal.terminal %>
-            </option>
+            <% terminal.terminals.forEach(function(subTerminal) { %>
+              <option value="<%= subTerminal.name %>" <%= editing && subjectedit.terminal === subTerminal.name ? 'selected' : '' %>>
+                <%= subTerminal.name %>
+              </option>
+            <% }); %>
           <% }); %>
         </select>
       </div>

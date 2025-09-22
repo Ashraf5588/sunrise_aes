@@ -19,7 +19,8 @@ const terminal = mongoose.model("terminal", terminalSchema, "terminal");
 const {ThemeEvaluationSchema,practicalSchema,scienceprojectSchema, practicalprojectSchema} = require("../model/themeformschema");
 const {themeSchemaFor1,scienceSchema,FinalPracticalSlipSchema} = require("../model/themeschema");
 const { get } = require("http");
- const marksheetSetup = new mongoose.model("MarksheetSetup", marksheetsetupSchema,"marksheetSetting");
+const {marksheetsetupschemaForAdmin} = require("../model/masrksheetschema");
+ const marksheetSetup =  mongoose.model("MarksheetSetup", marksheetsetupschemaForAdmin,"marksheetSetting");
 
 
 
@@ -172,7 +173,11 @@ exports.chooseClass = async (req, res) => {
 };
 exports.choosesubject = async (req,res)=>
   {
-    res.render("theme/choosesubject",{...await getSidenavData(req),editing: false})
+    const terminals = await marksheetSetup.find({})
+    console.log(terminals)
+   
+    
+    res.render("theme/choosesubject",{...await getSidenavData(req),editing: false,terminals})
   }
 exports.evaluationForm = async (req, res) => {
   const {studentClass,section,subject,terminal} = req.query;
@@ -189,6 +194,10 @@ exports.showpracticalDetailForm = async (req, res) => {
   
   try {
     const { studentClass, section, subject,terminal } = req.query;
+    const result = await marksheetSetup.findOne({"terminals.name": terminal}, { "terminals.$": 1 }).lean();
+    console.log("result", result);
+    const workingDays = result?.terminals?.[0]?.workingDays || 0;
+    console.log("workingdays",workingDays);
     const studentData = await studentRecord.find({studentClass:studentClass,section:section}).lean();
     const practicalFormat = getThemeFormat(studentClass);
     const practicalFormatData = await practicalFormat.find({
@@ -261,6 +270,8 @@ exports.showpracticalDetailForm = async (req, res) => {
         terminal,
         projectFormatData,
         studentData,
+        workingDays
+
       });
 
       
@@ -319,6 +330,7 @@ exports.showpracticalDetailForm = async (req, res) => {
         terminal,
         projectFormatData,
         studentData,
+        workingDays
       });
 
       
@@ -376,6 +388,7 @@ exports.showpracticalDetailForm = async (req, res) => {
         terminal,
         projectFormatData,
         studentData,
+        workingDays
       });
 
       
@@ -434,6 +447,7 @@ exports.showpracticalDetailForm = async (req, res) => {
         terminal,
         projectFormatData,
         studentData,
+        workingDays
       });
 
       
@@ -455,6 +469,7 @@ exports.showpracticalDetailForm = async (req, res) => {
         terminal,
         projectFormatData,
         studentData,
+        workingDays
       });
     }
     
@@ -476,6 +491,7 @@ exports.savepracticalDetailForm = async (req, res) => {
    try {
     const { roll, name, studentClass, section, terminal } = req.body;
     const Practical = getStudentThemeData(studentClass);
+
 
     // Validate required fields
     if (!roll || !name || !studentClass || !section) {
@@ -1513,7 +1529,11 @@ exports.projectrubrikscreate = async (req, res, next) => {
   try {
   try {
     const { studentClass: classParam ,subject} = req.query;
-    
+     const projectFormat = getProjectThemeFormat(classParam);
+    const projectFormatData = await projectFormat.find({
+      studentClass: classParam,
+      subject: subject
+    }).lean();
     // If studentClass is provided, render the form for that class
     if (classParam) {
       const subjects = await newsubject.find({});
@@ -1524,7 +1544,9 @@ exports.projectrubrikscreate = async (req, res, next) => {
         studentClass: classParam,
         subjects,
         subject,
-        existingData: null // Always start with null, let frontend load per subject
+        projectFormatData,
+        existingData: null,
+        editing:false // Always start with null, let frontend load per subject
       });
     }
 
@@ -1542,11 +1564,66 @@ exports.projectrubrikscreate = async (req, res, next) => {
     res.status(500).json({ error: "Internal server error", details: err.message });
   }
 }
+exports.editprojectrubriks = async (req, res, next) => {
+  try {
+    const { studentClass: classParam ,subject,projectId} = req.query;
+      const projectFormat = getProjectThemeFormat(classParam);
+    const projectFormatData = await projectFormat.find({
+      studentClass: classParam,
+      subject: subject
+    }).lean();
+    // If studentClass is provided, render the form for that class
+    if (classParam) {
+    
+      let existingData = null;
+      if(projectId)
+      {
+        existingData = await projectFormat.findById(projectId).lean();
+      }
+      return res.render("theme/projectrubrik", {
+        studentClass: classParam,
+      
+        subject,
+        projectFormatData,
+        existingData,
+        editing: true // Indicate we are in editing mode
+      });
+    }
+}
+  catch (err) {
+    res.status(500).json({ error: "Internal server error", details: err.message });
+  }
+}
 exports.projectrubrikscreatesave = async (req, res) => {
   try {
     // Get studentClass from query or body
     const studentClass = req.query.studentClass || req.body.studentClass;
-    
+    const {editing} = req.query;
+    if(editing==="true")
+    {
+      const projectId = req.query.projectId;
+      if(!projectId)
+      {
+        return res.status(400).json({success:false,message:"Project ID is required for editing"});
+      }
+      const model = getProjectThemeFormat(studentClass);
+      const existingData = await model.findById(projectId);
+      if(!existingData)
+      {
+        return res.status(404).json({success:false,message:"Project data not found for the given ID"});
+      }
+      // Update the existing document with new data
+      existingData.subject = req.body.subject;
+      existingData.credit = parseInt(req.body.credit) || req.body.credit;
+      existingData.themes = req.body.themes || [];
+      await existingData.save();
+      console.log(`Theme updated successfully for class ${studentClass}. Document ID: ${existingData._id}`);
+      return res.render("theme/theme-success", {
+        message: `Theme configuration for Class ${studentClass} was updated successfully!`,
+        studentClass: studentClass,
+        backUrl: "/projectrubrikscreate"
+      });
+    }
     if (!studentClass) {
       return res.status(400).json({
         success: false,

@@ -4,307 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Marksheet Setup</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
-
-    .form-container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #555;
-    }
-
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      border: 2px solid #ddd;
-      border-radius: 5px;
-      font-size: 16px;
-      transition: border-color 0.3s;
-      box-sizing: border-box;
-    }
-
-    input[type="text"]:focus, input[type="number"]:focus {
-      outline: none;
-      border-color: #007bff;
-    }
-
-    .terminal-section {
-      border: 2px solid #e9ecef;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 15px;
-      background-color: #f8f9fa;
-    }
-
-    .terminal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .terminal-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #495057;
-    }
-
-    .remove-terminal {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .remove-terminal:hover {
-      background-color: #c82333;
-    }
-
-    .terminal-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .add-terminal {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-bottom: 20px;
-      width: 100%;
-    }
-
-    .add-terminal:hover {
-      background-color: #218838;
-    }
-
-    .submit-btn {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 18px;
-      width: 100%;
-    }
-
-    .submit-btn:hover {
-      background-color: #0056b3;
-    }
-
-    @media (max-width: 600px) {
-      .terminal-inputs {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 <body>
-  <div class="form-container">
-    <h1>Marksheet Setup</h1>
+  <form action="/marksheetsetup" method="POST">
+  <center><h1>Marksheet Setup Page</h1></center>
+  <input type="text" name="schoolName" id="schoolName" placeholder="Enter School Name"><br>
+   <input type="text" name="address" id="address" placeholder="Enter Address"><br>
+   <input type="text" name="phone" id="phone" placeholder="Enter Phone Number"><br>
+   <input type="text" name="email" id="email" placeholder="Enter Email Address"><br>
+   <input type="text" name="website" id="website" placeholder="Enter Website URL"><br>
+   <input type="number" name="totalTerminals" id="totalTerminals" placeholder="Enter Total Terminals" min="1" oninput="addMoreTerminals()"><br>
+<input type="submit" name="submit" id="submit" value="Save Marksheet Setup">
+</form>
+   <script>
+   function addMoreTerminals() {
+  const totalterm = document.getElementById('totalTerminals').value;
+  const form = document.querySelector("form"); // target the form
 
-    <form action="/admin/marksheetsetup" method="POST" id="marksheetForm">
-      <div class="form-group">
-        <label for="schoolName">School Name:</label>
-        <input type="text" id="schoolName" name="schoolName" required>
-      </div>
+  // clear previous terminals first
+  document.querySelectorAll(".terminal-input").forEach(el => el.remove());
 
-      <div class="form-group">
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address" required>
-      </div>
+  for (let i = 1; i <= totalterm; i++) {
+    let input = document.createElement("input");
+    let workinginput = document.createElement("input");
+    let br = document.createElement("br");
 
-      <div class="form-group">
-        <label for="phone">Phone:</label>
-        <input type="number" id="phone" name="phone" required>
-      </div>
+    input.type = "text";
+    input.name = "name" + i;
+    input.placeholder = "Enter Terminal " + i + " Name";
+    input.classList.add("terminal-input");
 
-      <div class="form-group">
-        <label for="academicYear">Academic Year:</label>
-        <input type="number" id="academicYear" name="academicYear" required>
-      </div>
+    workinginput.type = "number";
+    workinginput.name = "workingDays" + i;
+    workinginput.placeholder = "Enter Working Days for Terminal " + i;
+    workinginput.classList.add("terminal-input");
 
-      <div class="form-group">
-        <h3>Terminal Configuration</h3>
-        <div id="terminalsContainer">
-          <!-- Initial terminal will be added by JavaScript -->
-        </div>
-        
-        <button type="button" class="add-terminal" onclick="addTerminal()">
-          + Add Terminal
-        </button>
-      </div>
+    form.appendChild(input);
+    form.appendChild(workinginput);
+    form.appendChild(br);
+  }
+}
 
-      <button type="submit" class="submit-btn">Submit Setup</button>
-    </form>
-  </div>
-
-  <script>
-    let terminalCount = 0;
-
-    function addTerminal() {
-      terminalCount++;
-      
-      const container = document.getElementById('terminalsContainer');
-      const terminalDiv = document.createElement('div');
-      terminalDiv.className = 'terminal-section';
-      terminalDiv.id = `terminal-${terminalCount}`;
-      
-      terminalDiv.innerHTML = `
-        <div class="terminal-header">
-          <span class="terminal-title">Terminal ${terminalCount}</span>
-          <button type="button" class="remove-terminal" onclick="removeTerminal(${terminalCount})">
-            Remove
-          </button>
-        </div>
-        <div class="terminal-inputs">
-          <div>
-            <label for="terminalName-${terminalCount}">Terminal Name:</label>
-            <input type="text" 
-                   id="terminalName-${terminalCount}" 
-                   name="terminals[${terminalCount-1}][name]" 
-                   placeholder="e.g., FIRST-2082, SECOND-2082" 
-                   required>
-          </div>
-          <div>
-            <label for="workingDays-${terminalCount}">Total Working Days Up to This Terminal:</label>
-            <input type="number" 
-                   id="workingDays-${terminalCount}" 
-                   name="terminals[${terminalCount-1}][workingDays]" 
-                   placeholder="e.g., 120" 
-                   min="1" 
-                   required>
-          </div>
-        </div>
-      `;
-      
-      container.appendChild(terminalDiv);
-      updateRemoveButtons();
-    }
-
-    function removeTerminal(terminalId) {
-      const terminalDiv = document.getElementById(`terminal-${terminalId}`);
-      if (terminalDiv) {
-        terminalDiv.remove();
-        renumberTerminals();
-        updateRemoveButtons();
-      }
-    }
-
-    function renumberTerminals() {
-      const terminals = document.querySelectorAll('.terminal-section');
-      terminals.forEach((terminal, index) => {
-        const newIndex = index + 1;
-        terminal.id = `terminal-${newIndex}`;
-        
-        // Update title
-        const title = terminal.querySelector('.terminal-title');
-        title.textContent = `Terminal ${newIndex}`;
-        
-        // Update input names and ids
-        const nameInput = terminal.querySelector('input[name*="[name]"]');
-        const daysInput = terminal.querySelector('input[name*="[workingDays]"]');
-        
-        if (nameInput) {
-          nameInput.name = `terminals[${index}][name]`;
-          nameInput.id = `terminalName-${newIndex}`;
-        }
-        
-        if (daysInput) {
-          daysInput.name = `terminals[${index}][workingDays]`;
-          daysInput.id = `workingDays-${newIndex}`;
-        }
-        
-        // Update labels
-        const nameLabel = terminal.querySelector('label[for*="terminalName"]');
-        const daysLabel = terminal.querySelector('label[for*="workingDays"]');
-        
-        if (nameLabel) nameLabel.setAttribute('for', `terminalName-${newIndex}`);
-        if (daysLabel) daysLabel.setAttribute('for', `workingDays-${newIndex}`);
-        
-        // Update remove button
-        const removeBtn = terminal.querySelector('.remove-terminal');
-        if (removeBtn) {
-          removeBtn.setAttribute('onclick', `removeTerminal(${newIndex})`);
-        }
-      });
-      
-      terminalCount = terminals.length;
-    }
-
-    function updateRemoveButtons() {
-      const removeButtons = document.querySelectorAll('.remove-terminal');
-      // Hide remove button if only one terminal exists
-      if (removeButtons.length === 1) {
-        removeButtons[0].style.display = 'none';
-      } else {
-        removeButtons.forEach(btn => {
-          btn.style.display = 'block';
-        });
-      }
-    }
-
-    // Add initial terminal on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      addTerminal();
-    });
-
-    // Form validation
-    document.getElementById('marksheetForm').addEventListener('submit', function(e) {
-      const terminals = document.querySelectorAll('.terminal-section');
-      if (terminals.length === 0) {
-        e.preventDefault();
-        alert('Please add at least one terminal.');
-        return false;
-      }
-      
-      // Check for duplicate terminal names
-      const terminalNames = [];
-      const nameInputs = document.querySelectorAll('input[name*="[name]"]');
-      
-      for (let input of nameInputs) {
-        const name = input.value.trim().toUpperCase();
-        if (terminalNames.includes(name)) {
-          e.preventDefault();
-          alert('Terminal names must be unique. Please check for duplicates.');
-          input.focus();
-          return false;
-        }
-        terminalNames.push(name);
-      }
-    });
-  </script>
+   </script>
 </body>
 </html>

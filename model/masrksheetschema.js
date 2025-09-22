@@ -10,15 +10,19 @@ const marksheetSchema = new mongoose.Schema({
   "practical": { type: Number, required: false },
   "totalmarks": { type: Number, required: false }
 });
-const marksheetsetupschema = new mongoose.Schema({
- "schoolname": { type: String, required: false },
- "schooladdress": { type: String, required: false },
-  "schoollogo": { type: String, required: false },
-  "principalname": { type: String, required: false },
-  "principalsignature": { type: String, required: false },
-  "phone": { type: String, required: false },
-  "email": { type: String, required: false },
-  "website": { type: String, required: false },
-}, { strict: false });
-exports.marksheetSchema = marksheetSchema;
-exports.marksheetsetupSchema = marksheetsetupschema;
+const terminalSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  workingDays: { type: Number, required: true }
+});
+const marksheetsetupschemaForAdmin = new mongoose.Schema({
+  schoolName: { type: String, required: true },
+  address: { type: String },
+  phone: { type: String },
+  email: { type: String },
+  website: { type: String },
+  academicYear: { type: String },
+  totalTerminals: { type: Number, required: false },
+  
+  terminals: [terminalSchema],
+});
+module.exports = { marksheetSchema, marksheetsetupschemaForAdmin };

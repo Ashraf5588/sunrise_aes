@@ -48,8 +48,6 @@ student.get('/report',verifytoken,authorized,isAdmin,admincontrol.report)
 student.get('/reportprint',verifytoken,authorized,isAdmin,admincontrol.reportprint)
 student.get('/newform',verifytoken,authorized,controller.newform)
 
-student.get('/admin/marksheetsetup',verifytoken,authorized,isAdmin,admincontrol.marksheetSetupForm)
-student.post('/admin/marksheetsetup',verifytoken,authorized,isAdmin,admincontrol.marksheetSetupSave)
 
 student.get('/admin/subject/:subId',verifytoken,authorized,admincontrol.showSubject)
 student.get('/admin/subject',verifytoken,authorized,admincontrol.showSubject)
@@ -243,8 +241,8 @@ student.get('/themewisemarks', verifytoken, authorized, themecontroller.themewis
 student.get('/themeslip', verifytoken, authorized, themecontroller.themeslip);
 student.get('/theme/previous-data', verifytoken, authorized, themecontroller.getPreviousThemeData);
 student.get('/theme/student-themes', verifytoken, authorized, themecontroller.getStudentThemes);
-student.get('/showmarksheetSetupForm',verifytoken,authorized,admincontrol.showmarksheetSetupForm);
-student.post('/admin/marksheetsetup',verifytoken,authorized,admincontrol.savemarksheetSetupForm);
+student.get('/marksheetsetup',verifytoken,authorized,isAdmin,admincontrol.showmarksheetSetupForm);
+student.post('/marksheetsetup',verifytoken,authorized,isAdmin,admincontrol.savemarksheetSetupForm);
 student.get('/class',verifytoken,authorized,practical410controller.chooseClass);
 student.get('/evaluationform',verifytoken,authorized,practical410controller.evaluationForm);
 student.get('/practicaldetailform',verifytoken,authorized,practical410controller.showpracticalDetailForm);
@@ -276,4 +274,6 @@ student.get('/internalreport',verifytoken,authorized,practical410controller.inte
 student.get('/getPracticalData', verifytoken, authorized, practical410controller.getPracticalData);
 student.get('/projectrubrikscreate', verifytoken, authorized, practical410controller.projectrubrikscreate);
 student.post('/projectrubrikscreatesave',verifytoken,authorized,practical410controller.projectrubrikscreatesave)
+
+student.get('/editprojectrubriks',verifytoken,authorized,practical410controller.editprojectrubriks)
 module.exports = student;

@@ -18,7 +18,8 @@ const newsubject = mongoose.model("newsubject", newsubjectSchema, "newsubject");
 const userlist = mongoose.model("userlist", teacherSchema, "users");
  const { studentrecordschema } = require("../model/adminschema");
 const modal = mongoose.model("studentrecord", studentrecordschema, "studentrecord");
- const setupMarksheet = new mongoose.model("MarksheetSetup", marksheetsetupSchema,"marksheetSetting");
+const {marksheetsetupschemaForAdmin} = require("../model/masrksheetschema");
+ const marksheetSetup =  mongoose.model("MarksheetSetup", marksheetsetupschemaForAdmin,"marksheetSetting");
 const bcrypt = require("bcrypt");
 const {allowedSubjectData} = require("./controller");
 const {generateToken} = require("../middleware/auth");
@@ -2797,8 +2798,33 @@ exports.showmarksheetSetupForm = async (req, res) => {
   });
 };
 exports.savemarksheetSetupForm = async (req, res) => {
+  try {
+    const total = req.body.totalTerminals;
+    const terminals = [];
 
-  const savesetting = await setupMarksheet.create(req.body);
+    for (let i = 1; i <= total; i++) {
+      const name = req.body[`name${i}`];
+      const workingDays = req.body[`workingDays${i}`];
 
-  res.redirect("/marksheetsetup");
+      if (name && workingDays) {
+        terminals.push({ name, workingDays });
+      }
+    }
+
+    const savesetting = await marksheetSetup.create({
+      schoolName: req.body.schoolName,
+      address: req.body.address,
+      phone: req.body.phone,
+      email: req.body.email,
+      website: req.body.website,
+      academicYear: req.body.academicYear,
+      totalTerminals: total,
+      terminals
+    });
+
+    res.render("success");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving marksheet setup");
+  }
 };

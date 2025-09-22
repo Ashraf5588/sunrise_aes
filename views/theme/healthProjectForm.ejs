@@ -606,7 +606,7 @@
 
 
 
-
+<input type="number" name="workingDays" value="<%=workingDays%>" id="totalWorkingDays" style="display:none;">
 
 
   <script>
@@ -634,7 +634,8 @@ function calculateTerminalMarks() {
 
     function calculateAttendanceMarks() {
      const attendanceDays = parseInt(document.getElementById('attendanceDays').value, 10) || 0;
-      const totalWorkingDays = 40;
+          const totalWorkingDays = document.getElementById('totalWorkingDays').value || 0;
+    
       const attendancePercentage = (attendanceDays / totalWorkingDays) * 100;
       console.log(attendancePercentage);
 

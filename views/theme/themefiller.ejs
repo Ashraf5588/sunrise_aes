@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Theme Configuration</title>
+  <title>Project Rubriks Creation</title>
   <style>
     * {
       margin: 0;
@@ -476,7 +476,8 @@
     </div>
 
     <div class="form-card">
-      <form action="/themefillupform?studentClass=<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" method="POST" id="mainForm">
+     <form action="/themefillupform?studentClass=<%= studentClass %><%= editing ? '&editing=true&projectId=' + existingData._id : '' %>&subject=<%= subject %>&terminal=<%= terminal %>" method="POST" id="mainForm">
+
         <div class="form-row">
           <div class="form-group">
             <label for="studentClass">Student Class</label>
@@ -490,7 +491,7 @@
 
           <div class="form-group">
             <label for="credit">Credit Hour</label>
-            <input type="text" name="credit" id="credit" placeholder="Enter credit hour" required>
+            <input type="text" name="credit" id="credit" placeholder="Enter credit hour" required value="<%= editing ? existingData.credit : '' %>">
           </div>
         </div>
 
@@ -511,14 +512,81 @@
       </form>
     </div>
   </div>
+<table cellspacing="0" border="1" style="background-color: white;"> 
+  <thead>
+                                <tr>
+                                  <th>SN</th>
+                                  <th>आधार</th>
+                                  <th>पक्ष</th>
+                                  <th>सूचक</th>
+                                 
+                                  <th>प्राप्तांक</th>
+                                  <th>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <% let iIndex = 0 %>
+                                <% practicalFormatData.forEach(function(doc) { %>
+                                  <% doc.themes.forEach(function(theme) { %>
+                                    <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
+                                    <% let firstThemeRow = true; %>
 
+                                    <% theme.learningOutcome.forEach(function(lo,loIdx) { %>
+                                      <% let loRowspan = lo.indicators.length; %>
+                                      <% let mulyIndex = iIndex; %>
+
+                                      <% lo.indicators.forEach(function(ind, indIndex) { %>
+                                        <tr>
+                                          <% if(firstThemeRow && indIndex === 0) { %>
+                                            <td rowspan="<%= themeRowspan %>"><%= iIndex+1 %></td>
+                                            <td rowspan="<%= themeRowspan %>"><%= theme.themeName %></td>
+                                            <% firstThemeRow = false; %>
+                                          <% } %>
+
+                                          <% if(indIndex === 0) { %>
+                                            <td rowspan="<%= loRowspan %>"><%= lo.learningOutcomeName %></td>
+                                          <% } %>
+
+                                          <td><%= ind.indicatorName %></td>
+                                          <td>
+                                            <div class="radio-group">
+                                              
+     
+
+                                              <%= ind.indicatorsMarks %>
+                                            </div>
+                                          </td>
+                                          <td><a href="/editpracticalrubriks?projectId=<%= doc._id %>&studentClass=<%= doc.studentClass %>&editing=true&subject=<%= doc.subject %>">Edit</a></td>
+                                        </tr>
+                                      <% }) %>
+                                      
+                                      <% iIndex++ %>
+                                      
+                                    <% }) %>
+                                    
+                                  <% }) %>
+                                  
+                                <% }) %>
+                              </tbody>
+</table>
   <script>
     let themeIndex = 0;
     let autoSaveTimeout;
     let isLoading = false;
 
     // Load existing data if available
-    const existingData = <%- typeof existingData !== 'undefined' && existingData ? JSON.stringify(existingData) : 'null' %>;
+ 
+    const existingData = <%- JSON.stringify(editing ? existingData.themes : []) %>;
+    const studentClass = <%= typeof studentClass !== 'undefined' ? studentClass : 'null' %>;
+    if (existingData && existingData.length > 0) {
+
+      existingData.forEach(themeData => {
+        addTheme(themeData);
+      });
+    } else {
+      addTheme(); // Start with one theme by default
+    }
+
 
     function addTheme(themeData = null) {
       const themesContainer = document.getElementById('themes-container');
@@ -536,7 +604,7 @@
           <label for="themeName_${themeIndex}"><% if(studentClass<=3){ %>Theme Name<% }else{ %>मुल्याङ्कन आधारको नाम (Evaluation Criteria Name)<% } %></label>
           <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" 
                  placeholder="<% if(studentClass<=3){ %>Enter Theme Name<% }else{ %>Enter मुल्याङ्कन आधारको नाम (Enter Evaluation Criteria Name)<% } %>" 
-                 required value="${themeData ? themeData.themeName || '' : ''}" 
+                 required  value="${themeData ? themeData.themeName || '' : ''}"
                  oninput="scheduleAutoSave()">
         </div>
         <div class="outcomes-container" id="outcomes-${themeIndex}"></div>
@@ -801,11 +869,7 @@
     }
 
     // Load existing data on page load
-    function loadExistingData() {
-      // Don't load any data by default - wait for subject selection
-      addTheme(); // Just add empty theme
-    }
-
+  
     // Load data for specific subject
     async function loadSubjectData(subject) {
       if (!subject) {

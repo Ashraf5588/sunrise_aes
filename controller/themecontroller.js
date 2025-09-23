@@ -25,7 +25,7 @@ app.set("view engine", "ejs");
 app.set("view", path.join(rootDir, "views"));
 const getSidenavData = async (req) => {
   try {
-    const subjects = await newsubject.find({}).lean();
+    const subjects = await subjectlist.find({}).lean();
     const studentClassdata = await studentClass.find({}).lean();
     const terminals = await terminal.find({}).lean();
     
@@ -103,24 +103,13 @@ const getThemeFormat = (studentClass) => {
   const collectionName = `themeFor${studentClass}`;
   console.log(`Getting theme format model for class ${studentClass} using collection ${collectionName}`);
   
-  // Delete the model if it exists to prevent schema conflicts
+  // Check if model already exists
   if (mongoose.models[collectionName]) {
-    delete mongoose.models[collectionName];
-    console.log(`Cleared existing model cache for ${collectionName}`);
+    return mongoose.models[collectionName];
   }
   
-  // Verify we have the correct schema
-  console.log('themeSchemaFor1 structure:', Object.keys(themeSchemaFor1.obj));
-  
   // Create model with themeSchemaFor1 for configuration
-  const model = mongoose.model(collectionName, themeSchemaFor1, collectionName);
-  console.log(`Created new model for collection ${collectionName} with themeSchemaFor1`);
-  
-  // Test the model schema to ensure it's correct
-  const schemaFields = Object.keys(model.schema.obj);
-  console.log(`Model schema fields:`, schemaFields);
-  
-  return model;
+  return mongoose.model(collectionName, themeSchemaFor1, collectionName);
 };
 
 // For student evaluation data (uses ThemeEvaluationSchema)
@@ -183,9 +172,9 @@ const existingThemeData = await themeForstudentData.find(
       subject: subject
     });
     console.log("Theme data fetched successfully:", themeData);
-    
-    return res.render("theme/themeform", { themeData, subject, studentClass, section, studentData,existingThemeData });
-  }catch(err){
+
+    res.render("theme/themeform", { themeData, subject, studentClass, section, studentData, existingThemeData });
+  } catch (err) {
     console.error("Error in theme controller:", err);
     res.status(500).send("Internal Server Error");
   }
@@ -377,23 +366,15 @@ exports.themeformSave = async (req, res) => {
 
 exports.themefillupform = async (req, res) => {
   try {
-    const { studentClass: classParam ,subject} = req.query;
+    const { studentClass: classParam } = req.query;
     
     // If studentClass is provided, render the form for that class
     if (classParam) {
-      const subjects = await newsubject.find({});
-      
-      // Don't load any specific subject data by default
-      // Let the frontend handle loading data when subject is selected
-      return res.render("theme/themefiller", { 
-        studentClass: classParam,
-        subjects,
-        subject,
-        existingData: null // Always start with null, let frontend load per subject
-      });
-    }
-
+      return res.render("theme/themefiller", { studentClass: classParam });
+    } 
+    
     // If no class provided, render the class selection page first
+    // Use the model correctly - avoiding the naming conflict
     const studentClassdata = await studentClass.find({}).lean();
     return res.render("theme/themefillerclassselect", { 
       studentClassdata,
@@ -416,51 +397,14 @@ exports.themefillupformsave = async (req, res) => {
       });
     }
     
-    // Log the incoming data for debugging
-    console.log(`Theme data received for class ${studentClass}:`, JSON.stringify(req.body, null, 2));
-    console.log(`Request headers:`, req.headers['content-type']);
-    console.log(`Form data keys:`, Object.keys(req.body));
-    
-    // Validate required fields exist
-    if (!req.body.subject || !req.body.credit) {
-      console.error("Missing required fields - subject or credit");
-      console.error("Available fields:", Object.keys(req.body));
-      return res.status(400).json({
-        success: false,
-        message: "Subject and credit are required"
-      });
-    }
-    
-    // Check if themes data exists and is in the right format
-    if (!req.body.themes) {
-      console.error("No themes data found in request body");
-      return res.status(400).json({
-        success: false,
-        message: "No themes data provided"
-      });
-    }
-    
-    console.log("Themes data type:", typeof req.body.themes);
-    console.log("Themes data structure:", JSON.stringify(req.body.themes, null, 2));
-    
-    // Prepare data for saving - extract the required fields
-    const themeData = {
-      studentClass: studentClass,
-      subject: req.body.subject,
-      credit: parseInt(req.body.credit) || req.body.credit,
-      themes: req.body.themes || []
-    };
-    
-    console.log(`Processed theme data for saving:`, JSON.stringify(themeData, null, 2));
+    // Ensure the studentClass in the request body is set correctly
+    req.body.studentClass = studentClass;
     
     // This is for theme format, so use getThemeFormat
     const model = getThemeFormat(studentClass);
-    console.log(`Using model for collection: themeFor${studentClass}`);
+    const result = await model.create(req.body);
+    console.log(`Theme filled successfully for class ${studentClass}`);
     
-    const result = await model.create(themeData);
-    console.log(`Theme filled successfully for class ${studentClass}. Document ID: ${result._id}`);
-    console.log(`Saved document structure:`, Object.keys(result.toObject()));
-    const subjects = await newsubject.find({})
     // Send a more user-friendly response
     return res.render("theme/theme-success", {
       message: `Theme configuration for Class ${studentClass} was created successfully!`,
@@ -469,123 +413,7 @@ exports.themefillupformsave = async (req, res) => {
     });
   } catch(err) {
     console.error("Error in theme controller:", err);
-    console.error("Error details:", err.message);
-    console.error("Stack trace:", err.stack);
     res.status(500).send("Internal Server Error: " + err.message);
-  }
-}
-
-// Autosave endpoint for real-time saving
-exports.autosaveTheme = async (req, res) => {
-  try {
-    const { studentClass, subject, credit, themes, outcomes, indicators } = req.body;
-    
-    // Validation
-    if (!studentClass || !subject) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Student class and subject are required' 
-      });
-    }
-
-    // Get the dynamic model for this class
-    const model = getThemeFormat(studentClass);
-    
-    // Find existing record or create new one
-    const existingRecord = await model.findOne({ 
-      studentClass: studentClass,
-      subject: subject 
-    });
-
-    if (existingRecord) {
-      // Update existing record
-      existingRecord.credit = credit || existingRecord.credit;
-      existingRecord.themes = themes || [];
-      existingRecord.outcomes = outcomes || [];
-      existingRecord.indicators = indicators || [];
-      existingRecord.updatedAt = new Date();
-      
-      await existingRecord.save();
-      
-      res.json({ 
-        success: true, 
-        message: 'Theme data updated successfully',
-        action: 'updated',
-        recordId: existingRecord._id
-      });
-    } else {
-      // Create new record
-      const newThemeData = new model({
-        studentClass: studentClass,
-        subject: subject,
-        credit: credit || '',
-        themes: themes || [],
-        outcomes: outcomes || [],
-        indicators: indicators || [],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-
-      await newThemeData.save();
-      
-      res.json({ 
-        success: true, 
-        message: 'Theme data saved successfully',
-        action: 'created',
-        recordId: newThemeData._id
-      });
-    }
-    
-  } catch (error) {
-    console.error('Error in autosave:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to save theme data',
-      error: error.message 
-    });
-  }
-}
-
-// Get theme data for specific subject
-exports.getThemeData = async (req, res) => {
-  try {
-    const { studentClass, subject } = req.query;
-    
-    if (!studentClass || !subject) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Student class and subject are required' 
-      });
-    }
-
-    // Get the dynamic model for this class
-    const model = getThemeFormat(studentClass);
-    
-    // Find existing record
-    const existingRecord = await model.findOne({ 
-      studentClass: studentClass,
-      subject: subject 
-    }).lean();
-
-    if (existingRecord) {
-      res.json({ 
-        success: true, 
-        data: existingRecord
-      });
-    } else {
-      res.json({ 
-        success: true, 
-        data: null 
-      });
-    }
-    
-  } catch (error) {
-    console.error('Error fetching theme data:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch theme data',
-      error: error.message 
-    });
   }
 }
 
@@ -1010,3 +838,41 @@ exports.getStudentThemes = async (req, res) => {
     });
   }
 }
+
+exports.editpracticalrubriks = async (req, res, next) => {
+  try {
+    const { studentClass: classParam ,subject,terminal} = req.query;
+    if (!classParam || !subject) {
+      return res.status(400).send("Student class and subject are required");
+    }
+      const {studentClass} = req.query;
+      const practicalFormat = getThemeFormat(studentClass)
+    const practicalFormatData = await practicalFormat.find({
+      studentClass: studentClass,
+      subject: subject
+    }).lean();
+
+    const model = getThemeFormat(classParam);
+    const existingData = await model.findOne({ studentClass: classParam, subject: subject }).lean();
+    if (!existingData) {
+      return res.status(404).send("Rubrik not found for the specified class and subject");
+    }
+    res.render("theme/themefiller", { 
+      studentClass: classParam,
+      practicalFormatData,
+      terminal,
+      subject,
+      editing: true,
+      existingData,
+      ...await getSidenavData(req)
+    });
+  }catch (err) {
+    console.error("Error fetching rubrik for editing:", err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+
+
+
+

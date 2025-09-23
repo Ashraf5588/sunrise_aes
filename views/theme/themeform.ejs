@@ -2,190 +2,3393 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Theme Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3498db">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Theme Evaluation Form</title>
+  <!-- Nepali Datepicker -->
+ <link href="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/css/nepali.datepicker.v5.0.6.min.css" rel="stylesheet" type="text/css"/>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Student navigation bar */
+    .student-nav-bar {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 8px;
+      margin: 0 20px 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+    
+    .student-nav-title {
+      font-weight: bold;
+      margin-right: 16px;
+      white-space: nowrap;
+      color: #2c3e50;
+    }
+    
+    .student-nav-buttons {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      flex: 1;
+    }
+    
+    .student-nav-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #fff;
+      color: #2c3e50;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .student-nav-button:hover {
+      background: #f1f1f1;
+    }
+    
+    .student-nav-button.active {
+      background: #3498db;
+      color: white;
+      font-weight: bold;
+    }
+
     body {
-      background-color: #f0f8ff; /* AliceBlue - a light sky blue */
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-      color: #5c3c1c; /* A shade of brown for text */
+      background: linear-gradient(135deg, #87CEEB 0%, #E0F6FF 50%, #B0E0E6 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1a1a1a;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .nav-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 1rem 0;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-header h1 {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
     }
 
     .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
     }
 
-    h1 {
+    .form-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .form-header {
       text-align: center;
-      color: #5c3c1c;
+      margin-bottom: 2rem;
+    }
+
+    .form-header h1 {
+      color: #2c3e50;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+      color: #7f8c8d;
+      font-size: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
     }
 
     label {
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #34495e;
+      font-weight: 600;
+      font-size: 0.9rem;
     }
 
-    input[type="text"], input[type="number"], select {
+    input[type="text"], 
+    input[type="number"], 
+    input[type="date"],
+    select {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #d2b48c; /* Tan - a light brown */
-      border-radius: 8px;
-      box-sizing: border-box;
-      transition: box-shadow 0.2s ease-in-out;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+      color: #2c3e50;
     }
 
-    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    input[type="text"]:focus, 
+    input[type="number"]:focus, 
+    input[type="date"]:focus,
+    select:focus {
       outline: none;
-      box-shadow: 0 0 0 2px #87ceeb; /* SkyBlue focus ring */
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      background: rgba(255, 255, 255, 1);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      border: 1px solid #d2b48c;
-      padding: 12px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #a52a2a; /* Brown */
-      color: white;
-      font-weight: bold;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f7f2e9; /* A very light, warm gray */
-    }
-
-    button[type="submit"] {
-      background-color: #a52a2a; /* Brown */
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
+    select {
       cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.2s ease-in-out;
-      display: block;
-      width: 100%;
-      margin-top: 20px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
     }
 
-    button[type="submit"]:hover {
-      background-color: #800000; /* Darker brown on hover */
+    .learning-outcome-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .learning-outcome-section h2 {
+      color: #2c3e50;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #3498db;
+    }
+
+    .evaluation-table {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      background: white;
+      margin-top: 1rem;
+    }
+
+    .evaluation-table th {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      padding: 1rem 0.75rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-align: center;
+      border: none;
+    }
+
+    .evaluation-table td {
+      padding: 1rem 0.75rem;
+      text-align: center;
+      border: 1px solid #ecf0f1;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .evaluation-table tr:nth-child(even) td {
+      background: rgba(52, 152, 219, 0.02);
+    }
+
+    .section-header {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      text-align: center;
+      font-weight: 600;
+      padding: 0.75rem;
+    }
+
+    .tools-header {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white;
+      text-align: center;
+      font-weight: 600;
+      padding: 0.75rem;
+    }
+
+    .custom-checkbox {
+      position: relative;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .checkbox-custom {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #bdc3c7;
+      border-radius: 6px;
+      display: inline-block;
+      position: relative;
+      transition: all 0.3s ease;
+      background: white;
+      pointer-events: none;
+    }
+
+    .custom-checkbox input[type="checkbox"]:checked + .checkbox-custom {
+      background: #3498db;
+      border-color: #3498db;
+      transform: scale(1.05);
+    }
+
+    .custom-checkbox input[type="checkbox"]:checked + .checkbox-custom::after {
+      content: '✓';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      opacity: 1;
+      animation: checkmark 0.3s ease-in-out;
+    }
+
+    @keyframes checkmark {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .custom-checkbox:hover .checkbox-custom {
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+    }
+    
+    /* Marks input styling */
+    .marks-input-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    input.marks-input {
+      width: 40px;
+      text-align: center;
+      padding: 6px 2px;
+      border: 1px solid #bdc3c7;
+      border-radius: 6px;
+      background-color: #fff;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    input.marks-input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+    
+    input.marks-input:hover {
+      border-color: #3498db;
+    }
+    
+    /* Custom styling for input[type="number"] */
+    input.marks-input::-webkit-outer-spin-button,
+    input.marks-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    input.marks-input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    
+    /* Increment/Decrement buttons */
+    .btn-increment,
+    .btn-decrement {
+      width: 24px;
+      height: 24px;
+      border: 1px solid #bdc3c7;
+      background-color: #f8f9fa;
+      color: #333;
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 2px;
+      transition: all 0.2s ease;
+      padding: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    .btn-increment:hover,
+    .btn-decrement:hover {
+      background-color: #e9ecef;
+      border-color: #3498db;
+    }
+    
+    .btn-increment:active,
+    .btn-decrement:active {
+      background-color: #3498db;
+      color: white;
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+      /* Form structure */
+      .container {
+        padding: 10px;
+        width: 100%;
+      }
+      
+      .form-container {
+        padding: 15px;
+        margin: 0;
+      }
+      
+      .form-row {
+        flex-direction: column;
+      }
+      
+      .form-group {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+      
+      /* Table adjustments */
+      .evaluation-table {
+        font-size: 14px;
+      }
+      
+      .evaluation-table th {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+      
+      .evaluation-table td {
+        padding: 8px 4px;
+      }
+      
+      /* Number input adjustments */
+      .marks-input-container {
+        flex-direction: row;
+      }
+      
+      input.marks-input {
+        width: 36px;
+        padding: 8px 2px;
+        font-size: 16px; /* Larger font size for mobile */
+      }
+      
+      .btn-increment,
+      .btn-decrement {
+        width: 30px;
+        height: 30px;
+        font-size: 18px; /* Larger buttons for touch */
+      }
+      
+      /* Section headers */
+      .section-header {
+        font-size: 14px;
+        padding: 8px 4px;
+      }
+      
+      /* Tools row */
+      input[type="text"].tools-input {
+        padding: 6px 4px;
+        font-size: 14px;
+      }
+      
+      /* Learning outcome section */
+      .learning-outcome-section h2 {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+    }
+
+    input[type="text"].tools-input {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .totals-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 16px;
+      border: 1px solid #dee2e6;
+    }
+
+    .totals-section h3 {
+      color: #2c3e50;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .totals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .total-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .total-item.full-width {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-around;
+      background: rgba(52, 152, 219, 0.1);
+    }
+    
+    .outcome-totals-box {
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+      padding: 0.75rem;
+      background: linear-gradient(135deg, #e8f4f8, #d1ecf1);
+      border-radius: 12px;
+      border: 1px solid #bee5eb;
+    }
+    
+    .outcome-totals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    
+    .outcome-total-item {
+      background: white;
+      padding: 0.75rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .outcome-total-item label {
+      display: block;
+      font-size: 0.8rem;
+      color: #5d6778;
+      margin-bottom: 0.25rem;
+    }
+    
+    .outcome-total-item .total-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #3498db;
+    }
+
+    .total-item label {
+      font-size: 0.875rem;
+      color: #7f8c8d;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-item input {
+      font-size: 1.125rem;
+      font-weight: 600;
+      text-align: center;
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #27ae60, #229954);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 2rem;
+      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+      }
+
+      .form-card {
+        padding: 1.5rem;
+        border-radius: 16px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .nav-header h1 {
+        font-size: 1.25rem;
+        padding: 0 1rem;
+      }
+
+      .form-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .evaluation-table {
+        font-size: 0.875rem;
+      }
+
+      .evaluation-table th,
+      .evaluation-table td {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .totals-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .learning-outcome-section {
+        padding: 1rem;
+      }
+
+      .totals-section {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .evaluation-table {
+        font-size: 0.75rem;
+      }
+
+      .evaluation-table th,
+      .evaluation-table td {
+        padding: 0.5rem 0.25rem;
+      }
+
+      .custom-checkbox {
+        width: 20px;
+        height: 20px;
+      }
+
+      .checkbox-custom {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* Hidden elements */
+    .learning-outcome-wrapper {
+      display: none;
+    }
+
+    .learning-outcome-wrapper[style*="display: block"] {
+      display: block !important;
     }
   </style>
+  
+  <!-- Theme loader fix script -->
+  <script src="/theme-loader-fix.js"></script>
+  
+  <!-- Auto theme manager for initialization and auto-save -->
+  <script src="/auto-theme-manager.js"></script>
+  
+  <!-- URL update helper script -->
+  <script>
+    // Function to update URL with student roll for sharing purposes
+    function updateUrlWithStudentRoll(studentIndex) {
+      console.log('updateUrlWithStudentRoll called with studentIndex:', studentIndex);
+      
+      const rollElement = document.getElementById(`roll-${studentIndex}`);
+      const nameElement = document.getElementById(`name-${studentIndex}`);
+      
+      console.log('Found elements:', {
+        roll: !!rollElement,
+        name: !!nameElement,
+        rollValue: rollElement?.value,
+        nameValue: nameElement?.value
+      });
+      
+      if (rollElement) {
+        const studentroll = rollElement.value.trim();
+        console.log('Student roll:', studentroll);
+
+        if (studentroll) {
+          // Keep other queries intact
+          const params = new URLSearchParams(window.location.search);
+          params.set("roll", studentroll);
+          
+          // Also add name if available
+          if (nameElement && nameElement.value.trim()) {
+            params.set("name", nameElement.value.trim());
+            console.log('Added name to URL:', nameElement.value.trim());
+          }
+
+          const newUrl = window.location.pathname + "?" + params.toString();
+          console.log('Updating URL to:', newUrl);
+          window.history.replaceState({}, "", newUrl);
+        }
+      } else {
+        console.log('Roll element not found for studentIndex:', studentIndex);
+      }
+    }
+    
+    // Add event listeners to update URL when roll/name fields change
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, setting up URL update listeners');
+      
+      // Monitor all roll and name inputs for changes
+      const rollInputs = document.querySelectorAll('[id^="roll-"]');
+      const nameInputs = document.querySelectorAll('[id^="name-"]');
+      
+      console.log('Found inputs:', {
+        rollInputs: rollInputs.length,
+        nameInputs: nameInputs.length
+      });
+      
+      // Also look for inputs without the dash format (fallback)
+      const rollInputsAlt = document.querySelectorAll('input[name="roll"]');
+      const nameInputsAlt = document.querySelectorAll('input[name="name"]');
+      
+      console.log('Found alternative inputs:', {
+        rollInputsAlt: rollInputsAlt.length,
+        nameInputsAlt: nameInputsAlt.length
+      });
+      
+      // Add listeners to student navigation buttons
+      const studentNavButtons = document.querySelectorAll('.student-nav-button');
+      console.log('Found student nav buttons:', studentNavButtons.length);
+      
+      studentNavButtons.forEach((button, index) => {
+        button.addEventListener('click', function() {
+          console.log('Student nav button clicked, index:', index);
+          // Small delay to allow form switch to complete
+          setTimeout(() => {
+            updateUrlWithStudentRoll(index.toString());
+          }, 100);
+        });
+      });
+      
+      rollInputs.forEach((input, index) => {
+        console.log('Adding listener to roll input:', input.id);
+        input.addEventListener('blur', function() {
+          console.log('Roll input blur event fired for:', this.id);
+          const studentIndex = this.id.split('-')[1];
+          if (studentIndex !== undefined) {
+            updateUrlWithStudentRoll(studentIndex);
+          }
+        });
+        
+        // Also add input event for real-time updates
+        input.addEventListener('input', function() {
+          const studentIndex = this.id.split('-')[1];
+          if (studentIndex !== undefined && this.value.trim()) {
+            setTimeout(() => updateUrlWithStudentRoll(studentIndex), 500);
+          }
+        });
+      });
+      
+      nameInputs.forEach((input, index) => {
+        console.log('Adding listener to name input:', input.id);
+        input.addEventListener('blur', function() {
+          console.log('Name input blur event fired for:', this.id);
+          const studentIndex = this.id.split('-')[1];
+          if (studentIndex !== undefined) {
+            updateUrlWithStudentRoll(studentIndex);
+          }
+        });
+        
+        // Also add input event for real-time updates
+        input.addEventListener('input', function() {
+          const studentIndex = this.id.split('-')[1];
+          if (studentIndex !== undefined && this.value.trim()) {
+            setTimeout(() => updateUrlWithStudentRoll(studentIndex), 500);
+          }
+        });
+      });
+      
+      // Fallback for inputs without dash format
+      rollInputsAlt.forEach((input, index) => {
+        console.log('Adding fallback listener to roll input:', input.id || input.name);
+        input.addEventListener('blur', function() {
+          updateUrlWithStudentRoll(0); // Default to index 0
+        });
+      });
+      
+      nameInputsAlt.forEach((input, index) => {
+        console.log('Adding fallback listener to name input:', input.id || input.name);
+        input.addEventListener('blur', function() {
+          updateUrlWithStudentRoll(0); // Default to index 0
+        });
+      });
+    });
+    
+    // Also provide a global function that can be called manually for testing
+    window.testUrlUpdate = function(studentIndex = 0) {
+      console.log('Manual test of URL update');
+      updateUrlWithStudentRoll(studentIndex);
+    };
+  </script>
 </head>
 <body>
+<nav class="nav-header">
+  <h1>Class <%= studentClass %><%=section%> - <%= subject %> Theme Evaluation</h1>
+</nav>
 
-  <div class="container">
-    <h1>Theme Form</h1>
-    <form action="/theme/form" method="POST">
-      <div class="form-group">
-        <label for="roll">Roll:</label>
-        <input type="text" name="roll" id="roll" required>
+<div class="container">
+  <div class="form-card">
+
+    
+    <div class="form-header">
+      <h1>Theme Evaluation Form</h1>
+      <p>Complete the evaluation for your selected theme</p>
+      <div style="margin-top: 10px;">
+        <p style="font-size: 0.9rem; color: #3498db; padding: 8px 16px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; border-left: 3px solid #3498db; margin-bottom: 8px;">
+          <strong>Smart Data Loading:</strong> Just enter a roll number to see available themes and load previous evaluations!
+        </p>
+        <p style="font-size: 0.9rem; color: #27ae60; padding: 8px 16px; background: rgba(46, 204, 113, 0.1); border-radius: 8px; border-left: 3px solid #27ae60; margin-bottom: 8px;">
+          <strong>Autosave enabled:</strong> Changes are automatically saved as you work!
+        </p>
+        <p style="font-size: 0.9rem; color: #e67e22; padding: 8px 16px; background: rgba(230, 126, 34, 0.1); border-radius: 8px; border-left: 3px solid #e67e22;">
+          <strong>Easy Editing:</strong> Previous evaluations can be modified - just make your changes and they'll be saved!
+        </p>
       </div>
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" required>
+    </div>
+    
+    <!-- Student Navigation Bar -->
+    <div class="student-nav-bar">
+      <div class="student-nav-title">Students:</div>
+      <div class="student-nav-buttons">
+        <% studentData.forEach((student, idx) => { %>
+          <button type="button" class="student-nav-button <%= idx === 0 ? 'active' : '' %>" onclick="showStudentForm('<%= idx %>')" value="<%= student.roll %>">
+            <%= student.roll %> - <%= student.name %>
+          </button>
+        <% }) %>
       </div>
-      <div class="form-group">
-        <label for="studentClass">Class:</label>
-        <input type="text" name="studentClass" id="studentClass" required>
+    </div>
+
+
+   
+    <% studentData.forEach((student, studentIndex) => { %>
+    <form action="/themeform" method="POST" id="themeEvaluationForm-<%= studentIndex %>" class="themeEvaluationForm" style="<%= studentIndex === 0 ? '' : 'display: none' %>" onsubmit="return validateAndSubmitAjax(event, false, '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">
+      <!-- Student Information Section -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="roll-<%= studentIndex %>">Roll Number</label>
+          <input type="text" name="roll" id="roll-<%= studentIndex %>" required placeholder="Enter roll number" value="<%= student.roll %>" data-student-index="<%= studentIndex %>">
+        </div>
+        <div class="form-group">
+          <label for="name-<%= studentIndex %>">Student Name</label>
+          <input type="text" name="name" id="name-<%= studentIndex %>" required placeholder="Enter student name" value="<%= student.name %>" data-student-index="<%= studentIndex %>">
+        </div>
       </div>
-      <div class="form-group">
-        <label for="themeName">Theme Name:</label>
-        <select name="themeName" id="themeName">
-          <% themeData.forEach(theme => { %>
-            <% theme.themes.forEach(themeitem => { %>
-              <option value="<%= themeitem.themeName %>"><%= themeitem.themeName %></option>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="studentClass-<%= studentIndex %>">Class</label>
+          <input type="text" name="studentClass" id="studentClass-<%= studentIndex %>" required value="<%= studentClass %>" readonly data-student-index="<%= studentIndex %>">
+        </div>
+        <div class="form-group">
+          <label for="section-<%= studentIndex %>">Section</label>
+          <input type="text" name="section" id="section-<%= studentIndex %>" required value="<%= section %>" readonly data-student-index="<%= studentIndex %>">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="subject-<%= studentIndex %>">Subject</label>
+          <input type="text" name="subjects[0][name]" id="subject-<%= studentIndex %>" required value="<%= subject %>" readonly data-student-index="<%= studentIndex %>">
+        </div>
+        <div class="form-group">
+          <label for="themeName-<%= studentIndex %>">Theme Name</label>
+          <select name="subjects[0][themes][0][themeName]" id="themeName-<%= studentIndex %>" onchange="filterLearningOutcomes(this)" required data-student-index="<%= studentIndex %>">
+            <option value="">Select a theme</option>
+            <% themeData.forEach(theme => { %>
+              <% theme.themes.forEach(themeitem => { %>
+                <option value="<%= themeitem.themeName %>"><%= themeitem.themeName %></option>
+              <% }) %>
             <% }) %>
-          <% }) %>
-        </select>
+          </select>
+        </div>
       </div>
 
-      <% themeData.forEach(themeDoc => { %>
-        <% themeDoc.themes.forEach(themeItem => { %>
-          <% themeItem.learningOutcome.forEach((outcome, index) => { %>
-            <h2><%= outcome.learningOutcomeName %></h2>
-            <input type="date" name="evaluationDate_<%= index %>">
-            <table>
-              <thead>
-                <tr>
-                  <% outcome.indicators.forEach(indicator => { %>
-                    <th><%= indicator.indicatorName %></th>
-                  <% }); %>
-                  <th>Obtained Marks</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <% outcome.indicators.forEach((indicator, i) => { %>
-                    <td><input type="checkbox" name="indicators_<%= index %>_<%= i %>" value="<%= indicator.indicatorsMarks %>" onclick="updateObtainedMarks(this, 'totalMarksbefore_<%= index %>')"></td>
-                  <% }); %>
-                  <td><input type="number" id="totalMarksbefore_<%= index %>" name="totalMarks_before_<%= index %>" readonly></td>
-                </tr>
-                <tr>
-                  <th colspan="<%= outcome.indicators.length + 1 %>" style="text-align:center;">थप सहायता पछि</th>
-                </tr>
-                <tr>
-                  <% outcome.indicators.forEach((indicator, i) => { %>
-                    <td><input type="checkbox" name="indicators_after_<%= index %>_<%= i %>" value="<%= indicator.indicatorsMarks %>" onclick="updateObtainedMarks(this, 'totalMarksafter_<%= index %>')"></td>
-                  <% }); %>
-                  <td><input type="number" id="totalMarksafter_<%= index %>" name="totalMarks_after_<%= index %>" readonly></td>
-                </tr>
-                <tr>
-                  <% outcome.indicators.forEach(() => { %>
-                    <th>प्रयोग गरिएको साधन</th>
-                  <% }); %>
-                  <th></th>
-                </tr>
-                <tr>
-                  <% outcome.indicators.forEach((indicator, i) => { %>
-                    <td><input type="text" name="tools_<%= index %>_<%= i %>"></td>
-                  <% }); %>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
+      <!-- Learning Outcomes Section -->
+      <% themeData.forEach((themeDoc, themeDocIndex) => { %>
+        <% themeDoc.themes.forEach((themeItem, themeItemIndex) => { %>
+          <div class="learning-outcome-wrapper" data-theme="<%= themeItem.themeName %>" data-theme-index="<%= themeItemIndex %>" data-student-index="<%= studentIndex %>">
+          <% themeItem.learningOutcome.forEach((outcome, outcomeIndex) => { %>
+            <div class="learning-outcome-section">
+              <h2><%= outcome.learningOutcomeName %></h2>
+              <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.learningOutcomeName %>">
+              
+              <div class="form-group">
+                <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>">Evaluation Date</label>
+                 <p>
+ <input type="text" 
+       id="nepali-datepicker<%=themeItemIndex%>" 
+       placeholder="YYYY-MM-DD" 
+       class="theme-field nepali-datepicker" 
+       name="subjects[<%= studentIndex %>][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][evaluationDate]" 
+       data-student-index="<%= studentIndex %>"/>
+ </p>
+ <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+  window.onload = function() {
+    // Get all inputs with class "nepali-datepicker"
+    var dateInputs = document.querySelectorAll('.nepali-datepicker');
+    
+    dateInputs.forEach(function(input) {
+      input.nepaliDatePicker();  // Initialize for each
+    });
+  };
+</script>
+                
+              </div>
+              
+              <table class="evaluation-table">
+                <thead>
+                  <tr>
+                    <% outcome.indicators.forEach(indicator => { %>
+                      <th><%= indicator.indicatorName %></th>
+                    <% }); %>
+                    <th>Total Marks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
+                      <td>
+                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][name]" value="<%= indicator.indicatorName %>">
+                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][maxMarks]" value="<%= indicator.indicatorsMarks %>">
+                        <div class="marks-input-container">
+                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
+                          <input type="number" 
+                                 min="0" 
+                                 max="<%= indicator.indicatorsMarks %>" 
+                                 step="any" 
+                                 data-max-marks="<%= indicator.indicatorsMarks %>"
+                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')"
+                                 class="marks-input indicator-before"
+                                 value="0"
+                                 data-student-index="<%= studentIndex %>">
+                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
+                        </div>
+                        <input type="hidden" 
+                               class="theme-field"
+                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
+                               value="0"
+                               data-student-index="<%= studentIndex %>">
+                      </td>
+                    <% }); %>
+                    <td>
+                      <input type="number" 
+                             id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                             class="theme-field"
+                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
+                             readonly
+                             data-student-index="<%= studentIndex %>">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="<%= outcome.indicators.length + 1 %>" class="section-header" style="color: #2980b9;">थप सहायता पछि (After Intervention)</td>
+                  </tr>
+                  <tr>
+                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
+                      <td>
+                        <div class="marks-input-container">
+                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
+                          <input type="number" 
+                                 min="0" 
+                                 max="<%= indicator.indicatorsMarks %>" 
+                                 step="any" 
+                                 data-max-marks="<%= indicator.indicatorsMarks %>"
+                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')"
+                                 class="marks-input indicator-after"
+                                 value="0"
+                                 data-student-index="<%= studentIndex %>">
+                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
+                        </div>
+                        <input type="hidden" 
+                               class="theme-field"
+                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
+                               value="0"
+                               data-student-index="<%= studentIndex %>">
+                      </td>
+                    <% }); %>
+                    <td>
+                      <input type="number" 
+                             id="totalAfter_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                             class="theme-field"
+                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
+                             readonly
+                             data-student-index="<%= studentIndex %>">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="<%= outcome.indicators.length + 1 %>" class="tools-header">प्रयोग गरिएको साधन (Tools Used)</td>
+                  </tr>
+                  <tr>
+                    <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
+                      <td>
+                        <input type="text" class="theme-field tools-input" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][toolsUsed]" placeholder="Tools used">
+                      </td>
+                    <% }); %>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              <!-- Individual outcome totals box -->
+              <div class="outcome-totals-box">
+                <div class="outcome-totals-grid">
+                  <div class="outcome-total-item">
+                    <label for="outcomeBeforeTotal_<%= themeItemIndex %>_<%= outcomeIndex %>">Before Intervention Total</label>
+                    <div class="total-value" id="outcomeBeforeDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</div>
+                  </div>
+                  <div class="outcome-total-item">
+                    <label for="outcomeAfterTotal_<%= themeItemIndex %>_<%= outcomeIndex %>">After Intervention Total</label>
+                    <div class="total-value" id="outcomeAfterDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           <% }); %>
+          
+          <!-- Overall theme totals -->
+          <div class="totals-section">
+            <h3>Overall Theme Totals</h3>
+            <div class="totals-grid">
+              <div class="total-item">
+                <label for="overallTotalBefore_<%= themeItemIndex %>-student-<%= studentIndex %>">Total Before Intervention</label>
+                <input type="number" id="overallTotalBefore_<%= themeItemIndex %>-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalBefore]" readonly data-student-index="<%= studentIndex %>">
+              </div>
+              <div class="total-item">
+                <label for="overallTotalAfter_<%= themeItemIndex %>-student-<%= studentIndex %>">Total After Intervention</label>
+                <input type="number" id="overallTotalAfter_<%= themeItemIndex %>-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalAfter]" readonly data-student-index="<%= studentIndex %>">
+              </div>
+              <div class="total-item full-width">
+                <label>Total Learning Outcomes: <span id="totalOutcomes_<%= themeItemIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</span></label>
+                <label>Total Max Marks: <span id="totalMaxMarks_<%= themeItemIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</span></label>
+              </div>
+            </div>
+          </div>
+          </div>
         <% }); %>
       <% }); %>
-      <button type="submit">Submit</button>
+      
+      <button type="submit" class="submit-btn">
+        Save Evaluation
+      </button>
     </form>
+    <%})%>
   </div>
-
+</div>
+<script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js" type="text/javascript"></script>
   <script>
-    function updateObtainedMarks(checkbox, totalMarksId) {
-      const row = checkbox.closest('tr');
-      const checkboxes = row.querySelectorAll('input[type="checkbox"]');
-      let totalMarks = 0;
+    function validateAndSubmitAjax(event, isAutosave = false, studentIndex = null) {
+      if (event) {
+        event.preventDefault();
+      }
+      
+      // If studentIndex is not provided, try to get it from the event
+      if (studentIndex === null && event && event.target) {
+        studentIndex = event.target.getAttribute('data-student-index');
+      }
+      
+      try {
+        // Get the selected theme based on studentIndex
+        const selectedThemeId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
+        const selectedThemeElement = document.getElementById(selectedThemeId);
+        
+        if (!selectedThemeElement) {
+          console.error(`Theme select element not found with ID: ${selectedThemeId}`);
+          return false;
+        }
+        
+        const selectedTheme = selectedThemeElement.value;
+        
+        // Find the active wrapper for this student
+        const activeWrapperSelector = studentIndex !== null 
+          ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
+          : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
+        
+        const activeWrapper = document.querySelector(activeWrapperSelector);
+        
+        // Use student-specific edit mode if available
+        const isCurrentEditMode = (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
+          ? isEditModeByStudent[studentIndex] 
+          : isEditMode;
+        
+        console.log('Selected theme:', selectedTheme);
+        console.log('Active wrapper found:', !!activeWrapper);
+        console.log('Is edit mode:', isCurrentEditMode);
+        
+        if (!activeWrapper) {
+          if (!isAutosave) alert('Please select a theme');
+          return false;
+        }
+        
+        // Validate required fields
+        const rollId = studentIndex !== null ? `roll-${studentIndex}` : 'roll';
+        const nameId = studentIndex !== null ? `name-${studentIndex}` : 'name';
+        
+        const rollElement = document.getElementById(rollId);
+        const nameElement = document.getElementById(nameId);
+        
+        if (!rollElement || !nameElement) {
+          console.error(`Form elements not found: roll=${!!rollElement}, name=${!!nameElement}`);
+          if (!isAutosave) alert('Error finding form elements');
+          return false;
+        }
+        
+        const roll = rollElement.value.trim();
+        const name = nameElement.value.trim();
+        
+        if (!roll || !name) {
+          if (!isAutosave) alert('Please fill in roll number and name');
+          return false;
+        }
+        
+        // If not autosaving, show a saving indicator
+        if (!isAutosave) {
+          showSavingIndicator();
+        }
+        
+        // Create a completely new form with clean data structure
+        const originalFormId = studentIndex !== null ? `themeEvaluationForm-${studentIndex}` : 'themeEvaluationForm';
+        const originalForm = document.getElementById(originalFormId);
+        
+        if (!originalForm) {
+          console.error(`Original form not found with ID: ${originalFormId}`);
+          if (!isAutosave) alert('Error finding form');
+          return false;
+        }
+        
+        const newForm = document.createElement('form');
+        newForm.action = originalForm.action;
+        newForm.method = originalForm.method;
+        newForm.style.display = 'none';
+        
+        // Helper function to add hidden inputs
+        const addField = (name, value) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value !== undefined && value !== null ? value : '';
+          newForm.appendChild(input);
+        };
+        
+        // Add basic student information
+        addField('roll', roll);
+        addField('name', name);
+        
+        // Get student-specific field values
+        const studentClassId = studentIndex !== null ? `studentClass-${studentIndex}` : 'studentClass';
+        const sectionId = studentIndex !== null ? `section-${studentIndex}` : 'section';
+        const subjectId = studentIndex !== null ? `subject-${studentIndex}` : 'subject';
+        
+        const studentClassElement = document.getElementById(studentClassId);
+        const sectionElement = document.getElementById(sectionId);
+        const subjectElement = document.getElementById(subjectId);
+        
+        if (!studentClassElement || !sectionElement || !subjectElement) {
+          console.error(`Form elements not found: class=${!!studentClassElement}, section=${!!sectionElement}, subject=${!!subjectElement}`);
+          if (!isAutosave) alert('Error finding form elements');
+          return false;
+        }
+        
+        addField('studentClass', studentClassElement.value);
+        addField('section', sectionElement.value);
+        addField('subjects[0][name]', subjectElement.value);
+        addField('subjects[0][themes][0][themeName]', selectedTheme);
+        addField('updatedAt', new Date().toISOString());
+        
+        // Use student-specific edit mode if available
+        const formEditMode = (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
+          ? isEditModeByStudent[studentIndex] 
+          : isEditMode;
+        addField('isEditMode', formEditMode);
+        
+        // Process learning outcomes from the active wrapper
+        const themeIndex = activeWrapper.dataset.themeIndex;
+        let newOutcomeIndex = 0;
+        
+        // Find all learning outcome containers in the active wrapper
+        const outcomeContainers = activeWrapper.querySelectorAll('h2');
+        
+        outcomeContainers.forEach((h2) => {
+          const outcomeName = h2.textContent.trim();
+          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][name]`, outcomeName);
+          
+          // Find the next sibling elements until we hit another h2 or end of wrapper
+          let currentElement = h2.nextElementSibling;
+          let evaluationDate = '';
+          let indicators = [];
+          let totalBefore = 0;
+          let totalAfter = 0;
+          
+          while (currentElement && currentElement.tagName !== 'H2') {
+            // Check for evaluation date input
+            if (currentElement.tagName === 'DIV' && currentElement.classList.contains('form-group')) {
+              const dateInput = currentElement.querySelector('input[type="date"]');
+              if (dateInput) {
+                evaluationDate = dateInput.value;
+              }
+            }
+            
+            // Check for table with indicators
+            if (currentElement.tagName === 'TABLE') {
+              const beforeRow = currentElement.querySelector('tbody tr:first-child');
+              const afterRow = currentElement.querySelector('tbody tr:nth-child(3)');
+              const toolsRow = currentElement.querySelector('tbody tr:nth-child(5)');
+              
+              if (beforeRow) {
+                const beforeInputs = beforeRow.querySelectorAll('.marks-input.indicator-before');
+                const afterInputs = afterRow ? afterRow.querySelectorAll('.marks-input.indicator-after') : [];
+                const toolsInputs = toolsRow ? toolsRow.querySelectorAll('input[type="text"]') : [];
+                
+                beforeInputs.forEach((input, indicatorIndex) => {
+                  const maxMarks = parseFloat(input.dataset.maxMarks) || 0;
+                  const beforeMarks = parseFloat(input.value) || 0;
+                  const afterMarks = afterInputs[indicatorIndex] ? parseFloat(afterInputs[indicatorIndex].value) || 0 : 0;
+                  const toolsUsed = toolsInputs[indicatorIndex] ? toolsInputs[indicatorIndex].value : '';
+                  
+                  // Try to get indicator name from the table header
+                  const headers = currentElement.querySelectorAll('thead th');
+                  const indicatorName = headers[indicatorIndex] ? headers[indicatorIndex].textContent.trim() : `Indicator ${indicatorIndex + 1}`;
+                  
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][name]`, indicatorName);
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][maxMarks]`, maxMarks);
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][marksBeforeIntervention]`, beforeMarks);
+                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][marksAfterIntervention]`, afterMarks);
+                  if (toolsUsed) {
+                    addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][toolsUsed]`, toolsUsed);
+                  }
+                  
+                  totalBefore += beforeMarks;
+                  totalAfter += afterMarks;
+                });
+              }
+            }
+            
+            currentElement = currentElement.nextElementSibling;
+          }
+          
+          // Add evaluation date and totals
+          if (evaluationDate) {
+            addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][evaluationDate]`, evaluationDate);
+          }
+          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][totalMarksBeforeIntervention]`, totalBefore);
+          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][totalMarksAfterIntervention]`, totalAfter);
+          
+          newOutcomeIndex++;
+        });
+        
+        // Add overall totals
+        const overallBeforeField = activeWrapper.querySelector(`#overallTotalBefore_${themeIndex}`);
+        const overallAfterField = activeWrapper.querySelector(`#overallTotalAfter_${themeIndex}`);
+        
+        addField('subjects[0][themes][0][overallTotalBefore]', overallBeforeField ? overallBeforeField.value : '0');
+        addField('subjects[0][themes][0][overallTotalAfter]', overallAfterField ? overallAfterField.value : '0');
+        
+        // Submit the form via AJAX instead of normal submit
+        document.body.appendChild(newForm);
+        console.log('Submitting clean form with', newForm.querySelectorAll('input').length, 'fields');
+        
+        // Convert to a structured object
+        const formData = new FormData(newForm);
+        const plainFormData = {};
+        
+        // Process form data into a structured object with proper nesting
+        for (const [key, value] of formData.entries()) {
+          // Check if this is a nested field (contains brackets)
+          if (key.includes('[')) {
+            // Parse the nested structure
+            const parts = key.match(/([^\[\]]+)|\[([^\[\]]*)\]/g).map(part => 
+              part.replace(/^\[|\]$/g, '') // Remove brackets
+            );
+            
+            // Build the nested structure
+            let current = plainFormData;
+            for (let i = 0; i < parts.length - 1; i++) {
+              const part = parts[i];
+              // Create array or object if it doesn't exist
+              if (/^\d+$/.test(parts[i+1])) {
+                // Next part is a number, create array
+                current[part] = current[part] || [];
+              } else {
+                current[part] = current[part] || {};
+              }
+              current = current[part];
+            }
+            
+            // Set the value at the final level
+            const lastPart = parts[parts.length - 1];
+            current[lastPart] = value;
+          } else {
+            // Simple key-value pair
+            plainFormData[key] = value;
+          }
+        }
+        
+        // Add flags
+        plainFormData.ajax = 'true';
+        if (isAutosave) {
+          plainFormData.autosave = 'true';
+        }
+        if (isEditMode) {
+          plainFormData.isEdit = 'true';
+        }
+        
+        fetch('/themeform', {
+          method: 'POST',
+          body: JSON.stringify(plainFormData),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            // If this was a manual save (not autosave), show success message
+            if (!isAutosave) {
+              // Set the form to edit mode after successfully saving
+              isEditMode = true;
+              updateSubmitButtonText(true);
+              
+              // Update the theme data in memory if it was returned
+              if (data.themeData) {
+                currentThemeData = data.themeData;
+              }
+              
+              // Show edit mode notification
+              showEditModeNotification();
+              
+              // Use student-specific edit mode if available
+              const messageEditMode = (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
+                ? isEditModeByStudent[studentIndex] 
+                : isEditMode;
+                
+              // Show success message
+              const successMessage = document.createElement('div');
+              successMessage.className = 'toast-message';
+              successMessage.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M22 4L12 14.01L9 11.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Evaluation ${messageEditMode ? 'updated' : 'saved'} successfully!</span>
+              `;
+              successMessage.style.position = 'fixed';
+              successMessage.style.top = '20px';
+              successMessage.style.left = '50%';
+              successMessage.style.transform = 'translateX(-50%)';
+              successMessage.style.background = 'rgba(46, 204, 113, 0.95)';
+              successMessage.style.color = 'white';
+              successMessage.style.padding = '12px 24px';
+              successMessage.style.borderRadius = '8px';
+              successMessage.style.zIndex = '1000';
+              successMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+              successMessage.style.display = 'flex';
+              successMessage.style.alignItems = 'center';
+              successMessage.style.gap = '10px';
+              document.body.appendChild(successMessage);
+              
+              // Remove the message after 3 seconds
+              setTimeout(() => {
+                successMessage.style.opacity = '0';
+                successMessage.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                successMessage.style.transform = 'translateX(-50%) translateY(-20px)';
+                setTimeout(() => {
+                  if (successMessage.parentNode) {
+                    document.body.removeChild(successMessage);
+                  }
+                }, 500);
+              }, 3000);
+            } else {
+              // For autosave just show the indicator
+              showSavedIndicator();
+            }
+          } else {
+            if (!isAutosave) {
+              alert('Error saving data: ' + (data.message || 'Unknown error'));
+              showSaveErrorIndicator();
+            } else {
+              showSaveErrorIndicator();
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error saving form:', error);
+          
+          if (!isAutosave) {
+            alert('Error saving form: ' + error.message);
+          }
+          
+          showSaveErrorIndicator();
+        });
+        
+        return false;
+        
+      } catch (error) {
+        console.error('Error in validateAndSubmitAjax:', error);
+        
+        if (!isAutosave) {
+          alert('Error preparing form submission: ' + error.message);
+        }
+        
+        showSaveErrorIndicator();
+        return false;
+      }
+    }
+    
+    function filterLearningOutcomes(selectElement) {
+      const selectedTheme = selectElement.value;
+      const studentIndex = selectElement.getAttribute('data-student-index');
+      
+      console.log(`Filtering for theme: ${selectedTheme}, student index: ${studentIndex}`);
+      
+      // Get wrappers for this specific student only
+      const outcomeWrappers = document.querySelectorAll(`.learning-outcome-wrapper[data-student-index="${studentIndex}"]`);
+      
+      console.log('Found wrappers:', outcomeWrappers.length);
 
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          totalMarks += parseFloat(cb.value) || 0;
+      outcomeWrappers.forEach((wrapper, index) => {
+        const wrapperTheme = wrapper.dataset.theme;
+        const isSelected = wrapperTheme === selectedTheme;
+        
+        console.log(`Wrapper ${index}: theme="${wrapperTheme}", selected=${isSelected}`);
+        
+        wrapper.style.display = isSelected ? 'block' : 'none';
+        
+        // Enable/disable form fields based on selection
+        const themeFields = wrapper.querySelectorAll('.theme-field');
+        themeFields.forEach(field => {
+          field.disabled = !isSelected;
+          // Clear values for non-selected themes
+          if (!isSelected) {
+            if (field.type === 'checkbox') {
+              field.checked = false;
+            } else if (field.type !== 'hidden' || !field.name.includes('[name]')) {
+              field.value = '';
+            }
+          }
+        });
+        
+        // Also disable mark inputs
+        const markInputs = wrapper.querySelectorAll('.marks-input');
+        markInputs.forEach(input => {
+          input.disabled = !isSelected;
+          if (!isSelected) input.value = 0;
+        });
+      });
+      
+      // Initialize totals for the newly selected theme
+      setTimeout(() => initializeAllTotals(studentIndex), 100); // Small delay to ensure DOM is updated
+    }
+
+    // Function to try to restore data from localStorage if available (in case of page refresh)
+    function tryRestoreFromLocalStorage(studentIndex) {
+      try {
+        const formId = studentIndex !== null ? `themeEvaluationForm-${studentIndex}` : 'themeEvaluationForm';
+        const backupKey = `themeForm_${formId}_backup`;
+        const backupData = localStorage.getItem(backupKey);
+        
+        if (backupData) {
+          const parsedData = JSON.parse(backupData);
+          const timestamp = new Date(parsedData.timestamp);
+          const now = new Date();
+          const minutesAgo = (now - timestamp) / (1000 * 60);
+          
+          // Only restore data if it's recent (less than 30 minutes old)
+          if (minutesAgo < 30) {
+            console.log(`Found saved form data from ${Math.round(minutesAgo)} minutes ago for ${formId}`);
+            
+            // Show notification about restored data
+            showCustomNotification(
+              "Restored Previous Data", 
+              `Your unsaved changes from ${Math.round(minutesAgo)} minutes ago have been restored.`, 
+              "info"
+            );
+            
+            // We don't need to actually restore the form data since we'll load it from the server
+            // But we know there's recent data, so we should prioritize loading from server
+            return true;
+          } else {
+            console.log(`Found old form backup from ${Math.round(minutesAgo)} minutes ago - not restoring`);
+            localStorage.removeItem(backupKey); // Clean up old data
+            return false;
+          }
+        }
+        return false;
+      } catch (e) {
+        console.error('Error checking for form backup:', e);
+        return false;
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize edit mode for all students
+      document.querySelectorAll('.themeEvaluationForm').forEach(form => {
+        const studentIndex = form.getAttribute('data-student-index');
+        if (!studentIndex) {
+          console.error('Form missing data-student-index attribute:', form);
+          return;
+        }
+        
+        // Initialize edit mode state for this student
+        isEditModeByStudent[studentIndex] = false;
+        
+        // Filter learning outcomes for each student form
+        const themeSelector = document.getElementById(`themeName-${studentIndex}`);
+        if (themeSelector) {
+          filterLearningOutcomes(themeSelector);
+        }
+        
+        // Check if there's saved form data in localStorage
+        const hasLocalBackup = tryRestoreFromLocalStorage(studentIndex);
+        
+        // Try to load previously saved data for this student
+        const rollInput = document.getElementById(`roll-${studentIndex}`);
+        if (rollInput && rollInput.value) {
+          // Trigger the loadPreviousData function to load saved data
+         
+          
+          // If we have both roll number and theme selected, trigger an immediate save
+          // to ensure we're persisting data frequently
+          const themeSelect = document.getElementById(`themeName-${studentIndex}`);
+          if (themeSelect && themeSelect.value) {
+            setTimeout(() => {
+              autosaveForm(studentIndex);
+            }, 1500); // Short delay to ensure form is fully loaded
+          }
+        }
+        
+        // Add hidden field with timestamp for updatedAt
+        const updatedAtField = document.createElement('input');
+        updatedAtField.type = 'hidden';
+        updatedAtField.name = 'updatedAt';
+        updatedAtField.value = new Date().toISOString();
+        form.appendChild(updatedAtField);
+        
+        // Add special handler for Syam Basnet's data (roll number 1)
+        const rollField = document.getElementById(`roll-${studentIndex}`);
+        if (rollField) {
+          rollField.addEventListener('change', function() {
+            if (this.value.trim() === "1") {
+              checkForSyamBasnetData(studentIndex);
+            }
+          });
         }
       });
+      
+      // Check URL parameters for auto-loading Syam's data
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoLoadSyam = urlParams.get('autoLoadSyam');
+      
+      // Apply to first student form only for now
+      const studentClassEl = document.getElementById('studentClass-0');
+      const subjectEl = document.getElementById('subject-0');
+      
+      if (studentClassEl && subjectEl && 
+          (autoLoadSyam === 'true' || 
+           (studentClassEl.value.trim() === "1" && 
+            subjectEl.value.trim().toLowerCase() === "serofero"))) {
+        // Add a slight delay to ensure the form is fully loaded
+        setTimeout(() => {
+          const rollEl = document.getElementById('roll-0');
+          if (rollEl) {
+            rollEl.value = "1";
+            checkForSyamBasnetData('0');
+          }
+        }, 500);
+      }
+      
+      // Add click handlers for custom checkboxes as backup
+      document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('checkbox-custom')) {
+          // Find the associated checkbox input
+          const checkboxInput = event.target.previousElementSibling;
+          if (checkboxInput && checkboxInput.type === 'checkbox') {
+            checkboxInput.checked = !checkboxInput.checked;
+            // Trigger the onchange event manually
+            const changeEvent = new Event('change', { bubbles: true });
+            checkboxInput.dispatchEvent(changeEvent);
+          }
+        }
+      });
+      
+      // Initialize all totals calculations
+      initializeAllTotals();
+    });
+    
+    function initializeAllTotals(studentIndex = null) {
+      // Find the active wrapper for the specified student (or all if not specified)
+      const activeWrapperSelector = studentIndex !== null 
+        ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
+        : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
+      
+      const activeWrappers = document.querySelectorAll(activeWrapperSelector);
+      if (!activeWrappers.length) return;
+      
+      // Process each active wrapper
+      activeWrappers.forEach(activeWrapper => {
+        const themeIndex = activeWrapper.dataset.themeIndex;
+        const wrapperStudentIndex = activeWrapper.dataset.studentIndex || null;
+        
+        // Find all outcome sections in this active wrapper
+        const outcomeContainers = activeWrapper.querySelectorAll('.learning-outcome-section');
+        
+        outcomeContainers.forEach((container, outcomeIndex) => {
+          // Update before intervention totals
+          updateLearningOutcomeTotal(outcomeIndex, 'Before', wrapperStudentIndex);
+          // Update after intervention totals
+          updateLearningOutcomeTotal(outcomeIndex, 'After', wrapperStudentIndex);
+        });
+        
+        // Calculate overall totals for this wrapper
+        calculateOverallTotals(wrapperStudentIndex);
+      });
+    }
 
-      const totalMarksCell = document.getElementById(totalMarksId);
-      if (totalMarksCell) {
-        totalMarksCell.value = totalMarks;
+    function updateMarks(input, outcomeIndex, indicatorIndex, timing, studentIndex = null) {
+      // Ensure the input value is valid
+      let value = parseFloat(input.value) || 0;
+      const maxMarks = parseFloat(input.dataset.maxMarks) || 0;
+      
+      // Cap the value at the maximum marks
+      if (value > maxMarks) {
+        value = maxMarks;
+        input.value = maxMarks;
+      }
+      
+      // Ensure value is not negative
+      if (value < 0) {
+        value = 0;
+        input.value = 0;
+      }
+      
+      console.log('Input value changed:', {
+        value: value,
+        maxMarks: maxMarks,
+        timing: timing,
+        outcomeIndex: outcomeIndex,
+        indicatorIndex: indicatorIndex
+      });
+      
+      // Set the appropriate field name based on timing (Before or After intervention)
+      const fieldName = timing === 'Before' ? 
+        `subjects[0][themes][0][learningOutcomes][${outcomeIndex}][indicators][${indicatorIndex}][marksBeforeIntervention]` :
+        `subjects[0][themes][0][learningOutcomes][${outcomeIndex}][indicators][${indicatorIndex}][marksAfterIntervention]`;
+      
+      // Get the hidden input field - try multiple approaches to find it
+      let inputField = null;
+      
+      // Look for hidden field with matching name pattern in the same cell
+      const cell = input.closest('td');
+      if (cell) {
+        inputField = cell.querySelector(`input[name$="[marks${timing}Intervention]"]`);
+      }
+      
+      // If not found, try to find by name in the entire active wrapper
+      if (!inputField || inputField.type !== 'hidden') {
+        // Use student-specific wrapper if provided
+        const activeWrapperSelector = studentIndex !== null 
+          ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
+          : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
+        
+        const activeWrapper = document.querySelector(activeWrapperSelector);
+        if (activeWrapper) {
+          // Create a partial name match for the field
+          const partialName = `[${outcomeIndex}][indicators][${indicatorIndex}][marks${timing}Intervention]`;
+          inputField = activeWrapper.querySelector(`input[name*="${partialName}"]`);
+        }
+      }
+      
+      // Set the value based on input value
+      if (inputField && inputField.type === 'hidden') {
+        inputField.value = value;
+        console.log('Updated hidden field value:', inputField.value);
+      } else {
+        console.warn('Could not find hidden input field for', fieldName);
+        
+        // Create the field if it doesn't exist
+        if (cell && !inputField) {
+          inputField = document.createElement('input');
+          inputField.type = 'hidden';
+          inputField.name = fieldName;
+          inputField.value = value;
+          cell.appendChild(inputField);
+          console.log('Created missing hidden field:', fieldName);
+        }
+      }
+      
+      // Update total for this learning outcome
+      updateLearningOutcomeTotal(outcomeIndex, timing, studentIndex);
+      
+      // Update overall theme totals
+      calculateOverallTotals(studentIndex);
+      
+      // Trigger autosave immediately after marks are updated - but use a short delay to batch changes
+      if (window.markUpdateTimeout) {
+        clearTimeout(window.markUpdateTimeout);
+      }
+      window.markUpdateTimeout = setTimeout(() => {
+        console.log('Marks updated, saving to database...');
+        autosaveForm(studentIndex); // Autosave the form with the new totals
+        
+        // Show quick feedback that save is happening
+        showSavingIndicator();
+      }, 500); // Shorter delay for faster response
+    }
+    
+    // Increment value function for + buttons
+    function incrementValue(button, outcomeIndex, indicatorIndex, timing, studentIndex = null) {
+      // Get the input element (sibling of the button)
+      const inputElement = button.previousElementSibling;
+      if (!inputElement || !inputElement.classList.contains('marks-input')) return;
+      
+      // Get current and max values
+      let currentValue = parseFloat(inputElement.value) || 0;
+      const maxMarks = parseFloat(inputElement.dataset.maxMarks) || 0;
+      
+      // Increment by 1, but don't exceed max marks
+      if (currentValue < maxMarks) {
+        currentValue += 1;
+        inputElement.value = currentValue;
+        
+        // Update marks using the existing function
+        updateMarks(inputElement, outcomeIndex, indicatorIndex, timing, studentIndex);
+      }
+    }
+    
+    // Decrement value function for - buttons
+    function decrementValue(button, outcomeIndex, indicatorIndex, timing, studentIndex = null) {
+      // Get the input element (sibling of the button)
+      const inputElement = button.nextElementSibling;
+      if (!inputElement || !inputElement.classList.contains('marks-input')) return;
+      
+      // Get current value
+      let currentValue = parseFloat(inputElement.value) || 0;
+      
+      // Decrement by 1, but not below zero
+      if (currentValue > 0) {
+        currentValue -= 1;
+        inputElement.value = currentValue;
+        
+        // Update marks using the existing function
+        updateMarks(inputElement, outcomeIndex, indicatorIndex, timing, studentIndex);
+      }
+    }
+    
+    function updateLearningOutcomeTotal(outcomeIndex, timing, studentIndex = null) {
+      // Get the currently active wrapper for the specified student (or active wrapper if not specified)
+      const activeWrapperSelector = studentIndex !== null 
+        ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
+        : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
+      
+      const activeWrapper = document.querySelector(activeWrapperSelector);
+      if (!activeWrapper) return;
+      
+      const themeIndex = activeWrapper.dataset.themeIndex;
+      const totalId = timing === 'Before' ? `totalBefore_${themeIndex}_${outcomeIndex}` : `totalAfter_${themeIndex}_${outcomeIndex}`;
+      const inputSelector = timing === 'Before' ? '.indicator-before' : '.indicator-after';
+      
+      // First try with student index if provided
+      let totalField = null;
+      if (studentIndex !== null) {
+        const studentSpecificId = `${totalId}-student-${studentIndex}`;
+        totalField = document.getElementById(studentSpecificId);
+      }
+      
+      // If not found with student index, try the regular ID
+      if (!totalField) {
+        totalField = document.getElementById(totalId);
+      }
+      
+      if (!totalField) {
+        console.error(`Total field not found for outcome ${outcomeIndex}, timing ${timing}, student ${studentIndex}`);
+        return;
+      }
+      
+      // Get all indicators for this learning outcome within the active wrapper
+      const outcomeSection = totalField.closest('.learning-outcome-section');
+      const inputs = outcomeSection.querySelectorAll(inputSelector);
+      
+      let total = 0;
+      inputs.forEach(input => {
+        // Add the input value to the total
+        total += parseFloat(input.value) || 0;
+      });
+      
+      // Check if the value has changed before updating
+      const previousValue = parseFloat(totalField.value) || 0;
+      let valueChanged = previousValue !== total;
+      
+      // Update the hidden field for form submission
+      if (valueChanged) {
+        totalField.value = total;
+      }
+      
+      // Update the display value in the outcome totals box
+      const displayId = studentIndex !== null ? 
+        `outcome${timing}Display_${themeIndex}_${outcomeIndex}-student-${studentIndex}` : 
+        `outcome${timing}Display_${themeIndex}_${outcomeIndex}`;
+      
+      const displayElement = document.getElementById(displayId);
+      if (displayElement) {
+        displayElement.textContent = total;
+      } else {
+        console.error(`Display element not found: ${displayId}`);
+      }
+      
+      // The updateMarks function already triggers autosave, so we don't need to trigger it here
+    }
+    
+    function calculateOverallTotals(studentIndex = null) {
+      // Only calculate for visible learning outcome wrapper (the currently selected theme)
+      const activeWrapperSelector = studentIndex !== null 
+        ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
+        : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
+      
+      const activeWrapper = document.querySelector(activeWrapperSelector);
+      if (!activeWrapper) return;
+      
+      const themeIndex = activeWrapper.dataset.themeIndex;
+      const studentSuffix = studentIndex !== null ? `-student-${studentIndex}` : '';
+      
+      let overallBefore = 0;
+      let overallAfter = 0;
+      let totalMaxMarks = 0;
+      
+      // Sum up all learning outcome totals for the active theme
+      // First try with student-specific IDs if studentIndex is provided
+      let beforeTotals, afterTotals;
+      
+      if (studentIndex !== null) {
+        beforeTotals = activeWrapper.querySelectorAll(`input[id^="totalBefore_${themeIndex}_"][id*="-student-${studentIndex}"]`);
+        afterTotals = activeWrapper.querySelectorAll(`input[id^="totalAfter_${themeIndex}_"][id*="-student-${studentIndex}"]`);
+      }
+      
+      // If no student-specific totals found, fall back to regular IDs
+      if (!beforeTotals || beforeTotals.length === 0) {
+        beforeTotals = activeWrapper.querySelectorAll(`input[id^="totalBefore_${themeIndex}_"]`);
+        afterTotals = activeWrapper.querySelectorAll(`input[id^="totalAfter_${themeIndex}_"]`);
+      }
+      
+      beforeTotals.forEach(input => {
+        overallBefore += parseFloat(input.value) || 0;
+      });
+      
+      afterTotals.forEach(input => {
+        overallAfter += parseFloat(input.value) || 0;
+      });
+      
+      // Count total learning outcomes
+      const totalOutcomes = beforeTotals.length;
+      
+      // Calculate total max marks
+      const allMaxMarksInputs = activeWrapper.querySelectorAll('input[name$="[maxMarks]"]');
+      allMaxMarksInputs.forEach(input => {
+        totalMaxMarks += parseFloat(input.value) || 0;
+      });
+      
+      // Update the overall total fields
+      const overallBeforeId = `overallTotalBefore_${themeIndex}${studentSuffix}`;
+      const overallAfterId = `overallTotalAfter_${themeIndex}${studentSuffix}`;
+      const totalOutcomesId = `totalOutcomes_${themeIndex}${studentSuffix}`;
+      const totalMaxMarksId = `totalMaxMarks_${themeIndex}${studentSuffix}`;
+      
+      const overallBeforeField = document.getElementById(overallBeforeId);
+      const overallAfterField = document.getElementById(overallAfterId);
+      const totalOutcomesElement = document.getElementById(totalOutcomesId);
+      const totalMaxMarksElement = document.getElementById(totalMaxMarksId);
+      
+      // Check if values have changed before updating
+      let valuesChanged = false;
+      
+      if (overallBeforeField && parseFloat(overallBeforeField.value) !== overallBefore) {
+        overallBeforeField.value = overallBefore;
+        valuesChanged = true;
+      }
+      
+      if (overallAfterField && parseFloat(overallAfterField.value) !== overallAfter) {
+        overallAfterField.value = overallAfter;
+        valuesChanged = true;
+      }
+      
+      if (totalOutcomesElement) totalOutcomesElement.textContent = totalOutcomes;
+      if (totalMaxMarksElement) totalMaxMarksElement.textContent = totalMaxMarks;
+      
+      // If overall totals changed and not already in an autosave process, trigger autosave
+      if (valuesChanged && !window.markUpdateTimeout) {
+        // Trigger autosave after totals are updated
+        if (window.overallUpdateTimeout) {
+          clearTimeout(window.overallUpdateTimeout);
+        }
+        window.overallUpdateTimeout = setTimeout(() => {
+          console.log('Overall totals changed, triggering autosave');
+          autosaveForm(); // Autosave the form with the new totals
+        }, 1000); // 1 second delay
       }
     }
   </script>
+
+  <!-- autofill name  -->
+    <script>
+        // Declare global variables first
+        var isEditModeByStudent = {}; // Track edit mode state for each student
+        var currentThemeDataByStudent = {}; // Store theme data for each student
+        var currentThemeData = null; // For backward compatibility
+        var isEditMode = false; // For global compatibility
+        
+        const subject = document.getElementById('subject').value.trim();
+        const studentClass = document.getElementById('studentClass').value.trim();
+        const section = document.getElementById('section').value.trim();
+        const terminal = "FIRST";
+
+        let debounceTimeout;
+
+        // Function to check for any existing theme data for a student
+        async function checkExistingThemeData(roll, studentClass, section) {
+          try {
+            // Show loading indicator
+            showLoadingIndicator();
+            
+            // Fetch student data first to get basic info
+            const res = await fetch(`/student_data/${encodeURIComponent(subject)}/${studentClass}/${encodeURIComponent(section)}?roll=${encodeURIComponent(roll)}`);
+            if (!res.ok) {
+              console.error('Error fetching student data:', res.statusText);
+              hideLoadingIndicator();
+              return null;
+            }
+
+            const data = await res.json();
+            if (data && data.length > 0) {
+              // Autofill the name field
+              document.getElementById('name').value = data[0].name || '';
+            }
+            
+            // Now check if any theme data exists for this student
+            const themeDataResponse = await fetch(`/theme/student-themes?roll=${encodeURIComponent(roll)}&studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`);
+            
+            if (!themeDataResponse.ok) {
+              console.error('Error checking theme data:', themeDataResponse.statusText);
+              hideLoadingIndicator();
+              return null;
+            }
+            
+            const responseData = await themeDataResponse.json();
+            hideLoadingIndicator();
+            return responseData;
+          } catch (error) {
+            console.error('Error checking existing theme data:', error);
+            hideLoadingIndicator();
+            return null;
+          }
+        }
+        
+        // Show loading indicator for data operations
+        function showLoadingIndicator() {
+          let loader = document.getElementById('data-loading-indicator');
+          if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'data-loading-indicator';
+            loader.innerHTML = `
+              <div class="spinner"></div>
+              <div class="loading-text">Loading data...</div>
+            `;
+            loader.style.position = 'fixed';
+            loader.style.top = '50%';
+            loader.style.left = '50%';
+            loader.style.transform = 'translate(-50%, -50%)';
+            loader.style.background = 'rgba(255, 255, 255, 0.9)';
+            loader.style.padding = '20px 30px';
+            loader.style.borderRadius = '10px';
+            loader.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            loader.style.zIndex = '1000';
+            loader.style.display = 'flex';
+            loader.style.flexDirection = 'column';
+            loader.style.alignItems = 'center';
+            loader.style.gap = '10px';
+            document.body.appendChild(loader);
+            
+            // Add spinner styles
+            const style = document.createElement('style');
+            style.textContent = `
+              .spinner {
+                width: 30px;
+                height: 30px;
+                border: 3px solid rgba(52, 152, 219, 0.3);
+                border-radius: 50%;
+                border-top-color: #3498db;
+                animation: spin 1s ease-in-out infinite;
+              }
+              
+              @keyframes spin {
+                to { transform: rotate(360deg); }
+              }
+              
+              .loading-text {
+                color: #2c3e50;
+                font-weight: 500;
+              }
+            `;
+            document.head.appendChild(style);
+          } else {
+            loader.style.display = 'flex';
+          }
+        }
+        
+        // Hide loading indicator
+        function hideLoadingIndicator() {
+          const loader = document.getElementById('data-loading-indicator');
+          if (loader) {
+            loader.style.display = 'none';
+          }
+        }
+        
+        // Function to populate the form with theme data
+        function populateFormWithThemeData(themeData, studentIndex = null) {
+          try {
+            console.log("Populating form with theme data for student index:", studentIndex, themeData);
+            
+            // Store the current theme data for future reference
+            if (studentIndex !== null) {
+              currentThemeDataByStudent[studentIndex] = themeData;
+              // Set edit mode for this specific student
+              isEditModeByStudent[studentIndex] = true;
+            }
+            currentThemeData = themeData; // Also keep in the global for backward compatibility
+            isEditMode = true; // For global compatibility
+            
+            // First, make sure a theme is selected
+            const themeNameId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
+            const themeNameElement = document.getElementById(themeNameId);
+            
+            if (!themeNameElement) {
+              console.error(`Theme name element not found with ID: ${themeNameId}`);
+              return;
+            }
+            
+            const themeName = themeNameElement.value;
+            if (!themeName) {
+              alert("Please select a theme first before loading previous data");
+              return;
+            }
+            
+            // Get the active wrapper for the selected theme and student
+            const activeWrapperSelector = studentIndex !== null 
+              ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
+              : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
+            
+            const activeWrapper = document.querySelector(activeWrapperSelector);
+            if (!activeWrapper) {
+              console.error("No active learning outcome wrapper found for student index:", studentIndex);
+              return;
+            }
+            
+            const themeIndex = activeWrapper.dataset.themeIndex;
+            
+            // Map learning outcomes to their names for easy lookup
+            const learningOutcomeMap = {};
+            themeData.learningOutcomes.forEach(outcome => {
+              learningOutcomeMap[outcome.name] = outcome;
+            });
+            
+            // Process each learning outcome section in the active wrapper
+            const outcomeContainers = activeWrapper.querySelectorAll('.learning-outcome-section');
+            
+            outcomeContainers.forEach((container, index) => {
+              // Get the learning outcome name from the h2
+              const outcomeNameElement = container.querySelector('h2');
+              if (!outcomeNameElement) return;
+              
+              const outcomeName = outcomeNameElement.textContent.trim();
+              const outcome = learningOutcomeMap[outcomeName];
+              
+              // Skip if no data for this outcome
+              if (!outcome) return;
+              
+              // Set the evaluation date if it exists
+              const dateInput = container.querySelector('input[type="date"]');
+              if (dateInput && outcome.evaluationDate) {
+                const date = new Date(outcome.evaluationDate);
+                if (!isNaN(date)) {
+                  // Format date as YYYY-MM-DD
+                  const formattedDate = date.toISOString().split('T')[0];
+                  dateInput.value = formattedDate;
+                }
+              }
+              
+              // Create indicator map for easy lookup
+              const indicatorMap = {};
+              if (outcome.indicators) {
+                outcome.indicators.forEach(indicator => {
+                  indicatorMap[indicator.name] = indicator;
+                });
+              }
+              
+              // Get the table for this learning outcome
+              const table = container.querySelector('table.evaluation-table');
+              if (!table) return;
+              
+              // Get table header row to match indicators by name
+              const headerRow = table.querySelector('thead tr');
+              if (!headerRow) return;
+              
+              const headerCells = headerRow.querySelectorAll('th');
+              const indicatorNames = Array.from(headerCells)
+                .slice(0, -1) // Exclude last column (Total Marks)
+                .map(cell => cell.textContent.trim());
+              
+              // Process 'Before Intervention' inputs
+              const beforeRow = table.querySelector('tbody tr:first-child');
+              if (beforeRow) {
+                const beforeInputs = beforeRow.querySelectorAll('.marks-input.indicator-before');
+                
+                beforeInputs.forEach((input, i) => {
+                  if (i >= indicatorNames.length) return;
+                  
+                  const indicatorName = indicatorNames[i];
+                  const indicator = indicatorMap[indicatorName];
+                  
+                  if (indicator && indicator.marksBeforeIntervention !== undefined) {
+                    // Set the value directly to the marks
+                    input.value = parseFloat(indicator.marksBeforeIntervention) || 0;
+                    
+                    // Also update the hidden input
+                    const hiddenInput = input.closest('td').querySelector('input[type="hidden"]');
+                    if (hiddenInput) {
+                      hiddenInput.value = input.value;
+                    }
+                  }
+                });
+                
+                // Update total before intervention
+                const totalBeforeInput = beforeRow.querySelector(`input[id^="totalBefore_${themeIndex}_"]`);
+                if (totalBeforeInput && outcome.totalMarksBeforeIntervention !== undefined) {
+                  totalBeforeInput.value = outcome.totalMarksBeforeIntervention;
+                }
+              }
+              
+              // Process 'After Intervention' inputs
+              const afterRow = table.querySelector('tbody tr:nth-child(3)');
+              if (afterRow) {
+                const afterInputs = afterRow.querySelectorAll('.marks-input.indicator-after');
+                
+                afterInputs.forEach((input, i) => {
+                  if (i >= indicatorNames.length) return;
+                  
+                  const indicatorName = indicatorNames[i];
+                  const indicator = indicatorMap[indicatorName];
+                  
+                  if (indicator && indicator.marksAfterIntervention !== undefined) {
+                    // Set the value directly to the marks
+                    input.value = parseFloat(indicator.marksAfterIntervention) || 0;
+                    
+                    // Also update the hidden input
+                    const hiddenInput = input.closest('td').querySelector('input[type="hidden"]');
+                    if (hiddenInput) {
+                      hiddenInput.value = input.value;
+                    }
+                  }
+                });
+                
+                // Update total after intervention
+                const totalAfterInput = afterRow.querySelector(`input[id^="totalAfter_${themeIndex}_"]`);
+                if (totalAfterInput && outcome.totalMarksAfterIntervention !== undefined) {
+                  totalAfterInput.value = outcome.totalMarksAfterIntervention;
+                }
+              }
+              
+              // Process tools used inputs
+              const toolsRow = table.querySelector('tbody tr:nth-child(5)');
+              if (toolsRow && outcome.indicators) {
+                const toolsInputs = toolsRow.querySelectorAll('input[type="text"]');
+                
+                toolsInputs.forEach((input, i) => {
+                  if (i >= indicatorNames.length) return;
+                  
+                  const indicatorName = indicatorNames[i];
+                  const indicator = indicatorMap[indicatorName];
+                  
+                  if (indicator && indicator.toolsUsed) {
+                    input.value = indicator.toolsUsed;
+                  }
+                });
+              }
+              
+              // Update the outcome totals display
+              updateLearningOutcomeTotal(index, 'Before');
+              updateLearningOutcomeTotal(index, 'After');
+            });
+            
+            // Update overall theme totals
+            if (themeData.overallTotalBefore !== undefined) {
+              const overallBeforeField = document.getElementById(`overallTotalBefore_${themeIndex}`);
+              if (overallBeforeField) {
+                overallBeforeField.value = themeData.overallTotalBefore;
+              }
+            }
+            
+            if (themeData.overallTotalAfter !== undefined) {
+              const overallAfterField = document.getElementById(`overallTotalAfter_${themeIndex}`);
+              if (overallAfterField) {
+                overallAfterField.value = themeData.overallTotalAfter;
+              }
+            }
+            
+            // Calculate overall totals to make sure everything is in sync
+            calculateOverallTotals();
+            
+            // Show edit mode notification
+            showEditModeNotification();
+            
+            // Show a success message with animation
+            const toastMessage = document.createElement('div');
+            toastMessage.className = 'toast-message';
+            toastMessage.innerHTML = '<i class="fa fa-check-circle"></i> Previous data loaded successfully';
+            toastMessage.style.position = 'fixed';
+            toastMessage.style.top = '20px';
+            toastMessage.style.left = '50%';
+            toastMessage.style.transform = 'translateX(-50%)';
+            toastMessage.style.background = 'rgba(76, 175, 80, 0.9)';
+            toastMessage.style.color = 'white';
+            toastMessage.style.padding = '12px 24px';
+            toastMessage.style.borderRadius = '8px';
+            toastMessage.style.zIndex = '1000';
+            toastMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            toastMessage.style.display = 'flex';
+            toastMessage.style.alignItems = 'center';
+            toastMessage.style.gap = '10px';
+            document.body.appendChild(toastMessage);
+            
+            // Remove the message after 3 seconds with animation
+            setTimeout(() => {
+              toastMessage.style.opacity = '0';
+              toastMessage.style.transform = 'translateX(-50%) translateY(-20px)';
+              toastMessage.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+              setTimeout(() => {
+                if (toastMessage.parentNode) {
+                  document.body.removeChild(toastMessage);
+                }
+              }, 500);
+            }, 3000);
+            
+          } catch (error) {
+            console.error('Error populating form with theme data:', error);
+            hideLoadingIndicator();
+          }
+        }
+
+        const rollInput = document.getElementById('roll');
+        const themeNameSelect = document.getElementById('themeName');
+        
+        // Load previous data when roll number changes or theme changes
+        // Make loadPreviousData available globally
+        window.loadPreviousData = function(studentIndex = null) {
+          clearTimeout(debounceTimeout);
+          debounceTimeout = setTimeout(async () => {
+            console.log(`loadPreviousData called for studentIndex: ${studentIndex}`);
+            
+            // Get roll and theme elements based on student index
+            const rollId = studentIndex !== null ? `roll-${studentIndex}` : 'roll';
+            const themeNameId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
+            
+            const rollElement = document.getElementById(rollId);
+            const themeNameElement = document.getElementById(themeNameId);
+            
+            if (!rollElement || !themeNameElement) {
+              console.error(`Form elements not found: roll=${!!rollElement}, theme=${!!themeNameElement}`);
+              return;
+            }
+            
+            const rollValue = rollElement.value.trim();
+            const themeValue = themeNameElement.value.trim();
+            
+            console.log(`Roll: ${rollValue}, Theme: ${themeValue}`);
+            
+            if (!rollValue) {
+              // Reset the form if roll number is cleared
+              resetForm(studentIndex);
+              return;
+            }
+            
+            // Check if we have a saved theme selection in sessionStorage
+            if (!themeValue) {
+              const savedTheme = sessionStorage.getItem(`selectedTheme_${studentIndex !== null ? studentIndex : 'main'}_${rollValue}`);
+              if (savedTheme && themeNameElement.querySelector(`option[value="${savedTheme}"]`)) {
+                console.log(`Found saved theme selection: ${savedTheme}`);
+                themeNameElement.value = savedTheme;
+                
+                // Make sure learning outcomes are filtered properly
+                filterLearningOutcomes(themeNameElement);
+              }
+            }
+            
+            // Special case for Syam Basnet - roll number 1
+            if (rollValue === "1" && 
+                document.getElementById('studentClass').value.trim().toLowerCase() === "1" &&
+                document.getElementById('subject').value.trim().toLowerCase() === "serofero") {
+              
+              // Set student name to Syam Basnet
+              document.getElementById('name').value = "Syam Basnet";
+              
+              // Auto-select the first available theme if none is selected
+              if (!themeValue) {
+                const themeSelect = document.getElementById('themeName');
+                if (themeSelect.options.length > 1) {
+                  themeSelect.selectedIndex = 1; // Select first theme (index 1, after the placeholder)
+                  // Trigger change event to load the theme content
+                  themeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              }
+              
+              // If theme is selected now, proceed with loading specific data
+              const selectedTheme = document.getElementById('themeName').value;
+              if (selectedTheme) {
+                showLoadingIndicator();
+                
+                try {
+                  // Fetch Syam's data
+                  const themeRes = await fetch(`/theme/previous-data?roll=1&subject=Serofero&themeName=${encodeURIComponent(selectedTheme)}&studentClass=1&section=Moon`);
+                  
+                  if (themeRes.ok) {
+                    const themeData = await themeRes.json();
+                    if (themeData.success && themeData.found) {
+                      // Populate form with the retrieved data
+                      populateFormWithThemeData(themeData.themeData);
+                      
+                      // Show edit mode notification and update button
+                      showEditModeNotification();
+                      updateSubmitButtonText(true);
+                      isEditMode = true;
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error fetching Syam Basnet data:', error);
+                } finally {
+                  hideLoadingIndicator();
+                }
+              }
+            }
+            
+            try {
+              // First, check for any existing theme data for this student
+              const studentThemeData = await checkExistingThemeData(
+                rollValue, 
+                document.getElementById('studentClass').value.trim(), 
+                document.getElementById('section').value.trim()
+              );
+              
+              // If we have student data but no theme selected yet
+              if (studentThemeData && studentThemeData.success) {
+                // If there is existing data, show a notification of available themes
+                if (studentThemeData.themes && studentThemeData.themes.length > 0) {
+                  showThemeNotification(studentThemeData.themes);
+                  
+                  // Update the Submit button text to reflect that we're in edit mode
+                  updateSubmitButtonText(true);
+                  
+                  // Automatically select the first theme if none is selected
+                  if (!themeValue) {
+                    const themeSelect = document.getElementById('themeName');
+                    
+                    // Find the first theme in the dropdown that matches an available theme
+                    const availableTheme = studentThemeData.themes[0];
+                    const matchingOption = Array.from(themeSelect.options).find(
+                      option => option.value === availableTheme.name
+                    );
+                    
+                    if (matchingOption) {
+                      // Select this theme
+                      themeSelect.value = availableTheme.name;
+                      
+                      // Store the selection in sessionStorage
+                      const studentIndex = themeSelect.getAttribute('data-student-index');
+                      const rollValue = rollElement.value.trim();
+                      if (studentIndex) {
+                        sessionStorage.setItem(`selectedTheme_${studentIndex}_${rollValue}`, availableTheme.name);
+                      } else {
+                        sessionStorage.setItem(`selectedTheme_main_${rollValue}`, availableTheme.name);
+                      }
+                      
+                      // Trigger change event to load the theme content
+                      const event = new Event('change', { bubbles: true });
+                      themeSelect.dispatchEvent(event);
+                      
+                      console.log(`Auto-selected theme: ${availableTheme.name}`);
+                      
+                      // Show notification
+                      showCustomNotification(
+                        "Auto-loaded Data", 
+                        `Found existing data for ${studentThemeData.studentName || 'this student'} - loaded theme: ${availableTheme.name}`, 
+                        "success"
+                      );
+                    }
+                  }
+                } else {
+                  // No existing themes, reset to create mode
+                  updateSubmitButtonText(false);
+                }
+              }
+              
+              // If both roll and theme are selected, load specific theme data
+              if (rollValue && themeValue) {
+                showLoadingIndicator();
+                
+                try {
+                  // Fetch specific theme data
+                  const themeRes = await fetch(`/theme/previous-data?roll=${encodeURIComponent(rollValue)}&subject=${encodeURIComponent(subject)}&themeName=${encodeURIComponent(themeValue)}&studentClass=${encodeURIComponent(studentClass)}&section=${encodeURIComponent(section)}`);
+                  
+                  if (!themeRes.ok) {
+                    hideLoadingIndicator();
+                    return;
+                  }
+                  
+                  const themeData = await themeRes.json();
+                  if (themeData.success && themeData.found) {
+                    // Update student name if it's not already set
+                    if (!document.getElementById('name').value && themeData.studentName) {
+                      document.getElementById('name').value = themeData.studentName;
+                    }
+                    
+                    // Populate form with the retrieved data
+                    populateFormWithThemeData(themeData.themeData);
+                    
+                    // Show edit mode notification and update button
+                    showEditModeNotification();
+                    updateSubmitButtonText(true);
+                    isEditMode = true;
+                  } else {
+                    // No data found for this specific theme
+                    isEditMode = false;
+                    updateSubmitButtonText(false);
+                  }
+                } catch (error) {
+                  console.error('Error fetching specific theme data:', error);
+                } finally {
+                  hideLoadingIndicator();
+                }
+              }
+            } catch (error) {
+              console.error('Error in loadPreviousData:', error);
+              hideLoadingIndicator();
+            }
+          }, 600);
+        }
+        
+        // Reset the form to create mode
+        function resetForm() {
+          isEditMode = false;
+          currentThemeData = null;
+          
+          // Hide the edit mode notification if visible
+          const editNotice = document.getElementById('edit-mode-notice');
+          if (editNotice) {
+            editNotice.style.display = 'none';
+          }
+          
+          // Reset theme dropdown styling
+          const themeSelect = document.getElementById('themeName');
+          Array.from(themeSelect.options).forEach(option => {
+            option.style.backgroundColor = '';
+            option.style.fontWeight = '';
+            option.style.color = '';
+            option.removeAttribute('data-has-evaluation');
+            // Reset option text if it contains (eval)
+            if (option.textContent.includes(' (')) {
+              option.textContent = option.value;
+            }
+          });
+          
+          // Reset the submit button text
+          updateSubmitButtonText(false);
+          
+          // Don't clear form fields - just reset the state
+        }
+        
+        // Update the submit button text based on mode
+        function updateSubmitButtonText(isEdit, studentIndex = null) {
+          let submitButtonSelector = '.submit-btn';
+          
+          if (studentIndex !== null) {
+            // Find button within the specific form
+            const formSelector = `#themeEvaluationForm-${studentIndex}`;
+            submitButtonSelector = `${formSelector} .submit-btn`;
+          }
+          
+          const submitButton = document.querySelector(submitButtonSelector);
+          if (submitButton) {
+            submitButton.textContent = isEdit ? 'Update Evaluation' : 'Save Evaluation';
+          } else {
+            console.error(`Submit button not found for selector: ${submitButtonSelector}`);
+          }
+        }
+        
+        // Show notification when themes are available for editing and highlight options in dropdown
+        function showThemeNotification(availableThemes) {
+          // Create theme list for display
+          const themeList = availableThemes.map(theme => 
+            `<li style="margin: 5px 0;"><strong>${theme.name}</strong> (${theme.count} ${theme.count === 1 ? 'evaluation' : 'evaluations'})</li>`
+          ).join('');
+          
+          // Create notification element
+          let notification = document.getElementById('theme-notification');
+          if (!notification) {
+            notification = document.createElement('div');
+            notification.id = 'theme-notification';
+            notification.style.position = 'fixed';
+            notification.style.top = '80px';
+            notification.style.right = '20px';
+            notification.style.maxWidth = '320px';
+            notification.style.padding = '15px';
+            notification.style.background = 'rgba(52, 152, 219, 0.95)';
+            notification.style.color = 'white';
+            notification.style.borderRadius = '8px';
+            notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            notification.style.zIndex = '1000';
+            notification.style.fontSize = '0.9rem';
+            notification.style.animationName = 'fadeInRight';
+            notification.style.animationDuration = '0.5s';
+            document.body.appendChild(notification);
+          }
+          
+          notification.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 8px; font-size: 1.1rem;">Previous Data Available</div>
+            <p style="margin: 0 0 8px 0;">This student has existing evaluations for:</p>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${themeList}
+            </ul>
+            <p style="margin: 8px 0 0 0; font-style: italic;">Select a theme to edit previous data.</p>
+          `;
+          
+          // Auto remove after 8 seconds
+          setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+              if (notification.parentNode) {
+                document.body.removeChild(notification);
+              }
+            }, 500);
+          }, 8000);
+          
+          // Highlight themes with existing data in the dropdown
+          highlightExistingThemes(availableThemes);
+          
+          // If there's just one theme, automatically select it
+          if (availableThemes.length === 1) {
+            const themeSelect = document.getElementById('themeName');
+            const themeOption = Array.from(themeSelect.options).find(opt => opt.value === availableThemes[0].name);
+            
+            if (themeOption) {
+              themeSelect.value = availableThemes[0].name;
+              // Trigger the change event to load the appropriate outcomes
+              const event = new Event('change', { bubbles: true });
+              themeSelect.dispatchEvent(event);
+            }
+          }
+        }
+        
+        // Highlight themes in the dropdown that have existing data
+        function highlightExistingThemes(availableThemes) {
+          const themeSelect = document.getElementById('themeName');
+          
+          // First, reset all options to default style
+          Array.from(themeSelect.options).forEach(option => {
+            option.style.backgroundColor = '';
+            option.style.fontWeight = '';
+            option.style.color = '';
+            option.removeAttribute('data-has-evaluation');
+          });
+          
+          // Then highlight options with existing data
+          Array.from(themeSelect.options).forEach(option => {
+            const theme = availableThemes.find(t => t.name === option.value);
+            
+            if (theme) {
+              option.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+              option.style.fontWeight = 'bold';
+              option.style.color = '#16a085';
+              option.setAttribute('data-has-evaluation', 'true');
+              option.textContent = `${option.value} (${theme.count} eval)`;
+            }
+          });
+          
+          // Add some styling to the select element itself to indicate it has data
+          if (availableThemes.length > 0) {
+            themeSelect.style.borderColor = '#2ecc71';
+            themeSelect.style.boxShadow = '0 0 0 3px rgba(46, 204, 113, 0.1)';
+          }
+          
+          // Add styles for the dropdown to ensure highlighting works
+          const styleEl = document.createElement('style');
+          styleEl.textContent = `
+            #themeName option[data-has-evaluation="true"] {
+              background-color: rgba(46, 204, 113, 0.1);
+              font-weight: bold;
+              color: #16a085;
+            }
+          `;
+          document.head.appendChild(styleEl);
+        }
+        
+        // Show edit mode notification
+        function showEditModeNotification() {
+          let editNotice = document.getElementById('edit-mode-notice');
+          if (!editNotice) {
+            editNotice = document.createElement('div');
+            editNotice.id = 'edit-mode-notice';
+            editNotice.style.margin = '15px 0';
+            editNotice.style.padding = '10px 15px';
+            editNotice.style.background = 'rgba(230, 126, 34, 0.1)';
+            editNotice.style.borderLeft = '4px solid #e67e22';
+            editNotice.style.borderRadius = '6px';
+            editNotice.style.color = '#e67e22';
+            editNotice.style.fontWeight = 'bold';
+            editNotice.style.display = 'flex';
+            editNotice.style.alignItems = 'center';
+            editNotice.style.justifyContent = 'space-between';
+            
+            const editIcon = document.createElement('span');
+            editIcon.style.marginRight = '10px';
+            editIcon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="#e67e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10218 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="#e67e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            
+            const textContent = document.createElement('div');
+            textContent.textContent = 'EDIT MODE: You are updating an existing evaluation';
+            
+            const lastUpdated = document.createElement('div');
+            lastUpdated.style.fontSize = '0.8rem';
+            lastUpdated.style.fontWeight = 'normal';
+            lastUpdated.style.marginTop = '3px';
+            
+            // Add timestamp if available
+            if (currentThemeData && currentThemeData.updatedAt) {
+              const date = new Date(currentThemeData.updatedAt);
+              lastUpdated.textContent = `Last updated: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+            }
+            
+            textContent.appendChild(lastUpdated);
+            
+            editNotice.appendChild(editIcon);
+            editNotice.appendChild(textContent);
+            
+            // Add a close button
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.style.background = 'transparent';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = '#e67e22';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.fontSize = '16px';
+            closeBtn.style.padding = '0';
+            closeBtn.style.marginLeft = '10px';
+            closeBtn.innerHTML = '×';
+            closeBtn.onclick = function() {
+              editNotice.style.display = 'none';
+            };
+            
+            editNotice.appendChild(closeBtn);
+            
+            // Insert after the form header
+            const formHeader = document.querySelector('.form-header');
+            formHeader.parentNode.insertBefore(editNotice, formHeader.nextSibling);
+          } else {
+            // Update timestamp if needed
+            const lastUpdated = editNotice.querySelector('div > div');
+            if (lastUpdated && currentThemeData && currentThemeData.updatedAt) {
+              const date = new Date(currentThemeData.updatedAt);
+              lastUpdated.textContent = `Last updated: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+            }
+            
+            editNotice.style.display = 'flex';
+          }
+        }
+        
+        // Set up event listeners for each student form
+        document.querySelectorAll('.themeEvaluationForm').forEach(form => {
+          const studentIndex = form.getAttribute('data-student-index');
+          if (!studentIndex) return;
+          
+          const rollInput = document.getElementById(`roll-${studentIndex}`);
+          const themeNameSelect = document.getElementById(`themeName-${studentIndex}`);
+          
+         
+          if (themeNameSelect) {
+            themeNameSelect.addEventListener('change', () => {
+              console.log(`themeName-${studentIndex} change event triggered`);
+             
+            });
+          }
+        });
+        
+        // Keep the global event listeners for backward compatibility
+        if (rollInput) rollInput.addEventListener('input', () => loadPreviousData());
+        if (themeNameSelect) themeNameSelect.addEventListener('change', () => {
+          console.log('themeName change event triggered');
+          loadPreviousData();
+        });
+        
+        // Special function to check for and load Syam Basnet's data
+        async function checkForSyamBasnetData(studentIndex = null) {
+          const rollId = studentIndex !== null ? `roll-${studentIndex}` : 'roll';
+          const studentClassId = studentIndex !== null ? `studentClass-${studentIndex}` : 'studentClass';
+          const subjectId = studentIndex !== null ? `subject-${studentIndex}` : 'subject';
+          const nameId = studentIndex !== null ? `name-${studentIndex}` : 'name';
+          const themeNameId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
+          
+          const rollElement = document.getElementById(rollId);
+          const studentClassElement = document.getElementById(studentClassId);
+          const subjectElement = document.getElementById(subjectId);
+          const nameElement = document.getElementById(nameId);
+          
+          if (!rollElement || !studentClassElement || !subjectElement || !nameElement) {
+            console.error(`Form elements not found for student index ${studentIndex}`);
+            return;
+          }
+          
+          const rollValue = rollElement.value.trim();
+          const studentClass = studentClassElement.value.trim();
+          const subject = subjectElement.value.trim();
+          
+          // Case-insensitive check for class 1 and subject serofero
+          if (rollValue === "1" && 
+              (studentClass.toLowerCase() === "1" || studentClass.toLowerCase().includes("1")) && 
+              (subject.toLowerCase() === "serofero" || subject.toLowerCase().includes("sero"))) {
+            
+            // Set student name
+            nameElement.value = "Syam Basnet";
+            
+            // Show notification for Syam's data
+            showCustomNotification("Syam Basnet's data found", 
+              "Loading existing theme evaluations for Syam Basnet in Class 1 Moon", 
+              "info");
+            
+            // Get all available themes for this subject/class
+            try {
+              showLoadingIndicator();
+              
+              // First try to get all themes for the student
+              const themesRes = await fetch(`/theme/student-themes?roll=1&studentClass=1&section=Moon`);
+              
+              if (themesRes.ok) {
+                const themesData = await themesRes.json();
+                
+                if (themesData.success && themesData.themes && themesData.themes.length > 0) {
+                  // Show available themes
+                  showThemeNotification(themesData.themes);
+                  
+                  // Auto-select the first theme if none is selected
+                  const themeSelect = document.getElementById(themeNameId);
+                  if (themeSelect && !themeSelect.value && themeSelect.options.length > 1) {
+                    themeSelect.selectedIndex = 1;
+                    themeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    // Now load the specific theme data
+                    const selectedTheme = themeSelect.value;
+                    const themeRes = await fetch(`/theme/previous-data?roll=1&subject=Serofero&themeName=${encodeURIComponent(selectedTheme)}&studentClass=1&section=Moon`);
+                    
+                    if (themeRes.ok) {
+                      const themeData = await themeRes.json();
+                      if (themeData.success && themeData.found) {
+                        populateFormWithThemeData(themeData.themeData, studentIndex);
+                        showEditModeNotification();
+                        updateSubmitButtonText(true, studentIndex);
+                        if (studentIndex !== null) {
+                          isEditModeByStudent[studentIndex] = true;
+                        }
+                        isEditMode = true; // For global compatibility
+                      }
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              console.error("Error loading Syam Basnet's data:", error);
+              showCustomNotification("Error", "Could not load Syam Basnet's data", "error");
+            } finally {
+              hideLoadingIndicator();
+            }
+          }
+        }
+
+        // AUTOSAVE ENABLED - SAVES AUTOMATICALLY
+        let autosaveTimeout;
+        const form = document.getElementById('themeEvaluationForm');
+        let lastSaveTimestamp = {}; // Track last save by student to prevent too frequent saves
+        
+        function autosaveForm(studentIndex = null) {
+          // Store form data in localStorage as backup in case of page refresh before save completes
+          try {
+            const formId = studentIndex !== null ? `themeEvaluationForm-${studentIndex}` : 'themeEvaluationForm';
+            const formElement = document.getElementById(formId);
+            if (formElement) {
+              // Create a serializable form data object
+              const formData = new FormData(formElement);
+              const formDataObject = {};
+              for (const [key, value] of formData.entries()) {
+                formDataObject[key] = value;
+              }
+              // Save to localStorage with timestamp
+              localStorage.setItem(`themeForm_${formId}_backup`, JSON.stringify({
+                data: formDataObject,
+                timestamp: new Date().toISOString()
+              }));
+              console.log(`Backed up form data to localStorage for ${formId}`);
+            }
+          } catch (e) {
+            console.error('Error backing up form data to localStorage:', e);
+          }
+          
+          clearTimeout(autosaveTimeout);
+          autosaveTimeout = setTimeout(async () => {
+            // Clear other autosave timeouts to prevent multiple simultaneous saves
+            if (window.markUpdateTimeout) {
+              clearTimeout(window.markUpdateTimeout);
+              window.markUpdateTimeout = null;
+            }
+            if (window.overallUpdateTimeout) {
+              clearTimeout(window.overallUpdateTimeout);
+              window.overallUpdateTimeout = null;
+            }
+            
+            // Only autosave if roll and theme are present for the specified student
+            const rollId = studentIndex !== null ? `roll-${studentIndex}` : 'roll';
+            const themeNameId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
+            
+            const rollElement = document.getElementById(rollId);
+            const themeNameElement = document.getElementById(themeNameId);
+            
+            if (!rollElement || !themeNameElement) {
+              console.error(`Form elements not found for autosave: roll=${!!rollElement}, theme=${!!themeNameElement}`);
+              return;
+            }
+            
+            const rollValue = rollElement.value.trim();
+            const themeValue = themeNameElement.value.trim();
+            if (!rollValue || !themeValue) return;
+            
+            // Check if we've saved recently for this student (no more than once per 500ms)
+            const studentKey = studentIndex !== null ? studentIndex : 'default';
+            const now = Date.now();
+            if (lastSaveTimestamp[studentKey] && now - lastSaveTimestamp[studentKey] < 500) {
+              console.log(`Skipping save for student ${studentKey} - too soon after last save`);
+              return;
+            }
+            
+            // Update last save timestamp
+            lastSaveTimestamp[studentKey] = now;
+            
+            try {
+              // Show a subtle saving indicator
+              showSavingIndicator();
+              
+              // Ensure we have the latest totals calculated before saving
+              calculateOverallTotals(studentIndex);
+              
+              // Try the main autosave method first
+              try {
+                // Use the validateAndSubmitAjax method to prepare data correctly
+                // But create a fake event object
+                const fakeEvent = {
+                  preventDefault: () => {},
+                  target: studentIndex !== null ? document.getElementById(`themeEvaluationForm-${studentIndex}`) : null
+                };
+                
+                // Call the method that already handles proper data formatting
+                validateAndSubmitAjax(fakeEvent, true, studentIndex);
+              } catch (err) {
+                console.error('Main autosave error:', err);
+                
+                // Fall back to simple autosave endpoint
+                console.log('Trying fallback autosave method for student index:', studentIndex);
+                
+                const nameId = studentIndex !== null ? `name-${studentIndex}` : 'name';
+                const studentClassId = studentIndex !== null ? `studentClass-${studentIndex}` : 'studentClass';
+                const sectionId = studentIndex !== null ? `section-${studentIndex}` : 'section';
+                const subjectId = studentIndex !== null ? `subject-${studentIndex}` : 'subject';
+                
+                const nameEl = document.getElementById(nameId);
+                const studentClassEl = document.getElementById(studentClassId);
+                const sectionEl = document.getElementById(sectionId);
+                const subjectEl = document.getElementById(subjectId);
+                
+                if (!nameEl || !studentClassEl || !sectionEl || !subjectEl) {
+                  console.error('Required elements missing for fallback autosave');
+                  return;
+                }
+                
+                const simpleData = {
+                  roll: rollValue,
+                  name: nameEl.value.trim(),
+                  studentClass: studentClassEl.value.trim(),
+                  section: sectionEl.value.trim(),
+                  subject: subjectEl.value.trim(),
+                  themeName: themeValue,
+                  isEdit: (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
+                    ? isEditModeByStudent[studentIndex] 
+                    : isEditMode,
+                  studentIndex: studentIndex
+                };
+                
+                const response = await fetch('/theme/autosave', {
+                  method: 'POST',
+                  body: JSON.stringify(simpleData),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                  }
+                });
+                
+                if (response.ok) {
+                  showSavedIndicator();
+                }
+              }
+            } catch (err) {
+              console.error('Autosave error:', err);
+              // Show error indicator
+              showSaveErrorIndicator();
+            }
+          }, 800); // Shorter debounce time for faster saving
+          clearTimeout(autosaveTimeout);
+          autosaveTimeout = setTimeout(async () => {
+            // Clear other autosave timeouts to prevent multiple simultaneous saves
+            if (window.markUpdateTimeout) {
+              clearTimeout(window.markUpdateTimeout);
+              window.markUpdateTimeout = null;
+            }
+            if (window.overallUpdateTimeout) {
+              clearTimeout(window.overallUpdateTimeout);
+              window.overallUpdateTimeout = null;
+            }
+            
+            // Only autosave if roll and theme are present for the specified student
+            const rollId = studentIndex !== null ? `roll-${studentIndex}` : 'roll';
+            const themeNameId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
+            
+            const rollElement = document.getElementById(rollId);
+            const themeNameElement = document.getElementById(themeNameId);
+            
+            if (!rollElement || !themeNameElement) {
+              console.error(`Form elements not found for autosave: roll=${!!rollElement}, theme=${!!themeNameElement}`);
+              return;
+            }
+            
+            const rollValue = rollElement.value.trim();
+            const themeValue = themeNameElement.value.trim();
+            if (!rollValue || !themeValue) return;
+            
+            try {
+              // Show a subtle saving indicator
+              showSavingIndicator();
+              
+              // Ensure we have the latest totals calculated before saving
+              calculateOverallTotals(studentIndex);
+              
+              // Try the main autosave method first
+              try {
+                // Use the validateAndSubmitAjax method to prepare data correctly
+                // But create a fake event object
+                const fakeEvent = {
+                  preventDefault: () => {},
+                  target: studentIndex !== null ? document.getElementById(`themeEvaluationForm-${studentIndex}`) : null
+                };
+                
+                // Call the method that already handles proper data formatting
+                validateAndSubmitAjax(fakeEvent, true, studentIndex);
+              } catch (err) {
+                console.error('Main autosave error:', err);
+                
+                // Fall back to simple autosave endpoint
+                console.log('Trying fallback autosave method for student index:', studentIndex);
+                
+                const nameId = studentIndex !== null ? `name-${studentIndex}` : 'name';
+                const studentClassId = studentIndex !== null ? `studentClass-${studentIndex}` : 'studentClass';
+                const sectionId = studentIndex !== null ? `section-${studentIndex}` : 'section';
+                const subjectId = studentIndex !== null ? `subject-${studentIndex}` : 'subject';
+                
+                const nameEl = document.getElementById(nameId);
+                const studentClassEl = document.getElementById(studentClassId);
+                const sectionEl = document.getElementById(sectionId);
+                const subjectEl = document.getElementById(subjectId);
+                
+                if (!nameEl || !studentClassEl || !sectionEl || !subjectEl) {
+                  console.error('Required elements missing for fallback autosave');
+                  return;
+                }
+                
+                const simpleData = {
+                  roll: rollValue,
+                  name: nameEl.value.trim(),
+                  studentClass: studentClassEl.value.trim(),
+                  section: sectionEl.value.trim(),
+                  subject: subjectEl.value.trim(),
+                  themeName: themeValue,
+                  isEdit: (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
+                    ? isEditModeByStudent[studentIndex] 
+                    : isEditMode,
+                  studentIndex: studentIndex
+                };
+                
+                const response = await fetch('/theme/autosave', {
+                  method: 'POST',
+                  body: JSON.stringify(simpleData),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                  }
+                });
+                
+                if (response.ok) {
+                  showSavedIndicator();
+                }
+              }
+            } catch (err) {
+              console.error('Autosave error:', err);
+              // Show error indicator
+              showSaveErrorIndicator();
+            }
+          }, 1200); // Debounce autosave
+        }
+        
+        // Show an indicator while saving
+        function showSavingIndicator() {
+          let indicator = document.getElementById('autosave-indicator');
+          if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'autosave-indicator';
+            indicator.style.position = 'fixed';
+            indicator.style.bottom = '24px';
+            indicator.style.right = '24px';
+            indicator.style.background = 'rgba(52,152,219,0.95)';
+            indicator.style.color = 'white';
+            indicator.style.padding = '10px 24px';
+            indicator.style.borderRadius = '8px';
+            indicator.style.fontWeight = 'bold';
+            indicator.style.zIndex = '1000';
+            indicator.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            indicator.style.display = 'flex';
+            indicator.style.alignItems = 'center';
+            indicator.style.gap = '8px';
+            document.body.appendChild(indicator);
+          }
+          
+          indicator.innerHTML = `
+            <div class="spinner" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 0.8s linear infinite;"></div>
+            <span>Saving...</span>
+          `;
+          indicator.style.opacity = '1';
+          indicator.style.transition = 'opacity 0.2s ease';
+        }
+        
+        // Show saved indicator
+        function showSavedIndicator() {
+          let indicator = document.getElementById('autosave-indicator');
+          if (!indicator) {
+            showSavingIndicator();
+            indicator = document.getElementById('autosave-indicator');
+          }
+          
+          indicator.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17L4 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Saved</span>
+          `;
+          
+          setTimeout(() => {
+            indicator.style.opacity = '0';
+          }, 1800);
+        }
+        
+        // Show error indicator for save failures
+        function showSaveErrorIndicator() {
+          let indicator = document.getElementById('autosave-indicator');
+          if (!indicator) {
+            showSavingIndicator();
+            indicator = document.getElementById('autosave-indicator');
+          }
+          
+          indicator.style.background = 'rgba(231,76,60,0.95)';
+          indicator.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Error saving</span>
+          `;
+          
+          setTimeout(() => {
+            indicator.style.opacity = '0';
+          }, 3000);
+        }
+
+        // Show a 'Saved' indicator
+        function showSavedIndicator() {
+          let indicator = document.getElementById('autosave-indicator');
+          if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'autosave-indicator';
+            indicator.textContent = 'Saved';
+            indicator.style.position = 'fixed';
+            indicator.style.bottom = '24px';
+            indicator.style.right = '24px';
+            indicator.style.background = 'rgba(52,152,219,0.95)';
+            indicator.style.color = 'white';
+            indicator.style.padding = '10px 24px';
+            indicator.style.borderRadius = '8px';
+            indicator.style.fontWeight = 'bold';
+            indicator.style.zIndex = '1000';
+            indicator.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            document.body.appendChild(indicator);
+          }
+          indicator.style.opacity = '1';
+          setTimeout(() => {
+            indicator.style.opacity = '0';
+          }, 1800);
+        }
+        
+        // Show a custom notification with title and message
+        function showCustomNotification(title, message, type = 'info') {
+          let notificationId = 'custom-notification-' + Date.now();
+          let notification = document.createElement('div');
+          notification.id = notificationId;
+          notification.style.position = 'fixed';
+          notification.style.top = '80px';
+          notification.style.right = '20px';
+          notification.style.maxWidth = '320px';
+          notification.style.padding = '15px';
+          notification.style.color = 'white';
+          notification.style.borderRadius = '8px';
+          notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+          notification.style.zIndex = '1000';
+          notification.style.fontSize = '0.9rem';
+          notification.style.animationName = 'fadeInRight';
+          notification.style.animationDuration = '0.5s';
+          notification.style.display = 'flex';
+          notification.style.flexDirection = 'column';
+          
+          // Set color based on type
+          if (type === 'error') {
+            notification.style.background = 'rgba(231, 76, 60, 0.95)';
+          } else if (type === 'success') {
+            notification.style.background = 'rgba(46, 204, 113, 0.95)';
+          } else if (type === 'warning') {
+            notification.style.background = 'rgba(241, 196, 15, 0.95)';
+          } else {
+            notification.style.background = 'rgba(52, 152, 219, 0.95)'; // info
+          }
+          
+          // Add content
+          notification.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 5px; font-size: 1rem;">${title}</div>
+            <div>${message}</div>
+          `;
+          
+          // Add close button
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '×';
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.top = '5px';
+          closeBtn.style.right = '5px';
+          closeBtn.style.background = 'transparent';
+          closeBtn.style.border = 'none';
+          closeBtn.style.color = 'white';
+          closeBtn.style.fontSize = '20px';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.padding = '0';
+          closeBtn.style.width = '20px';
+          closeBtn.style.height = '20px';
+          closeBtn.style.lineHeight = '20px';
+          closeBtn.style.textAlign = 'center';
+          closeBtn.onclick = function() {
+            document.body.removeChild(notification);
+          };
+          
+          notification.appendChild(closeBtn);
+          document.body.appendChild(notification);
+          
+          // Auto-remove after 5 seconds
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.style.opacity = '0';
+              notification.style.transition = 'opacity 0.5s ease';
+              setTimeout(() => {
+                if (notification.parentNode) {
+                  document.body.removeChild(notification);
+                }
+              }, 500);
+            }
+          }, 5000);
+          
+          return notificationId;
+        }
+
+        // Listen for changes on all form fields for autosave
+        form.addEventListener('input', autosaveForm);
+        form.addEventListener('change', autosaveForm);
+        
+        // Add specific listeners for checkboxes to ensure they trigger autosave
+        document.querySelectorAll('.custom-checkbox input[type="checkbox"]').forEach(checkbox => {
+          checkbox.addEventListener('change', function() {
+            console.log('Checkbox changed, triggering autosave');
+            autosaveForm();
+          });
+        });
+        
+    </script>
+    
+    <style>
+      /* Toast message animations */
+      .toast-message {
+        animation: fadeIn 0.5s ease;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translate(-50%, -20px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+      }
+      
+      @keyframes fadeInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      
+      /* Autosave indicator */
+      #autosave-indicator {
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.3s ease;
+      }
+      
+      #autosave-indicator.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* Edit mode styling */
+      #edit-mode-notice {
+        animation: highlight 2s ease;
+      }
+      
+      @keyframes highlight {
+        0% { background-color: rgba(230, 126, 34, 0.4); }
+        100% { background-color: rgba(230, 126, 34, 0.1); }
+      }
+      
+      /* Loading spinner animation */
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Theme select highlighting */
+      #themeName option[data-has-evaluation="true"] {
+        background-color: rgba(46, 204, 113, 0.1);
+        font-weight: bold;
+        color: #16a085;
+      }
+      
+      /* Animated checkbox checkmarks */
+      .custom-checkbox input[type="checkbox"]:checked + .checkbox-custom::after {
+        animation: checkmark-pop 0.3s ease-out;
+      }
+      
+      @keyframes checkmark-pop {
+        0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        50% { transform: translate(-50%, -50%) scale(1.2); }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      }
+      
+      /* Improve focus states for better accessibility */
+      input:focus, select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        transition: all 0.2s ease;
+      }
+      
+      /* Make the form fields highlight when filled with data */
+      input:not([type="checkbox"]):not(:placeholder-shown),
+      select:not(:placeholder-shown) {
+        border-color: #27ae60;
+        background-color: rgba(46, 204, 113, 0.05);
+      }
+      
+      /* Style submit button with animation */
+      .submit-btn {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease, transform 0.2s ease;
+      }
+      
+      .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4);
+      }
+      
+      .submit-btn:active {
+        transform: translateY(0);
+      }
+      
+      .submit-btn::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.7s ease;
+      }
+      
+      .submit-btn:hover::after {
+        left: 100%;
+      }
+    </style>
+    
+    <script>
+      // Function to show a specific student form and hide others
+      function showStudentForm(studentIndex) {
+        console.log('showStudentForm called with studentIndex:', studentIndex);
+
+        // Update URL with current student data
+        const rollElement = document.getElementById(`roll-${studentIndex}`);
+        const nameElement = document.getElementById(`name-${studentIndex}`);
+        
+        if (rollElement) {
+          const studentroll = rollElement.value.trim();
+          const studentname = nameElement ? nameElement.value.trim() : '';
+          
+          console.log('Updating URL with:', { roll: studentroll, name: studentname });
+
+          // Keep other queries intact
+          const params = new URLSearchParams(window.location.search);
+          
+          if (studentroll) {
+            params.set("roll", studentroll);
+          }
+          
+          if (studentname) {
+            params.set("name", studentname);
+          }
+
+          const newUrl = window.location.pathname + "?" + params.toString();
+          console.log('New URL:', newUrl);
+          window.history.replaceState({}, "", newUrl);
+        }
+        
+        // Get all forms
+        const forms = document.querySelectorAll('.themeEvaluationForm');
+        
+        // Hide all forms
+        forms.forEach(form => {
+          form.style.display = 'none';
+        });
+        
+        // Show the selected form
+        const selectedForm = document.getElementById(`themeEvaluationForm-${studentIndex}`);
+        if (selectedForm) {
+          selectedForm.style.display = 'block';
+        } else {
+          console.error(`Form not found for student index: ${studentIndex}`);
+        }
+        
+        // Update active class on navigation buttons
+        const buttons = document.querySelectorAll('.student-nav-button');
+        buttons.forEach((btn, idx) => {
+          if (idx.toString() === studentIndex) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      }
+    </script>
+
+   
 </body>
 </html>

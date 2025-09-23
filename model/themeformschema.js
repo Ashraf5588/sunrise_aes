@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { terminal } = require('../controller/controller');
 
 // Custom schema type to handle potentially array values - takes first element if array
 const handleArrayOrSingle = function(value) {
@@ -60,7 +59,7 @@ const ThemeEvaluationSchema = new mongoose.Schema({
                 set: handleArrayOrSingle 
               },
               evaluationDate: { 
-                type: Date,
+                type: String,
                 set: handleArrayOrSingle 
               },
               
@@ -187,6 +186,10 @@ ThemeEvaluationSchema.pre('save', function(next) {
   processObject(this);
   next();
 });
+
+// Export both the schema and model
+
+
 const practicalSchema = new mongoose.Schema(
   {
     roll:{ type:String, required:false},
@@ -318,3 +321,4 @@ module.exports = {
   practicalprojectSchema
 
 };
+

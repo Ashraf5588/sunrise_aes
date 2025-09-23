@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Theme Configuration</title>
+  <title>Project Rubriks Creation</title>
   <style>
     * {
       margin: 0;
@@ -480,17 +480,17 @@
         <div class="form-row">
           <div class="form-group">
             <label for="studentClass">Student Class</label>
-            <input type="text" name="studentClass" id="studentClass" value="<%=editing?existingData.studentClass : '' %>" readonly>
+            <input type="text" name="studentClass" id="studentClass" value="<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" readonly>
           </div>
         
           <div class="form-group">
             <label for="subject">Subject</label>
-            <input type="text" name="subject" id="subject" value="<%= editing ? existingData.subject : '' %>" required>
+            <input type="text" name="subject" id="subject" value="<%= subject %>" required>
           </div>
 
           <div class="form-group">
             <label for="credit">Credit Hour</label>
-            <input type="text" name="credit" id="credit" placeholder="Enter credit hour" value="<%= editing ? existingData.credit : '' %>" required>
+            <input type="text" name="credit" id="credit" placeholder="Enter credit hour" required value="<%= editing ? existingData.credit : '' %>">
           </div>
         </div>
 
@@ -511,20 +511,19 @@
       </form>
     </div>
   </div>
-<div>
-  <table cellspacing="0" border="1" style="background-color: white;">
- <thead>
+<table cellspacing="0" border="1" style="background-color: white;"> 
+  <thead>
                                 <tr>
                                   <th>SN</th>
                                   <th>आधार</th>
                                   <th>पक्ष</th>
                                   <th>सूचक</th>
-                                  <th>जम्मा अंक</th>
+                                 
+                                  <th>प्राप्तांक</th>
                                   <th>Action</th>
                                 </tr>
                               </thead>
                               <tbody>
-                                
                                 <% let iIndex = 0 %>
                                 <% projectFormatData.forEach(function(doc) { %>
                                   <% doc.themes.forEach(function(theme) { %>
@@ -549,12 +548,14 @@
 
                                           <td><%= ind.indicatorName %></td>
                                           <td>
-                                            <div class="radio-group">         
-                                              <label><%= ind.indicatorsMarks %></label>
+                                            <div class="radio-group">
+                                              
+     
+
+                                              <%= ind.indicatorsMarks %>
                                             </div>
                                           </td>
-                                          <td><a href="/editprojectrubriks?projectId=<%=doc._id%>&editing=true&studentClass=<%=doc.studentClass%>"><button >Edit</button></a>  <button >Delete</button>
-                                          </td>
+                                          <td><a href="/editprojectrubriks?projectId=<%= doc._id %>&studentClass=<%= doc.studentClass %>&editing=true&subject=<%= doc.subject %>">Edit</a></td>
                                         </tr>
                                       <% }) %>
                                       <% iIndex++ %>
@@ -562,16 +563,25 @@
                                   <% }) %>
                                 <% }) %>
                               </tbody>
-  </table>
-</div>
+</table>
   <script>
     let themeIndex = 0;
     let autoSaveTimeout;
     let isLoading = false;
 
     // Load existing data if available
-    const existingData = <%- JSON.stringify(existingData || null) %>;
-  const editing = <%= editing ? 'true' : 'false' %>;
+ 
+    const existingData = <%- JSON.stringify(editing ? existingData.themes : []) %>;
+    const studentClass = <%= typeof studentClass !== 'undefined' ? studentClass : 'null' %>;
+    if (existingData && existingData.length > 0) {
+
+      existingData.forEach(themeData => {
+        addTheme(themeData);
+      });
+    } else {
+      addTheme(); // Start with one theme by default
+    }
+
 
     function addTheme(themeData = null) {
       const themesContainer = document.getElementById('themes-container');
@@ -587,10 +597,9 @@
         </div>
         <div class="form-group">
           <label for="themeName_${themeIndex}"><% if(studentClass<=3){ %>Theme Name<% }else{ %>मुल्याङ्कन आधारको नाम (Evaluation Criteria Name)<% } %></label>
-          <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex} " 
+          <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" 
                  placeholder="<% if(studentClass<=3){ %>Enter Theme Name<% }else{ %>Enter मुल्याङ्कन आधारको नाम (Enter Evaluation Criteria Name)<% } %>" 
-                 required value="${themeData && themeData.themeName ? themeData.themeName : ''}"
-
+                 required  value="${themeData ? themeData.themeName || '' : ''}"
                  oninput="scheduleAutoSave()">
         </div>
         <div class="outcomes-container" id="outcomes-${themeIndex}"></div>
@@ -855,11 +864,7 @@
     }
 
     // Load existing data on page load
-    function loadExistingData() {
-      // Don't load any data by default - wait for subject selection
-      addTheme(); // Just add empty theme
-    }
-
+  
     // Load data for specific subject
     async function loadSubjectData(subject) {
       if (!subject) {

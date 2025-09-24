@@ -820,17 +820,7 @@
     <div class="form-header">
       <h1>Theme Evaluation Form</h1>
       <p>Complete the evaluation for your selected theme</p>
-      <div style="margin-top: 10px;">
-        <p style="font-size: 0.9rem; color: #3498db; padding: 8px 16px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; border-left: 3px solid #3498db; margin-bottom: 8px;">
-          <strong>Smart Data Loading:</strong> Just enter a roll number to see available themes and load previous evaluations!
-        </p>
-        <p style="font-size: 0.9rem; color: #27ae60; padding: 8px 16px; background: rgba(46, 204, 113, 0.1); border-radius: 8px; border-left: 3px solid #27ae60; margin-bottom: 8px;">
-          <strong>Autosave enabled:</strong> Changes are automatically saved as you work!
-        </p>
-        <p style="font-size: 0.9rem; color: #e67e22; padding: 8px 16px; background: rgba(230, 126, 34, 0.1); border-radius: 8px; border-left: 3px solid #e67e22;">
-          <strong>Easy Editing:</strong> Previous evaluations can be modified - just make your changes and they'll be saved!
-        </p>
-      </div>
+     
     </div>
     
     <!-- Student Navigation Bar -->
@@ -838,48 +828,122 @@
       <div class="student-nav-title">Students:</div>
       <div class="student-nav-buttons">
         <% studentData.forEach((student, idx) => { %>
-          <button type="button" class="student-nav-button <%= idx === 0 ? 'active' : '' %>" onclick="showStudentForm('<%= idx %>')" value="<%= student.roll %>">
+          <button type="button" class="student-nav-button " onclick="autofill('<%= student.roll %>', '<%= student.name %>')">
             <%= student.roll %> - <%= student.name %>
           </button>
         <% }) %>
       </div>
     </div>
+    <script>
+  async function autofill(roll,name) {
+      
+      if(roll && name) {
+        document.getElementById('roll').value = roll;
+        document.getElementById('name').value = name;
+        const response = await fetch(`/getThemeDataFromDB?roll=${roll}&studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>`);
+      const themeDataFetched = await response.json();
+      console.log("Fetched data:", themeDataFetched);
+      if(themeDataFetched)
+      {
+        if(themeDataFetched.roll)
+          document.getElementById('roll').value=themeDataFetched.roll;
+        if(themeDataFetched.name)
+          document.getElementById('name').value=themeDataFetched.name;
+        if(themeDataFetched.studentClass)
+          document.getElementById('studentClass').value=themeDataFetched.studentClass;
+        if(themeDataFetched.section)
+          document.getElementById('section').value=themeDataFetched.section;
+        if(themeDataFetched.subjects && themeDataFetched.subjects.length > 0) {
+          const subject = themeDataFetched.subjects[0];
+          if(subject.name)
+            document.getElementById('subject').value=subject.name;
+          if(subject.themes && subject.themes.length > 0) {
+
+            subject
+            const theme = subject.themes[0];
+            //we have to deal with every theme not only the first one
+            subject.themes.forEach((theme, themeIndex) => {
+              if(theme.themeName) {
+                const themeSelect = document.getElementById('themeName');
+                if(themeSelect) {
+                  themeSelect.value = theme.themeName;
+                  filterLearningOutcomes(themeSelect);
+                }
+              }
+              if(theme.learningOutcomes && theme.learningOutcomes.length > 0) {
+                theme.learningOutcomes.forEach((outcome, outcomeIndex) => {
+                  if(outcome.evaluationDate) {
+                    const dateInput = document.getElementById(`nepali-datepicker${outcomeIndex}`);
+                    if(dateInput) {
+                      dateInput.value = outcome.evaluationDate;
+                    }
+                  }
+                  if (outcome.indicators && outcome.indicators.length > 0) {
+                  outcome.indicators.forEach((indicator, indicatorIndex) => {
+                    const beforeInput = document.getElementById(`indicatorBefore_${themeIndex}_${outcomeIndex}_${indicatorIndex}`);
+                    const afterInput = document.getElementById(`indicatorAfter_${themeIndex}_${outcomeIndex}_${indicatorIndex}`);
+                    const toolInput = document.getElementById(`indicatorTools_${themeIndex}_${outcomeIndex}_${indicatorIndex}`);
+
+                    if (beforeInput && indicator.marksBeforeIntervention != null)
+                      beforeInput.value = indicator.marksBeforeIntervention;
+                    if (afterInput && indicator.marksAfterIntervention != null)
+                      afterInput.value = indicator.marksAfterIntervention;
+                    if (toolInput && indicator.toolsUsed)
+                      toolInput.value = indicator.toolsUsed;
+                  });
+                }
+                });
+              }
+            });
+          
+              
+              
+            }
+          }
+        }
+
+      }
+      }
+
+   
+    
+   </script>
 
 
    
-    <% studentData.forEach((student, studentIndex) => { %>
-    <form action="/themeform" method="POST" id="themeEvaluationForm-<%= studentIndex %>" class="themeEvaluationForm" style="<%= studentIndex === 0 ? '' : 'display: none' %>" onsubmit="return validateAndSubmitAjax(event, false, '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">
+  
+    <form action="/themeform" method="POST" id="themeEvaluationForm" class="themeEvaluationForm"  >
       <!-- Student Information Section -->
       <div class="form-row">
         <div class="form-group">
-          <label for="roll-<%= studentIndex %>">Roll Number</label>
-          <input type="text" name="roll" id="roll-<%= studentIndex %>" required placeholder="Enter roll number" value="<%= student.roll %>" data-student-index="<%= studentIndex %>">
+          <label for="roll">Roll Number</label>
+          <input type="text" name="roll" id="roll" required placeholder="Enter roll number"  >
         </div>
         <div class="form-group">
-          <label for="name-<%= studentIndex %>">Student Name</label>
-          <input type="text" name="name" id="name-<%= studentIndex %>" required placeholder="Enter student name" value="<%= student.name %>" data-student-index="<%= studentIndex %>">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="studentClass-<%= studentIndex %>">Class</label>
-          <input type="text" name="studentClass" id="studentClass-<%= studentIndex %>" required value="<%= studentClass %>" readonly data-student-index="<%= studentIndex %>">
-        </div>
-        <div class="form-group">
-          <label for="section-<%= studentIndex %>">Section</label>
-          <input type="text" name="section" id="section-<%= studentIndex %>" required value="<%= section %>" readonly data-student-index="<%= studentIndex %>">
+          <label for="name">Student Name</label>
+          <input type="text" name="name" id="name" required placeholder="Enter student name" >
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="subject-<%= studentIndex %>">Subject</label>
-          <input type="text" name="subjects[0][name]" id="subject-<%= studentIndex %>" required value="<%= subject %>" readonly data-student-index="<%= studentIndex %>">
+          <label for="studentClass">Class</label>
+          <input type="text" name="studentClass" id="studentClass" required value="<%= studentClass %>" readonly >
         </div>
         <div class="form-group">
-          <label for="themeName-<%= studentIndex %>">Theme Name</label>
-          <select name="subjects[0][themes][0][themeName]" id="themeName-<%= studentIndex %>" onchange="filterLearningOutcomes(this)" required data-student-index="<%= studentIndex %>">
+          <label for="section">Section</label>
+          <input type="text" name="section" id="section" required value="<%= section %>" readonly >
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input type="text" name="subjects[0][name]" id="subject" required value="<%= subject %>" readonly >
+        </div>
+        <div class="form-group">
+          <label for="themeName">Theme Name</label>
+          <select name="subjects[0][themes][0][themeName]" id="themeName" onchange="filterLearningOutcomes(this)" required >
             <option value="">Select a theme</option>
             <% themeData.forEach(theme => { %>
               <% theme.themes.forEach(themeitem => { %>
@@ -893,21 +957,21 @@
       <!-- Learning Outcomes Section -->
       <% themeData.forEach((themeDoc, themeDocIndex) => { %>
         <% themeDoc.themes.forEach((themeItem, themeItemIndex) => { %>
-          <div class="learning-outcome-wrapper" data-theme="<%= themeItem.themeName %>" data-theme-index="<%= themeItemIndex %>" data-student-index="<%= studentIndex %>">
+          <div class="learning-outcome-wrapper" data-theme="<%= themeItem.themeName %>" data-theme-index="<%= themeItemIndex %>">
           <% themeItem.learningOutcome.forEach((outcome, outcomeIndex) => { %>
             <div class="learning-outcome-section">
               <h2><%= outcome.learningOutcomeName %></h2>
               <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.learningOutcomeName %>">
               
               <div class="form-group">
-                <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>">Evaluation Date</label>
+                <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>">Evaluation Date</label>
                  <p>
  <input type="text" 
        id="nepali-datepicker<%=themeItemIndex%>" 
        placeholder="YYYY-MM-DD" 
        class="theme-field nepali-datepicker" 
        name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][evaluationDate]"  
-       data-student-index="<%= studentIndex %>"/>
+       />
  </p>
  <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -939,32 +1003,33 @@
                         <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][name]" value="<%= indicator.indicatorName %>">
                         <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][maxMarks]" value="<%= indicator.indicatorsMarks %>">
                         <div class="marks-input-container">
-                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
+                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before')" >−</button>
                           <input type="number" 
                                  min="0" 
+                                 id="indicatorBefore_<%= themeItemIndex %>_<%= outcomeIndex %>_<%= indicatorIndex %>"
                                  max="<%= indicator.indicatorsMarks %>" 
                                  step="any" 
                                  data-max-marks="<%= indicator.indicatorsMarks %>"
-                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')"
+                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before')"
                                  class="marks-input indicator-before"
                                  value="0"
-                                 data-student-index="<%= studentIndex %>">
-                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
+                                >
+                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before')">+</button>
                         </div>
                         <input type="hidden" 
                                class="theme-field"
                                name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
                                value="0"
-                               data-student-index="<%= studentIndex %>">
+                               >
                       </td>
                     <% }); %>
                     <td>
                       <input type="number" 
-                             id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                             id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>" 
                              class="theme-field"
                              name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
                              readonly
-                             data-student-index="<%= studentIndex %>">
+                            >
                     </td>
                   </tr>
                   <tr>
@@ -974,32 +1039,33 @@
                     <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
                       <td>
                         <div class="marks-input-container">
-                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">−</button>
+                          <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After')">−</button>
                           <input type="number" 
                                  min="0" 
                                  max="<%= indicator.indicatorsMarks %>" 
                                  step="any" 
                                  data-max-marks="<%= indicator.indicatorsMarks %>"
-                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')"
+                                 onchange="updateMarks(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After')"
                                  class="marks-input indicator-after"
                                  value="0"
-                                 data-student-index="<%= studentIndex %>">
-                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After', '<%= studentIndex %>')" data-student-index="<%= studentIndex %>">+</button>
+                                 id="indicatorAfter_<%= themeItemIndex %>_<%= outcomeIndex %>_<%= indicatorIndex %>">
+                          <button type="button" class="btn-increment" onclick="incrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'After')">+</button>
+                         
                         </div>
                         <input type="hidden" 
                                class="theme-field"
                                name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
                                value="0"
-                               data-student-index="<%= studentIndex %>">
+                               id="indicatorAfter_<%= themeItemIndex %>_<%= outcomeIndex %>_<%= indicatorIndex %>">
                       </td>
                     <% }); %>
                     <td>
                       <input type="number" 
-                             id="totalAfter_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" 
+                             id="totalAfter_<%= themeItemIndex %>_<%= outcomeIndex %>" 
                              class="theme-field"
                              name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
                              readonly
-                             data-student-index="<%= studentIndex %>">
+                            >
                     </td>
                   </tr>
                   <tr>
@@ -1021,11 +1087,11 @@
                 <div class="outcome-totals-grid">
                   <div class="outcome-total-item">
                     <label for="outcomeBeforeTotal_<%= themeItemIndex %>_<%= outcomeIndex %>">Before Intervention Total</label>
-                    <div class="total-value" id="outcomeBeforeDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</div>
+                    <div class="total-value" id="outcomeBeforeDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>">0</div>
                   </div>
                   <div class="outcome-total-item">
                     <label for="outcomeAfterTotal_<%= themeItemIndex %>_<%= outcomeIndex %>">After Intervention Total</label>
-                    <div class="total-value" id="outcomeAfterDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</div>
+                    <div class="total-value" id="outcomeAfterDisplay_<%= themeItemIndex %>_<%= outcomeIndex %>">0</div>
                   </div>
                 </div>
               </div>
@@ -1037,16 +1103,16 @@
             <h3>Overall Theme Totals</h3>
             <div class="totals-grid">
               <div class="total-item">
-                <label for="overallTotalBefore_<%= themeItemIndex %>-student-<%= studentIndex %>">Total Before Intervention</label>
-                <input type="number" id="overallTotalBefore_<%= themeItemIndex %>-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalBefore]" readonly data-student-index="<%= studentIndex %>">
+                <label for="overallTotalBefore_<%= themeItemIndex %>">Total Before Intervention</label>
+                <input type="number" id="overallTotalBefore_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalBefore]" readonly>
               </div>
               <div class="total-item">
-                <label for="overallTotalAfter_<%= themeItemIndex %>-student-<%= studentIndex %>">Total After Intervention</label>
-                <input type="number" id="overallTotalAfter_<%= themeItemIndex %>-student-<%= studentIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalAfter]" readonly data-student-index="<%= studentIndex %>">
+                <label for="overallTotalAfter_<%= themeItemIndex %>">Total After Intervention</label>
+                <input type="number" id="overallTotalAfter_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalAfter]" readonly >
               </div>
               <div class="total-item full-width">
-                <label>Total Learning Outcomes: <span id="totalOutcomes_<%= themeItemIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</span></label>
-                <label>Total Max Marks: <span id="totalMaxMarks_<%= themeItemIndex %>-student-<%= studentIndex %>" data-student-index="<%= studentIndex %>">0</span></label>
+                <label>Total Learning Outcomes: <span id="totalOutcomes_<%= themeItemIndex %>">0</span></label>
+                <label>Total Max Marks: <span id="totalMaxMarks_<%= themeItemIndex %>">0</span></label>
               </div>
             </div>
           </div>
@@ -1058,382 +1124,20 @@
         Save Evaluation
       </button>
     </form>
-    <%})%>
+   
   </div>
 </div>
 <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js" type="text/javascript"></script>
   <script>
-    function validateAndSubmitAjax(event, isAutosave = false, studentIndex = null) {
-      if (event) {
-        event.preventDefault();
-      }
-      
-      // If studentIndex is not provided, try to get it from the event
-      if (studentIndex === null && event && event.target) {
-        studentIndex = event.target.getAttribute('data-student-index');
-      }
-      
-      try {
-        // Get the selected theme based on studentIndex
-        const selectedThemeId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
-        const selectedThemeElement = document.getElementById(selectedThemeId);
         
-        if (!selectedThemeElement) {
-          console.error(`Theme select element not found with ID: ${selectedThemeId}`);
-          return false;
-        }
-        
-        const selectedTheme = selectedThemeElement.value;
-        
-        // Find the active wrapper for this student
-        const activeWrapperSelector = studentIndex !== null 
-          ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
-          : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
-        
-        const activeWrapper = document.querySelector(activeWrapperSelector);
-        
-        // Use student-specific edit mode if available
-        const isCurrentEditMode = (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
-          ? isEditModeByStudent[studentIndex] 
-          : isEditMode;
-        
-        console.log('Selected theme:', selectedTheme);
-        console.log('Active wrapper found:', !!activeWrapper);
-        console.log('Is edit mode:', isCurrentEditMode);
-        
-        if (!activeWrapper) {
-          if (!isAutosave) alert('Please select a theme');
-          return false;
-        }
-        
-        // Validate required fields
-        const rollId = studentIndex !== null ? `roll-${studentIndex}` : 'roll';
-        const nameId = studentIndex !== null ? `name-${studentIndex}` : 'name';
-        
-        const rollElement = document.getElementById(rollId);
-        const nameElement = document.getElementById(nameId);
-        
-        if (!rollElement || !nameElement) {
-          console.error(`Form elements not found: roll=${!!rollElement}, name=${!!nameElement}`);
-          if (!isAutosave) alert('Error finding form elements');
-          return false;
-        }
-        
-        const roll = rollElement.value.trim();
-        const name = nameElement.value.trim();
-        
-        if (!roll || !name) {
-          if (!isAutosave) alert('Please fill in roll number and name');
-          return false;
-        }
-        
-        // If not autosaving, show a saving indicator
-        if (!isAutosave) {
-          showSavingIndicator();
-        }
-        
-        // Create a completely new form with clean data structure
-        const originalFormId = studentIndex !== null ? `themeEvaluationForm-${studentIndex}` : 'themeEvaluationForm';
-        const originalForm = document.getElementById(originalFormId);
-        
-        if (!originalForm) {
-          console.error(`Original form not found with ID: ${originalFormId}`);
-          if (!isAutosave) alert('Error finding form');
-          return false;
-        }
-        
-        const newForm = document.createElement('form');
-        newForm.action = originalForm.action;
-        newForm.method = originalForm.method;
-        newForm.style.display = 'none';
-        
-        // Helper function to add hidden inputs
-        const addField = (name, value) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = name;
-          input.value = value !== undefined && value !== null ? value : '';
-          newForm.appendChild(input);
-        };
-        
-        // Add basic student information
-        addField('roll', roll);
-        addField('name', name);
-        
-        // Get student-specific field values
-        const studentClassId = studentIndex !== null ? `studentClass-${studentIndex}` : 'studentClass';
-        const sectionId = studentIndex !== null ? `section-${studentIndex}` : 'section';
-        const subjectId = studentIndex !== null ? `subject-${studentIndex}` : 'subject';
-        
-        const studentClassElement = document.getElementById(studentClassId);
-        const sectionElement = document.getElementById(sectionId);
-        const subjectElement = document.getElementById(subjectId);
-        
-        if (!studentClassElement || !sectionElement || !subjectElement) {
-          console.error(`Form elements not found: class=${!!studentClassElement}, section=${!!sectionElement}, subject=${!!subjectElement}`);
-          if (!isAutosave) alert('Error finding form elements');
-          return false;
-        }
-        
-        addField('studentClass', studentClassElement.value);
-        addField('section', sectionElement.value);
-        addField('subjects[0][name]', subjectElement.value);
-        addField('subjects[0][themes][0][themeName]', selectedTheme);
-        addField('updatedAt', new Date().toISOString());
-        
-        // Use student-specific edit mode if available
-        const formEditMode = (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
-          ? isEditModeByStudent[studentIndex] 
-          : isEditMode;
-        addField('isEditMode', formEditMode);
-        
-        // Process learning outcomes from the active wrapper
-        const themeIndex = activeWrapper.dataset.themeIndex;
-        let newOutcomeIndex = 0;
-        
-        // Find all learning outcome containers in the active wrapper
-        const outcomeContainers = activeWrapper.querySelectorAll('h2');
-        
-        outcomeContainers.forEach((h2) => {
-          const outcomeName = h2.textContent.trim();
-          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][name]`, outcomeName);
-          
-          // Find the next sibling elements until we hit another h2 or end of wrapper
-          let currentElement = h2.nextElementSibling;
-          let evaluationDate = '';
-          let indicators = [];
-          let totalBefore = 0;
-          let totalAfter = 0;
-          
-          while (currentElement && currentElement.tagName !== 'H2') {
-            // Check for evaluation date input
-            if (currentElement.tagName === 'DIV' && currentElement.classList.contains('form-group')) {
-              const dateInput = currentElement.querySelector('input[type="date"]');
-              if (dateInput) {
-                evaluationDate = dateInput.value;
-              }
-            }
-            
-            // Check for table with indicators
-            if (currentElement.tagName === 'TABLE') {
-              const beforeRow = currentElement.querySelector('tbody tr:first-child');
-              const afterRow = currentElement.querySelector('tbody tr:nth-child(3)');
-              const toolsRow = currentElement.querySelector('tbody tr:nth-child(5)');
-              
-              if (beforeRow) {
-                const beforeInputs = beforeRow.querySelectorAll('.marks-input.indicator-before');
-                const afterInputs = afterRow ? afterRow.querySelectorAll('.marks-input.indicator-after') : [];
-                const toolsInputs = toolsRow ? toolsRow.querySelectorAll('input[type="text"]') : [];
-                
-                beforeInputs.forEach((input, indicatorIndex) => {
-                  const maxMarks = parseFloat(input.dataset.maxMarks) || 0;
-                  const beforeMarks = parseFloat(input.value) || 0;
-                  const afterMarks = afterInputs[indicatorIndex] ? parseFloat(afterInputs[indicatorIndex].value) || 0 : 0;
-                  const toolsUsed = toolsInputs[indicatorIndex] ? toolsInputs[indicatorIndex].value : '';
-                  
-                  // Try to get indicator name from the table header
-                  const headers = currentElement.querySelectorAll('thead th');
-                  const indicatorName = headers[indicatorIndex] ? headers[indicatorIndex].textContent.trim() : `Indicator ${indicatorIndex + 1}`;
-                  
-                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][name]`, indicatorName);
-                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][maxMarks]`, maxMarks);
-                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][marksBeforeIntervention]`, beforeMarks);
-                  addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][marksAfterIntervention]`, afterMarks);
-                  if (toolsUsed) {
-                    addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][indicators][${indicatorIndex}][toolsUsed]`, toolsUsed);
-                  }
-                  
-                  totalBefore += beforeMarks;
-                  totalAfter += afterMarks;
-                });
-              }
-            }
-            
-            currentElement = currentElement.nextElementSibling;
-          }
-          
-          // Add evaluation date and totals
-          if (evaluationDate) {
-            addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][evaluationDate]`, evaluationDate);
-          }
-          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][totalMarksBeforeIntervention]`, totalBefore);
-          addField(`subjects[0][themes][0][learningOutcomes][${newOutcomeIndex}][totalMarksAfterIntervention]`, totalAfter);
-          
-          newOutcomeIndex++;
-        });
-        
-        // Add overall totals
-        const overallBeforeField = activeWrapper.querySelector(`#overallTotalBefore_${themeIndex}`);
-        const overallAfterField = activeWrapper.querySelector(`#overallTotalAfter_${themeIndex}`);
-        
-        addField('subjects[0][themes][0][overallTotalBefore]', overallBeforeField ? overallBeforeField.value : '0');
-        addField('subjects[0][themes][0][overallTotalAfter]', overallAfterField ? overallAfterField.value : '0');
-        
-        // Submit the form via AJAX instead of normal submit
-        document.body.appendChild(newForm);
-        console.log('Submitting clean form with', newForm.querySelectorAll('input').length, 'fields');
-        
-        // Convert to a structured object
-        const formData = new FormData(newForm);
-        const plainFormData = {};
-        
-        // Process form data into a structured object with proper nesting
-        for (const [key, value] of formData.entries()) {
-          // Check if this is a nested field (contains brackets)
-          if (key.includes('[')) {
-            // Parse the nested structure
-            const parts = key.match(/([^\[\]]+)|\[([^\[\]]*)\]/g).map(part => 
-              part.replace(/^\[|\]$/g, '') // Remove brackets
-            );
-            
-            // Build the nested structure
-            let current = plainFormData;
-            for (let i = 0; i < parts.length - 1; i++) {
-              const part = parts[i];
-              // Create array or object if it doesn't exist
-              if (/^\d+$/.test(parts[i+1])) {
-                // Next part is a number, create array
-                current[part] = current[part] || [];
-              } else {
-                current[part] = current[part] || {};
-              }
-              current = current[part];
-            }
-            
-            // Set the value at the final level
-            const lastPart = parts[parts.length - 1];
-            current[lastPart] = value;
-          } else {
-            // Simple key-value pair
-            plainFormData[key] = value;
-          }
-        }
-        
-        // Add flags
-        plainFormData.ajax = 'true';
-        if (isAutosave) {
-          plainFormData.autosave = 'true';
-        }
-        if (isEditMode) {
-          plainFormData.isEdit = 'true';
-        }
-        
-        fetch('/themeform', {
-          method: 'POST',
-          body: JSON.stringify(plainFormData),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.success) {
-            // If this was a manual save (not autosave), show success message
-            if (!isAutosave) {
-              // Set the form to edit mode after successfully saving
-              isEditMode = true;
-              updateSubmitButtonText(true);
-              
-              // Update the theme data in memory if it was returned
-              if (data.themeData) {
-                currentThemeData = data.themeData;
-              }
-              
-              // Show edit mode notification
-              showEditModeNotification();
-              
-              // Use student-specific edit mode if available
-              const messageEditMode = (studentIndex !== null && isEditModeByStudent[studentIndex] !== undefined) 
-                ? isEditModeByStudent[studentIndex] 
-                : isEditMode;
-                
-              // Show success message
-              const successMessage = document.createElement('div');
-              successMessage.className = 'toast-message';
-              successMessage.innerHTML = `
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M22 4L12 14.01L9 11.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Evaluation ${messageEditMode ? 'updated' : 'saved'} successfully!</span>
-              `;
-              successMessage.style.position = 'fixed';
-              successMessage.style.top = '20px';
-              successMessage.style.left = '50%';
-              successMessage.style.transform = 'translateX(-50%)';
-              successMessage.style.background = 'rgba(46, 204, 113, 0.95)';
-              successMessage.style.color = 'white';
-              successMessage.style.padding = '12px 24px';
-              successMessage.style.borderRadius = '8px';
-              successMessage.style.zIndex = '1000';
-              successMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-              successMessage.style.display = 'flex';
-              successMessage.style.alignItems = 'center';
-              successMessage.style.gap = '10px';
-              document.body.appendChild(successMessage);
-              
-              // Remove the message after 3 seconds
-              setTimeout(() => {
-                successMessage.style.opacity = '0';
-                successMessage.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                successMessage.style.transform = 'translateX(-50%) translateY(-20px)';
-                setTimeout(() => {
-                  if (successMessage.parentNode) {
-                    document.body.removeChild(successMessage);
-                  }
-                }, 500);
-              }, 3000);
-            } else {
-              // For autosave just show the indicator
-              showSavedIndicator();
-            }
-          } else {
-            if (!isAutosave) {
-              alert('Error saving data: ' + (data.message || 'Unknown error'));
-              showSaveErrorIndicator();
-            } else {
-              showSaveErrorIndicator();
-            }
-          }
-        })
-        .catch(error => {
-          console.error('Error saving form:', error);
-          
-          if (!isAutosave) {
-            alert('Error saving form: ' + error.message);
-          }
-          
-          showSaveErrorIndicator();
-        });
-        
-        return false;
-        
-      } catch (error) {
-        console.error('Error in validateAndSubmitAjax:', error);
-        
-        if (!isAutosave) {
-          alert('Error preparing form submission: ' + error.message);
-        }
-        
-        showSaveErrorIndicator();
-        return false;
-      }
-    }
-    
     function filterLearningOutcomes(selectElement) {
       const selectedTheme = selectElement.value;
-      const studentIndex = selectElement.getAttribute('data-student-index');
       
-      console.log(`Filtering for theme: ${selectedTheme}, student index: ${studentIndex}`);
+      
+      console.log(`Filtering for theme: ${selectedTheme}, `);
       
       // Get wrappers for this specific student only
-      const outcomeWrappers = document.querySelectorAll(`.learning-outcome-wrapper[data-student-index="${studentIndex}"]`);
+      const outcomeWrappers = document.querySelectorAll(`.learning-outcome-wrapper`);
       
       console.log('Found wrappers:', outcomeWrappers.length);
 
@@ -1467,174 +1171,11 @@
         });
       });
       
-      // Initialize totals for the newly selected theme
-      setTimeout(() => initializeAllTotals(studentIndex), 100); // Small delay to ensure DOM is updated
+    
     }
 
-    // Function to try to restore data from localStorage if available (in case of page refresh)
-    function tryRestoreFromLocalStorage(studentIndex) {
-      try {
-        const formId = studentIndex !== null ? `themeEvaluationForm-${studentIndex}` : 'themeEvaluationForm';
-        const backupKey = `themeForm_${formId}_backup`;
-        const backupData = localStorage.getItem(backupKey);
-        
-        if (backupData) {
-          const parsedData = JSON.parse(backupData);
-          const timestamp = new Date(parsedData.timestamp);
-          const now = new Date();
-          const minutesAgo = (now - timestamp) / (1000 * 60);
-          
-          // Only restore data if it's recent (less than 30 minutes old)
-          if (minutesAgo < 30) {
-            console.log(`Found saved form data from ${Math.round(minutesAgo)} minutes ago for ${formId}`);
-            
-            // Show notification about restored data
-            showCustomNotification(
-              "Restored Previous Data", 
-              `Your unsaved changes from ${Math.round(minutesAgo)} minutes ago have been restored.`, 
-              "info"
-            );
-            
-            // We don't need to actually restore the form data since we'll load it from the server
-            // But we know there's recent data, so we should prioritize loading from server
-            return true;
-          } else {
-            console.log(`Found old form backup from ${Math.round(minutesAgo)} minutes ago - not restoring`);
-            localStorage.removeItem(backupKey); // Clean up old data
-            return false;
-          }
-        }
-        return false;
-      } catch (e) {
-        console.error('Error checking for form backup:', e);
-        return false;
-      }
-    }
     
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize edit mode for all students
-      document.querySelectorAll('.themeEvaluationForm').forEach(form => {
-        const studentIndex = form.getAttribute('data-student-index');
-        if (!studentIndex) {
-          console.error('Form missing data-student-index attribute:', form);
-          return;
-        }
-        
-        // Initialize edit mode state for this student
-        isEditModeByStudent[studentIndex] = false;
-        
-        // Filter learning outcomes for each student form
-        const themeSelector = document.getElementById(`themeName-${studentIndex}`);
-        if (themeSelector) {
-          filterLearningOutcomes(themeSelector);
-        }
-        
-        // Check if there's saved form data in localStorage
-        const hasLocalBackup = tryRestoreFromLocalStorage(studentIndex);
-        
-        // Try to load previously saved data for this student
-        const rollInput = document.getElementById(`roll-${studentIndex}`);
-        if (rollInput && rollInput.value) {
-          // Trigger the loadPreviousData function to load saved data
-         
-          
-          // If we have both roll number and theme selected, trigger an immediate save
-          // to ensure we're persisting data frequently
-          const themeSelect = document.getElementById(`themeName-${studentIndex}`);
-          if (themeSelect && themeSelect.value) {
-            setTimeout(() => {
-              autosaveForm(studentIndex);
-            }, 1500); // Short delay to ensure form is fully loaded
-          }
-        }
-        
-        // Add hidden field with timestamp for updatedAt
-        const updatedAtField = document.createElement('input');
-        updatedAtField.type = 'hidden';
-        updatedAtField.name = 'updatedAt';
-        updatedAtField.value = new Date().toISOString();
-        form.appendChild(updatedAtField);
-        
-        // Add special handler for Syam Basnet's data (roll number 1)
-        const rollField = document.getElementById(`roll-${studentIndex}`);
-        if (rollField) {
-          rollField.addEventListener('change', function() {
-            if (this.value.trim() === "1") {
-              checkForSyamBasnetData(studentIndex);
-            }
-          });
-        }
-      });
-      
-      // Check URL parameters for auto-loading Syam's data
-      const urlParams = new URLSearchParams(window.location.search);
-      const autoLoadSyam = urlParams.get('autoLoadSyam');
-      
-      // Apply to first student form only for now
-      const studentClassEl = document.getElementById('studentClass-0');
-      const subjectEl = document.getElementById('subject-0');
-      
-      if (studentClassEl && subjectEl && 
-          (autoLoadSyam === 'true' || 
-           (studentClassEl.value.trim() === "1" && 
-            subjectEl.value.trim().toLowerCase() === "serofero"))) {
-        // Add a slight delay to ensure the form is fully loaded
-        setTimeout(() => {
-          const rollEl = document.getElementById('roll-0');
-          if (rollEl) {
-            rollEl.value = "1";
-            checkForSyamBasnetData('0');
-          }
-        }, 500);
-      }
-      
-      // Add click handlers for custom checkboxes as backup
-      document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('checkbox-custom')) {
-          // Find the associated checkbox input
-          const checkboxInput = event.target.previousElementSibling;
-          if (checkboxInput && checkboxInput.type === 'checkbox') {
-            checkboxInput.checked = !checkboxInput.checked;
-            // Trigger the onchange event manually
-            const changeEvent = new Event('change', { bubbles: true });
-            checkboxInput.dispatchEvent(changeEvent);
-          }
-        }
-      });
-      
-      // Initialize all totals calculations
-      initializeAllTotals();
-    });
     
-    function initializeAllTotals(studentIndex = null) {
-      // Find the active wrapper for the specified student (or all if not specified)
-      const activeWrapperSelector = studentIndex !== null 
-        ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
-        : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
-      
-      const activeWrappers = document.querySelectorAll(activeWrapperSelector);
-      if (!activeWrappers.length) return;
-      
-      // Process each active wrapper
-      activeWrappers.forEach(activeWrapper => {
-        const themeIndex = activeWrapper.dataset.themeIndex;
-        const wrapperStudentIndex = activeWrapper.dataset.studentIndex || null;
-        
-        // Find all outcome sections in this active wrapper
-        const outcomeContainers = activeWrapper.querySelectorAll('.learning-outcome-section');
-        
-        outcomeContainers.forEach((container, outcomeIndex) => {
-          // Update before intervention totals
-          updateLearningOutcomeTotal(outcomeIndex, 'Before', wrapperStudentIndex);
-          // Update after intervention totals
-          updateLearningOutcomeTotal(outcomeIndex, 'After', wrapperStudentIndex);
-        });
-        
-        // Calculate overall totals for this wrapper
-        calculateOverallTotals(wrapperStudentIndex);
-      });
-    }
-
     function updateMarks(input, outcomeIndex, indicatorIndex, timing, studentIndex = null) {
       // Ensure the input value is valid
       let value = parseFloat(input.value) || 0;
@@ -1711,7 +1252,7 @@
       updateLearningOutcomeTotal(outcomeIndex, timing, studentIndex);
       
       // Update overall theme totals
-      calculateOverallTotals(studentIndex);
+      calculateOverallTotals();
       
       // Trigger autosave immediately after marks are updated - but use a short delay to batch changes
       if (window.markUpdateTimeout) {
@@ -1719,7 +1260,7 @@
       }
       window.markUpdateTimeout = setTimeout(() => {
         console.log('Marks updated, saving to database...');
-        autosaveForm(studentIndex); // Autosave the form with the new totals
+       // Autosave the form with the new totals
         
         // Show quick feedback that save is happening
         showSavingIndicator();
@@ -2095,13 +1636,18 @@
               if (!outcome) return;
               
               // Set the evaluation date if it exists
-              const dateInput = container.querySelector('input[type="date"]');
+              const dateInput = container.querySelector('input.nepali-datepicker') || container.querySelector('input[type="date"]');
               if (dateInput && outcome.evaluationDate) {
-                const date = new Date(outcome.evaluationDate);
-                if (!isNaN(date)) {
-                  // Format date as YYYY-MM-DD
-                  const formattedDate = date.toISOString().split('T')[0];
-                  dateInput.value = formattedDate;
+                // For Nepali datepicker, set the value directly as string
+                if (dateInput.classList.contains('nepali-datepicker')) {
+                  dateInput.value = outcome.evaluationDate;
+                } else {
+                  // For regular date input, format as YYYY-MM-DD
+                  const date = new Date(outcome.evaluationDate);
+                  if (!isNaN(date)) {
+                    const formattedDate = date.toISOString().split('T')[0];
+                    dateInput.value = formattedDate;
+                  }
                 }
               }
               

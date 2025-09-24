@@ -182,7 +182,19 @@ const existingThemeData = await themeForstudentData.find(
 
 exports.themeformSave = async (req, res) => {
   try {
-    console.log("Form data received:", req.body);
+    console.log("Form data received:", JSON.stringify(req.body, null, 2));
+    
+    // Debug: Check for evaluationDate in the request body
+    if (req.body.subjects && req.body.subjects[0] && req.body.subjects[0].themes && req.body.subjects[0].themes[0] && req.body.subjects[0].themes[0].learningOutcomes) {
+      console.log("Found learningOutcomes in request:", req.body.subjects[0].themes[0].learningOutcomes);
+      req.body.subjects[0].themes[0].learningOutcomes.forEach((outcome, index) => {
+        if (outcome.evaluationDate) {
+          console.log(`Learning Outcome ${index} has evaluationDate:`, outcome.evaluationDate);
+        } else {
+          console.log(`Learning Outcome ${index} missing evaluationDate`);
+        }
+      });
+    }
     
     // Check if req.body exists
     if (!req.body) {
@@ -231,8 +243,16 @@ exports.themeformSave = async (req, res) => {
       Object.keys(obj).forEach(key => {
         const value = obj[key];
         
+        // Special handling for evaluationDate - ensure it's a String
+        if (key === 'evaluationDate') {
+          if (Array.isArray(value)) {
+            result[key] = String(value[0] || ''); // Convert to String
+          } else {
+            result[key] = String(value || ''); // Convert to String
+          }
+        }
         // If value is array with 1 element and not supposed to be an array field
-        if (Array.isArray(value) && 
+        else if (Array.isArray(value) && 
             !['subjects', 'themes', 'learningOutcomes', 'indicators'].includes(key)) {
           result[key] = value[0]; // Take the first value
         }
@@ -350,11 +370,11 @@ exports.themeformSave = async (req, res) => {
         id: result._id, 
         message: 'Data saved successfully',
         isAutosave: req.body.autosave === 'true',
-        redirect: `/themeform?subject=${subject}&studentClass=${studentClass}` 
+        redirect: `/themeform?subject=${subject}&studentClass=${studentClass}&section=${section}&roll=${roll}` 
       });
     } else {
       // If it's a regular form submission, redirect
-      res.redirect(`/themeform?subject=${subject}&studentClass=${studentClass}`);
+      res.redirect(`/themeform?subject=${subject}&studentClass=${studentClass}&section=${section}&roll=${roll}`);
     }
   } catch (err) {
     console.error("Error saving theme form data:", err);
@@ -873,6 +893,42 @@ exports.editpracticalrubriks = async (req, res, next) => {
 }
 
 
+exports.getThemeDataFromDB = async (req,res,next) => {
+  try {
+    const { roll, studentClass, section, subject } = req.query;
+    if (!studentClass || !subject) {
+      throw new Error("Student class and subject are required");
+    }
+    const model = getStudentThemeData(studentClass);
+   const existingThemeDataInDB = await model.findOne({
+  studentClass,
+  roll,
+  section,
+  "subjects.name": subject   // <---
+},
+  {
+    "subjects.$": 1, // only include the matched element from subjects
+    name: 1,
+    roll: 1,
+    studentClass: 1,
+    section: 1
+  }
+).lean();
+
+console.log("Existing theme data fetched:", existingThemeDataInDB);
+if(!existingThemeDataInDB){
+ res.json(null);
+}
+else
+{
+ res.json(existingThemeDataInDB);
+}
+   
+  } catch (err) {
+    console.error("Error fetching theme data:", err);
+    throw err;
+  }
+};
 
 
 

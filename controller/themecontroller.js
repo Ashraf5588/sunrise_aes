@@ -370,11 +370,11 @@ exports.themeformSave = async (req, res) => {
         id: result._id, 
         message: 'Data saved successfully',
         isAutosave: req.body.autosave === 'true',
-        redirect: `/themeform?subject=${subject}&studentClass=${studentClass}&section=${section}&roll=${roll}` 
+        redirect: `/themeform?subject=${subject}&studentClass=${studentClass}` 
       });
     } else {
       // If it's a regular form submission, redirect
-      res.redirect(`/themeform?subject=${subject}&studentClass=${studentClass}&section=${section}&roll=${roll}`);
+      res.redirect(`/themeform?subject=${subject}&studentClass=${studentClass}`);
     }
   } catch (err) {
     console.error("Error saving theme form data:", err);
@@ -905,17 +905,7 @@ exports.getThemeDataFromDB = async (req,res,next) => {
   roll,
   section,
   "subjects.name": subject   // <---
-},
-  {
-    "subjects.$": 1, // only include the matched element from subjects
-    name: 1,
-    roll: 1,
-    studentClass: 1,
-    section: 1
-  }
-).lean();
-
-console.log("Existing theme data fetched:", existingThemeDataInDB);
+}).lean();
 if(!existingThemeDataInDB){
  res.json(null);
 }

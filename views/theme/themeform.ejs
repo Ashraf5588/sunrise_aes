@@ -835,96 +835,285 @@
       </div>
     </div>
     <script>
-  async function autofill(roll,name) {
+  async function autofill(roll, name) {
       
       if(roll && name) {
         document.getElementById('roll').value = roll;
         document.getElementById('name').value = name;
+        
         const response = await fetch(`/getThemeDataFromDB?roll=${roll}&studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>`);
-      const themeDataFetched = await response.json();
-      console.log("Fetched data:", themeDataFetched);
-      if(themeDataFetched)
-      {
-        if(themeDataFetched.roll)
-          document.getElementById('roll').value=themeDataFetched.roll;
-        if(themeDataFetched.name)
-          document.getElementById('name').value=themeDataFetched.name;
-        if(themeDataFetched.studentClass)
-          document.getElementById('studentClass').value=themeDataFetched.studentClass;
-        if(themeDataFetched.section)
-          document.getElementById('section').value=themeDataFetched.section;
-        if(themeDataFetched.subjects && themeDataFetched.subjects.length > 0) {
-          const subject = themeDataFetched.subjects[0];
-          if(subject.name)
-            document.getElementById('subject').value=subject.name;
-          if(subject.themes && subject.themes.length > 0) {
-
-            subject
-            const theme = subject.themes[0];
-            //we have to deal with every theme not only the first one
-            subject.themes.forEach((theme, themeIndex) => {
-              if(theme.themeName) {
-                const themeSelect = document.getElementById('themeName');
-                if(themeSelect) {
-                  themeSelect.value = theme.themeName;
-                  filterLearningOutcomes(themeSelect);
-                }
-              }
-              if(theme.learningOutcomes && theme.learningOutcomes.length > 0) {
-                theme.learningOutcomes.forEach((outcome, outcomeIndex) => {
-                  if(outcome.evaluationDate) {
-                    const dateInput = document.getElementById(`nepali-datepicker${outcomeIndex}`);
-                    if(dateInput) {
-                      dateInput.value = outcome.evaluationDate;
-                    }
-                  }
-                  if (outcome.indicators && outcome.indicators.length > 0) {
-                  outcome.indicators.forEach((indicator, indicatorIndex) => {
-                    const beforeInput = document.getElementById(`indicatorBefore_${themeIndex}_${outcomeIndex}_${indicatorIndex}`);
-                    const afterInput = document.getElementById(`indicatorAfter_${themeIndex}_${outcomeIndex}_${indicatorIndex}`);
-                    const toolInput = document.getElementById(`indicatorTools_${themeIndex}_${outcomeIndex}_${indicatorIndex}`);
-                    const totalBefore = document.getElementById(`totalBefore_${themeIndex}_${outcomeIndex}`);
-                    const totalAfter = document.getElementById(`totalAfter_${themeIndex}_${outcomeIndex}`);
-                    const outcomeBeforeDisplay = document.getElementById(`outcomeBeforeDisplay_${themeIndex}_${outcomeIndex}`);
-                    const outcomeAfterDisplay = document.getElementById(`outcomeAfterDisplay_${themeIndex}_${outcomeIndex}`);
-                    const overallTotalBefore = document.getElementById(`overallTotalBefore_${themeIndex}`);
-                    const overallTotalAfter = document.getElementById(`overallTotalAfter_${themeIndex}`);
-                    if (beforeInput )
-                      beforeInput.value = indicator.marksBeforeIntervention;
-                    if (afterInput )
-                      afterInput.value = indicator.marksAfterIntervention;
-                    if (toolInput && indicator.toolsUsed)
-                      toolInput.value = indicator.toolsUsed;
-                    if(totalBefore) 
-                    totalBefore.value = outcome.totalMarksBeforeIntervention || 0;
-                    if(totalAfter)
-                    totalAfter.value = outcome.totalMarksAfterIntervention || 0;
-                    if(outcomeBeforeDisplay)
-                    outcomeBeforeDisplay.textContent = outcome.totalMarksBeforeIntervention || 0;
-                    if(outcomeAfterDisplay)
-                    outcomeAfterDisplay.textContent = outcome.totalMarksAfterIntervention || 0;
-                    if(overallTotalBefore)
-                    overallTotalBefore.value = theme.overallTotalBefore || 0;
-                    if(overallTotalAfter)
-                    overallTotalAfter.value = theme.overallTotalAfter || 0;
-
-                  });
-                }
-                });
-              }
-            });
-          
+        const themeDataFetched = await response.json();
+        console.log("Fetched data:", themeDataFetched);
+        
+        if(themeDataFetched) {
+          // Fill basic student info
+          if(themeDataFetched.roll)
+            document.getElementById('roll').value = themeDataFetched.roll;
+          if(themeDataFetched.name)
+            document.getElementById('name').value = themeDataFetched.name;
+          if(themeDataFetched.studentClass)
+            document.getElementById('studentClass').value = themeDataFetched.studentClass;
+          if(themeDataFetched.section)
+            document.getElementById('section').value = themeDataFetched.section;
+            
+          if(themeDataFetched.subjects && themeDataFetched.subjects.length > 0) {
+            const subject = themeDataFetched.subjects[0];
+            if(subject.name)
+              document.getElementById('subject').value = subject.name;
               
+            // Get the currently selected theme from the form
+            const themeSelect = document.getElementById('themeName');
+            const currentlySelectedTheme = themeSelect ? themeSelect.value : '';
+            
+            if(subject.themes && subject.themes.length > 0) {
+              // Store all themes for later use when user switches themes
+              window.studentThemeData = subject.themes;
               
+              // If a theme is currently selected, populate only that theme's data
+              if(currentlySelectedTheme) {
+                populateThemeData(currentlySelectedTheme, subject.themes);
+              }
+              // If no theme selected yet, don't auto-select any theme
+              // Let the user choose which theme they want to work with
             }
           }
+        } else if(themeDataFetched === null) {
+  function clearFormInputs() {
+  // Fields to keep safe
+  const excludeIds = ['roll', 'name', 'studentClass', 'section', 'subject'];
+
+  // Clear text, number, date inputs
+  document.querySelectorAll('#themeEvaluationForm input').forEach(input => {
+    if (!excludeIds.includes(input.id)) {
+      if (input.type === "number" || input.type === "text" || input.type === "date") {
+        input.value = 0;
+      }
+    }
+  });
+
+  // Reset total displays
+  document.querySelectorAll('.total-value').forEach(div => {
+    div.textContent = "0";
+  });
+
+  // Reset readonly fields, but not roll/name/class/section/subject
+  document.querySelectorAll('#themeEvaluationForm input[readonly]').forEach(input => {
+    if (!excludeIds.includes(input.id)) {
+      if (input.type === "number") {
+        input.value = 0;
+      } else {
+        input.value = "";
+      }
+    }
+  });
+
+  // Reset selects but keep subject select
+  document.querySelectorAll('#themeEvaluationForm select').forEach(select => {
+    if (!excludeIds.includes(select.id)) {
+      select.value = "";
+    }
+  });
+}
+  clearFormInputs(); // 🔹 clears only theme-related inputs
+  window.studentThemeData = null;
         }
-
       }
-      }
-
-   
+    }
     
+    // New function to populate data for a specific theme
+    function populateThemeData(themeName, allThemes) {
+      console.log("Populating data for theme:", themeName);
+      
+      // Find the specific theme data
+      const themeData = allThemes.find(theme => theme.themeName === themeName);
+      if (!themeData) {
+        console.log("No data found for theme:", themeName);
+        return;
+      }
+      
+      // Find the theme wrapper that matches this theme name
+      const themeWrapper = document.querySelector(`.learning-outcome-wrapper[data-theme="${themeName}"]`);
+      if (!themeWrapper) {
+        console.log("Theme wrapper not found for:", themeName);
+        return;
+      }
+      
+      // Get the original theme index from the wrapper
+      const originalThemeIndex = themeWrapper.dataset.themeIndex;
+      console.log("Using original theme index:", originalThemeIndex);
+      
+      // Populate learning outcomes for this specific theme
+      if(themeData.learningOutcomes && themeData.learningOutcomes.length > 0) {
+        themeData.learningOutcomes.forEach((outcome, outcomeIndex) => {
+          // Set evaluation date
+          if(outcome.evaluationDate) {
+            const dateInput = document.getElementById(`nepali-datepicker${originalThemeIndex}`);
+            if(dateInput) {
+              dateInput.value = outcome.evaluationDate;
+            }
+          }
+          
+          // Populate indicators
+          if(outcome.indicators && outcome.indicators.length > 0) {
+            outcome.indicators.forEach((indicator, indicatorIndex) => {
+              const beforeInput = document.getElementById(`indicatorBefore_${originalThemeIndex}_${outcomeIndex}_${indicatorIndex}`);
+              const afterInput = document.getElementById(`indicatorAfter_${originalThemeIndex}_${outcomeIndex}_${indicatorIndex}`);
+              
+              if (beforeInput) {
+                beforeInput.value = indicator.marksBeforeIntervention || 0;
+                // Also update the hidden input (these will have updated names after filterLearningOutcomes)
+                const hiddenBefore = themeWrapper.querySelector(`input[name*="[marksBeforeIntervention]"][name*="[${outcomeIndex}]"][name*="[${indicatorIndex}]"]`);
+                if(hiddenBefore) hiddenBefore.value = indicator.marksBeforeIntervention || 0;
+              }
+              
+              if (afterInput) {
+                afterInput.value = indicator.marksAfterIntervention || 0;
+                // Also update the hidden input
+                const hiddenAfter = themeWrapper.querySelector(`input[name*="[marksAfterIntervention]"][name*="[${outcomeIndex}]"][name*="[${indicatorIndex}]"]`);
+                if(hiddenAfter) hiddenAfter.value = indicator.marksAfterIntervention || 0;
+              }
+              
+              // Update tools used
+              const toolInput = themeWrapper.querySelector(`input[name*="[toolsUsed]"][name*="[${outcomeIndex}]"][name*="[${indicatorIndex}]"]`);
+              if (toolInput && indicator.toolsUsed) {
+                toolInput.value = indicator.toolsUsed;
+              }
+            });
+          }
+          
+          // Set totals for this learning outcome
+          const totalBefore = document.getElementById(`totalBefore_${originalThemeIndex}_${outcomeIndex}`);
+          const totalAfter = document.getElementById(`totalAfter_${originalThemeIndex}_${outcomeIndex}`);
+          const outcomeBeforeDisplay = document.getElementById(`outcomeBeforeDisplay_${originalThemeIndex}_${outcomeIndex}`);
+          const outcomeAfterDisplay = document.getElementById(`outcomeAfterDisplay_${originalThemeIndex}_${outcomeIndex}`);
+          
+          if(totalBefore) totalBefore.value = outcome.totalMarksBeforeIntervention || 0;
+          if(totalAfter) totalAfter.value = outcome.totalMarksAfterIntervention || 0;
+          if(outcomeBeforeDisplay) outcomeBeforeDisplay.textContent = outcome.totalMarksBeforeIntervention || 0;
+          if(outcomeAfterDisplay) outcomeAfterDisplay.textContent = outcome.totalMarksAfterIntervention || 0;
+        });
+        
+        // Set overall theme totals
+        const overallTotalBefore = document.getElementById(`overallTotalBefore_${originalThemeIndex}`);
+        const overallTotalAfter = document.getElementById(`overallTotalAfter_${originalThemeIndex}`);
+        
+        if(overallTotalBefore) overallTotalBefore.value = themeData.overallTotalBefore || 0;
+        if(overallTotalAfter) overallTotalAfter.value = themeData.overallTotalAfter || 0;
+      }
+    }
+
+   </script>
+
+   <!-- Form submission handler to only submit selected theme data -->
+   <script>
+     // Debug function to log form data before submission
+     function debugFormData() {
+       const form = document.getElementById('themeEvaluationForm');
+       const formData = new FormData(form);
+       
+       console.log('=== FORM DEBUG DATA ===');
+       console.log('Selected theme:', document.getElementById('themeName').value);
+       
+       for (let [key, value] of formData.entries()) {
+         if (key.includes('themes') || key.includes('learningOutcomes')) {
+           console.log(`${key}: ${value}`);
+         }
+       }
+       console.log('=== END FORM DEBUG ===');
+     }
+     
+     document.addEventListener('DOMContentLoaded', function() {
+       const form = document.getElementById('themeEvaluationForm');
+       
+       if (form) {
+         form.addEventListener('submit', function(e) {
+           const selectedTheme = document.getElementById('themeName').value;
+           
+           if (!selectedTheme) {
+             alert('Please select a theme before submitting.');
+             e.preventDefault();
+             return;
+           }
+           
+           console.log('Form submitting with selected theme:', selectedTheme);
+           
+           // Debug: Log form data before processing
+           debugFormData();
+           
+           // Find the currently visible/selected theme wrapper
+           const selectedWrapper = document.querySelector('.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]');
+           if (selectedWrapper) {
+             // Ensure the selected theme's field names are correct
+             updateFieldNamesForSelectedTheme(selectedWrapper);
+             console.log('Updated field names for selected theme');
+           }
+           
+           // Debug: Log form data after updating field names
+           console.log('Form data after field name updates:');
+           debugFormData();
+           
+           // Find all form elements that belong to non-selected themes and disable them
+           const allWrappers = document.querySelectorAll('.learning-outcome-wrapper');
+           const fieldsToDisable = [];
+           
+           allWrappers.forEach(wrapper => {
+             const isVisible = wrapper.style.display === 'block' || 
+                              (wrapper.style.display === '' && wrapper.dataset.theme === selectedTheme);
+             
+             if (!isVisible) {
+               // This wrapper is not selected, disable all its fields
+               const fields = wrapper.querySelectorAll('input, select, textarea');
+               fields.forEach(field => {
+                 if (!field.disabled) {
+                   field.disabled = true;
+                   fieldsToDisable.push(field);
+                 }
+               });
+             }
+           });
+           
+           console.log(`Disabled ${fieldsToDisable.length} fields from non-selected themes`);
+           
+           // Final debug: Log form data after disabling non-selected fields
+           console.log('Final form data to be submitted:');
+           debugFormData();
+           
+           // Re-enable disabled fields after form submission
+           setTimeout(() => {
+             fieldsToDisable.forEach(field => {
+               field.disabled = false;
+             });
+           }, 100);
+         });
+       }
+     });
+
+
+     function clearFormInputs() {
+  // Clear all text, number, and date inputs
+  document.querySelectorAll('#themeEvaluationForm input[type="text"], #themeEvaluationForm input[type="number"]').forEach(input => {
+    input.value = "";
+  });
+
+  // Reset totals and displays
+  document.querySelectorAll('.total-value').forEach(div => {
+    div.textContent = "0";
+  });
+
+  document.querySelectorAll('#themeEvaluationForm input[readonly]').forEach(input => {
+    if (input.type === "number") {
+      input.value = 0;
+    } else {
+      input.value = "";
+    }
+  });
+
+  // Reset selects
+  document.querySelectorAll('#themeEvaluationForm select').forEach(select => {
+    select.value = "";
+  });
+}
+
    </script>
 
 
@@ -960,12 +1149,12 @@
           <input type="text" name="subjects[0][name]" id="subject" required value="<%= subject %>" readonly >
         </div>
         <div class="form-group">
-          <label for="themeName">Theme Name</label>
-          <select name="subjects[0][themes][0][themeName]" id="themeName" onchange="filterLearningOutcomes(this)" required >
-            <option value="">Select a theme</option>
+          <label for="themeName" >Theme Name</label>
+          <select id="themeName" name="subjects[0][themes][0][themeName]" required onchange="filterLearningOutcomes(this,0)">
+            <option value="" selected>Select a theme</option>
             <% themeData.forEach(theme => { %>
-              <% theme.themes.forEach(themeitem => { %>
-                <option value="<%= themeitem.themeName %>"><%= themeitem.themeName %></option>
+              <% theme.themes.forEach((themeitem,themeItemIndex) => { %>
+                <option value="<%= themeitem.themeName %>"  required><%= themeitem.themeName %></option>
               <% }) %>
             <% }) %>
           </select>
@@ -973,13 +1162,13 @@
       </div>
 
       <!-- Learning Outcomes Section -->
-      <% themeData.forEach((themeDoc, themeDIndex) => { %>
+      <% themeData.forEach((themeDoc, themeIndex) => { %>
         <% themeDoc.themes.forEach((themeItem, themeItemIndex) => { %>
           <div class="learning-outcome-wrapper" data-theme="<%= themeItem.themeName %>" data-theme-index="<%= themeItemIndex %>">
           <% themeItem.learningOutcome.forEach((outcome, outcomeIndex) => { %>
             <div class="learning-outcome-section">
               <h2><%= outcome.learningOutcomeName %></h2>
-              <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.learningOutcomeName %>">
+              <input type="hidden" class="theme-field" name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.learningOutcomeName %>">
               
               <div class="form-group">
                 <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>">Evaluation Date</label>
@@ -988,7 +1177,7 @@
        id="nepali-datepicker<%=themeItemIndex%>" 
        placeholder="YYYY-MM-DD" 
        class="theme-field nepali-datepicker" 
-       name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][evaluationDate]"  
+       name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][evaluationDate]"  
        />
  </p>
  <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js" type="text/javascript"></script>
@@ -1018,8 +1207,8 @@
                   <tr>
                     <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
                       <td>
-                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][name]" value="<%= indicator.indicatorName %>">
-                        <input type="hidden" class="theme-field" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][maxMarks]" value="<%= indicator.indicatorsMarks %>">
+                        <input type="hidden" class="theme-field" name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][name]" value="<%= indicator.indicatorName %>">
+                        <input type="hidden" class="theme-field" name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][maxMarks]" value="<%= indicator.indicatorsMarks %>">
                         <div class="marks-input-container">
                           <button type="button" class="btn-decrement" onclick="decrementValue(this, '<%= outcomeIndex %>', '<%= indicatorIndex %>', 'Before')" >−</button>
                           <input type="number" 
@@ -1036,7 +1225,7 @@
                         </div>
                         <input type="hidden" 
                                class="theme-field"
-                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
+                               name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksBeforeIntervention]" 
                                value="0"
                                >
                       </td>
@@ -1045,7 +1234,7 @@
                       <input type="number" 
                              id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>" 
                              class="theme-field"
-                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
+                             name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][totalMarksBeforeIntervention]" 
                              readonly
                             >
                     </td>
@@ -1072,7 +1261,7 @@
                         </div>
                         <input type="hidden" 
                                class="theme-field"
-                               name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
+                               name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][marksAfterIntervention]" 
                                value="0"
                                id="indicatorAfter_<%= themeItemIndex %>_<%= outcomeIndex %>_<%= indicatorIndex %>">
                       </td>
@@ -1081,7 +1270,7 @@
                       <input type="number" 
                              id="totalAfter_<%= themeItemIndex %>_<%= outcomeIndex %>" 
                              class="theme-field"
-                             name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
+                             name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][totalMarksAfterIntervention]" 
                              readonly
                             >
                     </td>
@@ -1092,7 +1281,7 @@
                   <tr>
                     <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
                       <td>
-                        <input type="text" class="theme-field tools-input" name="subjects[0][themes][0][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][toolsUsed]" placeholder="Tools used">
+                        <input type="text" class="theme-field tools-input" name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][indicators][<%= indicatorIndex %>][toolsUsed]" placeholder="Tools used">
                       </td>
                     <% }); %>
                     <td></td>
@@ -1122,11 +1311,11 @@
             <div class="totals-grid">
               <div class="total-item">
                 <label for="overallTotalBefore_<%= themeItemIndex %>">Total Before Intervention</label>
-                <input type="number" id="overallTotalBefore_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalBefore]" readonly>
+                <input type="number" id="overallTotalBefore_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][<%= themeItemIndex %>][overallTotalBefore]" readonly>
               </div>
               <div class="total-item">
                 <label for="overallTotalAfter_<%= themeItemIndex %>">Total After Intervention</label>
-                <input type="number" id="overallTotalAfter_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][0][overallTotalAfter]" readonly >
+                <input type="number" id="overallTotalAfter_<%= themeItemIndex %>" class="theme-field" name="subjects[0][themes][<%= themeItemIndex %>][overallTotalAfter]" readonly >
               </div>
               <div class="total-item full-width">
                 <label>Total Learning Outcomes: <span id="totalOutcomes_<%= themeItemIndex %>">0</span></label>
@@ -1141,6 +1330,11 @@
       <button type="submit" class="submit-btn">
         Save Evaluation
       </button>
+      
+      <!-- Debug button (remove in production) -->
+      <button type="button" onclick="debugFormData()" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-top: 10px; width: 100%;">
+        Debug Form Data
+      </button>
     </form>
    
   </div>
@@ -1148,17 +1342,18 @@
 <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js" type="text/javascript"></script>
   <script>
         
-    function filterLearningOutcomes(selectElement) {
+    function filterLearningOutcomes(selectElement, themeIndex) {
       const selectedTheme = selectElement.value;
-      
-      
-      console.log(`Filtering for theme: ${selectedTheme}, `);
-      
+      const themeItemIndex = themeIndex;
+
+      console.log(`Filtering for theme: ${selectedTheme}, themeItemIndex: ${themeItemIndex}`);
+
       // Get wrappers for this specific student only
       const outcomeWrappers = document.querySelectorAll(`.learning-outcome-wrapper`);
       
       console.log('Found wrappers:', outcomeWrappers.length);
 
+      let selectedWrapper = null;
       outcomeWrappers.forEach((wrapper, index) => {
         const wrapperTheme = wrapper.dataset.theme;
         const isSelected = wrapperTheme === selectedTheme;
@@ -1167,34 +1362,73 @@
         
         wrapper.style.display = isSelected ? 'block' : 'none';
         
-        // Enable/disable form fields based on selection
+        if (isSelected) {
+          selectedWrapper = wrapper;
+        }
+        
+        // Important: Don't disable fields - instead modify form submission behavior
+        // This ensures that all theme data is preserved but only selected theme is submitted
+        
         const themeFields = wrapper.querySelectorAll('.theme-field');
         themeFields.forEach(field => {
-          field.disabled = !isSelected;
-          // Clear values for non-selected themes
-          if (!isSelected) {
-            if (field.type === 'checkbox') {
-              field.checked = false;
-            } else if (field.type !== 'hidden' || !field.name.includes('[name]')) {
-              field.value = '';
-            }
-          }
+          // Add a data attribute to identify if this field belongs to the selected theme
+          field.setAttribute('data-theme-selected', isSelected ? 'true' : 'false');
+          
+          // Don't disable the fields - this was causing the issue
+          // field.disabled = !isSelected;
         });
         
-        // Also disable mark inputs
+        // Handle mark inputs - also don't disable them
         const markInputs = wrapper.querySelectorAll('.marks-input');
         markInputs.forEach(input => {
-          input.disabled = !isSelected;
-          if (!isSelected) input.value = 0;
+          input.setAttribute('data-theme-selected', isSelected ? 'true' : 'false');
+          // Don't disable: input.disabled = !isSelected;
         });
       });
       
+      // CRITICAL FIX: Update form field names for the selected theme to use index [0]
+      // This ensures the backend receives data in the expected format
+      if (selectedWrapper && selectedTheme) {
+        updateFieldNamesForSelectedTheme(selectedWrapper);
+      }
+      
+      // If a theme is selected and we have stored theme data, populate it
+      if (selectedTheme && window.studentThemeData) {
+        console.log('Attempting to populate stored data for theme:', selectedTheme);
+        populateThemeData(selectedTheme, window.studentThemeData);
+      }
+    }
     
+    // New function to update field names for the selected theme
+    function updateFieldNamesForSelectedTheme(selectedWrapper) {
+      console.log('Updating field names for selected theme wrapper');
+      
+      // Update all form fields within the selected wrapper to use index [0]
+      const allInputs = selectedWrapper.querySelectorAll('input, select, textarea');
+      
+      allInputs.forEach(input => {
+        if (input.name && input.name.includes('[themes][')) {
+          // Replace any [themes][X] with [themes][0] to ensure consistency
+          const originalName = input.name;
+          const updatedName = input.name.replace(/\[themes\]\[\d+\]/, '[themes][0]');
+          
+          if (originalName !== updatedName) {
+            console.log(`Updated field name: ${originalName} -> ${updatedName}`);
+            input.name = updatedName;
+          }
+        }
+      });
+      
+      // Also update the theme name field to use index [0]
+      const themeNameSelect = document.getElementById('themeName');
+      if (themeNameSelect) {
+        themeNameSelect.name = 'subjects[0][themes][0][themeName]';
+      }
     }
 
     
     
-    function updateMarks(input, outcomeIndex, indicatorIndex, timing, studentIndex = null) {
+    function updateMarks(input, outcomeIndex, indicatorIndex, timing, themeIndex) {
       // Ensure the input value is valid
       let value = parseFloat(input.value) || 0;
       const maxMarks = parseFloat(input.dataset.maxMarks) || 0;
@@ -1223,7 +1457,7 @@
       const fieldName = timing === 'Before' ? 
         `subjects[0][themes][0][learningOutcomes][${outcomeIndex}][indicators][${indicatorIndex}][marksBeforeIntervention]` :
         `subjects[0][themes][0][learningOutcomes][${outcomeIndex}][indicators][${indicatorIndex}][marksAfterIntervention]`;
-      
+
       // Get the hidden input field - try multiple approaches to find it
       let inputField = null;
       
@@ -1267,10 +1501,15 @@
       }
       
       // Update total for this learning outcome
-      updateLearningOutcomeTotal(outcomeIndex, timing, studentIndex);
+      updateLearningOutcomeTotal(outcomeIndex, timing, studentIndex=null);
       
       // Update overall theme totals
       calculateOverallTotals();
+      
+      // Trigger autosave immediately after marks are updated - but use a short delay to batch changes
+      if (window.markUpdateTimeout) {
+        clearTimeout(window.markUpdateTimeout);
+      }
       
     }
     
@@ -1394,19 +1633,9 @@
       let totalMaxMarks = 0;
       
       // Sum up all learning outcome totals for the active theme
-      // First try with student-specific IDs if studentIndex is provided
-      let beforeTotals, afterTotals;
-      
-      if (studentIndex !== null) {
-        beforeTotals = activeWrapper.querySelectorAll(`input[id^="totalBefore_${themeIndex}_"][id*="-student-${studentIndex}"]`);
-        afterTotals = activeWrapper.querySelectorAll(`input[id^="totalAfter_${themeIndex}_"][id*="-student-${studentIndex}"]`);
-      }
-      
-      // If no student-specific totals found, fall back to regular IDs
-      if (!beforeTotals || beforeTotals.length === 0) {
-        beforeTotals = activeWrapper.querySelectorAll(`input[id^="totalBefore_${themeIndex}_"]`);
-        afterTotals = activeWrapper.querySelectorAll(`input[id^="totalAfter_${themeIndex}_"]`);
-      }
+      // Get all before and after total inputs in the active wrapper
+      const beforeTotals = activeWrapper.querySelectorAll('input[id^="totalBefore_"]');
+      const afterTotals = activeWrapper.querySelectorAll('input[id^="totalAfter_"]');
       
       beforeTotals.forEach(input => {
         overallBefore += parseFloat(input.value) || 0;
@@ -1451,8 +1680,6 @@
       
       if (totalOutcomesElement) totalOutcomesElement.textContent = totalOutcomes;
       if (totalMaxMarksElement) totalMaxMarksElement.textContent = totalMaxMarks;
-
-     
     }
   </script>
 
@@ -1467,7 +1694,7 @@
         const subject = document.getElementById('subject').value.trim();
         const studentClass = document.getElementById('studentClass').value.trim();
         const section = document.getElementById('section').value.trim();
-        const terminal = "FIRST";
+        
 
         let debounceTimeout;
 

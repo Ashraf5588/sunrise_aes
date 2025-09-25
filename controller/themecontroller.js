@@ -905,7 +905,16 @@ exports.getThemeDataFromDB = async (req,res,next) => {
   roll,
   section,
   "subjects.name": subject   // <---
-}).lean();
+},
+ {
+    "subjects": { $elemMatch: { name: subject } }, // only return matching subject
+    studentClass: 1,
+    roll: 1,
+    section: 1,
+    name: 1
+  }
+).lean();
+
 if(!existingThemeDataInDB){
  res.json(null);
 }

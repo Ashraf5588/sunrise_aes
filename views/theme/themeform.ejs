@@ -947,7 +947,7 @@
         themeData.learningOutcomes.forEach((outcome, outcomeIndex) => {
           // Set evaluation date
           if(outcome.evaluationDate) {
-            const dateInput = document.getElementById(`nepali-datepicker${outcomeIndex}`);
+            const dateInput = document.getElementById(`nepali-datepicker${originalThemeIndex}${outcomeIndex}`);
             if(dateInput) {
               dateInput.value = outcome.evaluationDate;
             }
@@ -1174,7 +1174,7 @@
                 <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>">Evaluation Date</label>
                  <p>
  <input type="text" 
-       id="nepali-datepicker<%=outcomeIndex%>" 
+       id="nepali-datepicker<%= themeItemIndex %><%= outcomeIndex %>" 
        placeholder="YYYY-MM-DD" 
        class="theme-field nepali-datepicker" 
        name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][evaluationDate]"  

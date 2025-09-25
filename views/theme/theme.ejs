@@ -452,51 +452,27 @@
     <div class="quick-actions">
       <h3>🚀 Quick Navigation</h3>
       <div class="action-grid">
-        <a href="/internalreport?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>" class="compact-action-card">
+        <a href="/themewisemarks?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>" class="compact-action-card">
           <div class="compact-action-icon">📊</div>
-          <div class="compact-action-title">View Record Unit Wise</div>
+          <div class="compact-action-title">View Theme Wise Marks</div>
         </a>
 
         <a href="/themefillupform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
           <div class="compact-action-icon">⚙️</div>
           <div class="compact-action-title">
-            <%if (subject==="SCIENCE") { %>
-             Create Practical Rubriks
-              <% }else if(subject==="MATHEMATICS"){%>
-                Create कार्य सञ्चालन र कार्यसम्पादन Rubriks (20 marks)
-              <%}else if(subject==="SOCIAL"){%>
-                Create Practical/ProjectWork Rubriks
-              <%}else if(subject==="HEALTH"){%>
-               
-
-               Create प्रयोगात्मक कार्य (शारीरिक र सिर्जनात्मक कला) को मूल्याङ्कन (रुब्रिक्स)
-              <%}%>
+            
+             Create Theme Rubrik
             </div>
         </a>
-        <a href="/projectrubrikscreate?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
-          <div class="compact-action-icon">⚙️</div>
-          <div class="compact-action-title"> <%if (subject==="SCIENCE") { %>
-             Create ProjectWork Rubriks
-              <% }else if(subject==="MATHEMATICS"){%>
-                Create प्रस्तुतीकरण र अभिलेखीकरण Rubriks (12 marks)
-              <%}else if(subject==="SOCIAL"){%>
-                Create Practical/ProjectWork Rubriks
-              <%}else if(subject==="HEALTH"){%>
-                Create परियोजना कार्य (स्वास्थ्य) को मूल्याङ्कन (रुब्रिक्स) 
-              <%}%>
-              
-            </div>
-        </a>
-        <% if(subject==="SCIENCE" || subject==="MATHEMATICS" || subject==="SOCIAL" || subject==="HEALTH"){%>
-         <a href="/practicalform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
-          <div class="compact-action-icon">⚙️</div>
-          <div class="compact-action-title">Add Practical </div>
-        </a>
-        <%}%>
-
-        <a href="/practicalslip?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>" class="compact-action-card">
+     
+       
+        <a href="/themeslip?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>" class="compact-action-card">
           <div class="compact-action-icon">📋</div>
-          <div class="compact-action-title">Practical Marks Slip</div>
+          <div class="compact-action-title">View Theme Slip</div>
+        </a>
+         <a href="/thememarksofstudent?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>" class="compact-action-card">
+          <div class="compact-action-icon">📋</div>
+          <div class="compact-action-title">View Detail Record of student</div>
         </a>
       </div>
     </div>

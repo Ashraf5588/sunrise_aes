@@ -238,6 +238,7 @@ student.post('/themeform', verifytoken, authorized, themecontroller.themeformSav
 student.get('/thememarks', verifytoken, authorized, themecontroller.themeformMarks);
 student.get('/thememarksofstudent', verifytoken, authorized, themecontroller.thememarksOfStudent);
 student.get('/themewisemarks', verifytoken, authorized, themecontroller.themewisemarks);
+student.get('/themeMarksheet', verifytoken, authorized, themecontroller.themeMarksheet);
 student.get('/themeslip', verifytoken, authorized, themecontroller.themeslip);
 student.get('/theme/previous-data', verifytoken, authorized, themecontroller.getPreviousThemeData);
 student.get('/theme/student-themes', verifytoken, authorized, themecontroller.getStudentThemes);
@@ -279,5 +280,7 @@ student.post('/projectrubrikscreatesave',verifytoken,authorized,practical410cont
 student.get('/editprojectrubriks',verifytoken,authorized,practical410controller.editprojectrubriks)
 
 student.get('/editpracticalrubriks',verifytoken,authorized,themecontroller.editpracticalrubriks)
+
+student.get('/deletepracticalrubriks',verifytoken,authorized,themecontroller.deletepracticalrubriks)
 student.get('/getThemeDataFromDB', verifytoken, authorized, themecontroller.getThemeDataFromDB);
 module.exports = student;

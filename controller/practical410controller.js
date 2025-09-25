@@ -1574,6 +1574,18 @@ exports.projectrubrikscreatesave = async (req, res) => {
   try {
     // Get studentClass from query or body
     const studentClass = req.query.studentClass || req.body.studentClass;
+      const {editing,subject,terminal,projectId}= req.query;
+    if(editing==='true'){
+
+      const projectModel = getProjectThemeFormat(studentClass);
+      // Update the existing record with new data
+      await projectModel.findByIdAndUpdate(projectId, req.body);
+      return res.redirect(`/projectrubrikscreate?studentClass=${studentClass}&subject=${subject}&terminal=${terminal}`);
+
+    }
+    else
+    {
+
     
     if (!studentClass) {
       return res.status(400).json({
@@ -1633,6 +1645,7 @@ exports.projectrubrikscreatesave = async (req, res) => {
       studentClass: studentClass,
       backUrl: "/theme"
     });
+  }
   } catch(err) {
     console.error("Error in theme controller:", err);
     console.error("Error details:", err.message);

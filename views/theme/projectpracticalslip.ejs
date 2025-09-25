@@ -4,17 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Practical Project Record</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #87CEEB 0%, #E0F6FF 40%, #B0E0E6 100%) !important;
+    }
+  </style>
 </head>
 <body>
-  <h1>Practical Project Slip</h1>
-
+  <center><h1 style="color: #4a90e2;">Practical Project Slip</h1></center>
+<center>
   <form action="/practicalslipsave?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>&academicYear=<%= marksheetSetting[0].academicYear %>" method="POST">
 
   
 
 
-    <table border="1" cellspacing="0" cellpadding="5">
-      <tr>
+    <table border="1" cellspacing="0" cellpadding="5" style="background-color: white;">
+      <tr style="color: #4a90e2;background-color:  #c9e2ff;;">
         <th>Roll</th>
        <th>Name</th>
        <th>Class</th>
@@ -124,7 +129,9 @@
     <br><br>
   <% }) %>
     </table>
+    
     <input type="submit">
     </form>
+    </center>
 </body>
 </html>

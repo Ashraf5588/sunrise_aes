@@ -22,7 +22,7 @@
     </tr>
     <% subject.themes.forEach((theme,i=1)=>{ %>
       <tr>
-        <td><%= i+1 %> <%i=i+1%></td>
+        <td><%= i+1 %> <% i=i+1 %></td>
         <td><%= theme.themeName %></td>
         <td><%= theme.learningOutcomes.length %></td>
         <td><%= theme.overallTotalAfter %></td>
@@ -31,35 +31,35 @@
       </tr>
 
    <% }) %>
+   <tr>
    <td colspan="2">Total</td>
    <td><%= subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0) %></td>
    <td><%= subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) %></td>
    <td><%= (subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) / (4 * subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0))) * 100 %> %</td>
-   <td> <% percentage = <%= (subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) / (4 * subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0))) * 100 %>
-    <% if (percentage >= 90 && percentage <= 100) { %>
-  <%= "A+" %>
-<% } else if (percentage >= 80 && percentage < 89) { %>
-  <%= "A" %>
-<% } else if (percentage >= 70 && percentage < 79) { %>
-  <%= "B+" %>
-<% } else if (percentage >= 60 && percentage < 69) { %>
-  <%= "B" %>
-<% } else if (percentage >= 50 && percentage < 59) { %>
-  <%= "C+" %>
-<% } else if (percentage >= 40 && percentage < 49) { %>
-  <%= "C" %>
-<% } else if (percentage >= 20 && percentage < 39) { %>
-  <%= "D" %>
-<% } else if (percentage >= 0 && percentage < 19) { %>
-  <%= "E" %>
-<% } else { %>
-  Invalid Percentage
-<% } %>
-
-     </td>
-      
-  
-  
+   <td> 
+   <% 
+   var percentage = (subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0) / (4 * subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0))) * 100;
+   if (percentage >= 90 && percentage <= 100) { %>
+      A+
+   <% } else if (percentage >= 80 && percentage < 89) { %>
+      A
+   <% } else if (percentage >= 70 && percentage < 79) { %>
+      B+
+   <% } else if (percentage >= 60 && percentage < 69) { %>
+      B
+   <% } else if (percentage >= 50 && percentage < 59) { %>
+      C+
+   <% } else if (percentage >= 40 && percentage < 49) { %>
+      C
+   <% } else if (percentage >= 20 && percentage < 39) { %>
+      D
+   <% } else if (percentage >= 0 && percentage < 19) { %>
+      E
+   <% } else { %>
+      Invalid Percentage
+   <% } %>
+   </td>
+   </tr>
   </table>
     <% }) %>
   <% })%>

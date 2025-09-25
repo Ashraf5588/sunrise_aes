@@ -12,7 +12,7 @@
     }
 
     body {
-      background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+       background: linear-gradient(135deg, #87CEEB 0%, #E0F6FF 50%, #B0E0E6 100%);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: #1a1a1a;
       min-height: 100vh;
@@ -38,7 +38,7 @@
     }
 
     .header-card h2 {
-      color: #27ae60;
+      color: #4a90e2;
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
@@ -98,7 +98,7 @@
     input[type="text"]:focus, 
     input[type="number"]:focus {
       outline: none;
-      border-color: #27ae60;
+      border-color: #4a90e2;
       box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
       background: rgba(255, 255, 255, 1);
     }
@@ -128,7 +128,7 @@
     }
 
     .unit-header h3 {
-      color: #27ae60;
+      color: #4a90e2;
       margin: 0;
       font-size: 1.4rem;
       font-weight: 700;
@@ -323,7 +323,7 @@
       <h2><span class="science-icon"></span><%= subject %> Practicals/Project Configuration</h2>
       <p>Set up units and practicals for science evaluation</p>
       <% if (typeof studentClass !== 'undefined') { %>
-        <div style="background-color: #d5f4e6; padding: 10px; margin-top: 15px; border-radius: 8px; font-weight: bold; color: #27ae60;">
+        <div style="background-color: #c9e2ff; padding: 10px; margin-top: 15px; border-radius: 8px; font-weight: bold; color: #4a90e2;">
           Configuring <%= subject %> Practicals for Class <%= studentClass %>
         </div>
       <% } %>
@@ -356,7 +356,7 @@
         </div>
 
         <div class="submit-section" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
-          <button type="submit" class="submit-btn">Save Science Practicals</button>
+          <button type="submit" class="submit-btn">Save Practicals</button>
           <a href="/themefillupform" style="text-decoration: none;">
             <button type="button" class="btn btn-warning" style="padding: 10px 20px; min-width: 200px;">
               Back to Theme Configuration

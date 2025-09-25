@@ -386,11 +386,19 @@ exports.themeformSave = async (req, res) => {
 
 exports.themefillupform = async (req, res) => {
   try {
-    const { studentClass: classParam } = req.query;
+    const { studentClass: classParam ,subject,terminal} = req.query;
+
+    const practicalFormat = getThemeFormat(classParam);
+    const practicalFormatData = await practicalFormat.find({
+      studentClass: classParam,
+      subject: subject
+    }).lean();
+   
+    
     
     // If studentClass is provided, render the form for that class
     if (classParam) {
-      return res.render("theme/themefiller", { studentClass: classParam });
+      return res.render("theme/themefiller", { studentClass: classParam ,editing:false, ...await getSidenavData(req) ,subject,terminal,practicalFormatData});
     } 
     
     // If no class provided, render the class selection page first
@@ -409,7 +417,17 @@ exports.themefillupformsave = async (req, res) => {
   try {
     // Get studentClass from query or body
     const studentClass = req.query.studentClass || req.body.studentClass;
-    
+    const {editing,subject,terminal,projectId}= req.query;
+    if(editing==='true'){
+      
+      const ThemeModel = getThemeFormat(studentClass);
+      // Update the existing record with new data
+      await ThemeModel.findByIdAndUpdate(projectId, req.body);
+      return res.redirect(`/themefillupform?studentClass=${studentClass}&subject=${subject}&terminal=${terminal}`);
+
+    }
+    else
+    {
     if (!studentClass) {
       return res.status(400).json({
         success: false,
@@ -431,7 +449,8 @@ exports.themefillupformsave = async (req, res) => {
       studentClass: studentClass,
       backUrl: "/theme"
     });
-  } catch(err) {
+  } 
+}catch(err) {
     console.error("Error in theme controller:", err);
     res.status(500).send("Internal Server Error: " + err.message);
   }
@@ -697,6 +716,28 @@ exports.themeslip =  async (req, res) => {
     res.status(500).send('Error fetching theme slip: ' + error.message);
   }
 }
+exports.themeMarksheet =  async (req, res) => {
+  try {
+    const { studentClass, section, subject } = req.query;
+      const ThemeModel = getStudentThemeData(studentClass);
+    const themeslip = await ThemeModel.find({
+      studentClass: studentClass,
+      section: section,
+      
+    }).lean();
+    return res.render("theme/themeMarksheet", {
+      ...await getSidenavData(req),
+      editing: false,
+      studentClass,
+      section,
+      subject,
+      themeslip,
+    });
+  } catch (error) {
+    console.error('Error fetching theme slip:', error);
+    res.status(500).send('Error fetching theme slip: ' + error.message);
+  }
+}
 
 // Function to get previous theme data for a student by roll number
 exports.getPreviousThemeData = async (req, res) => {
@@ -892,7 +933,23 @@ exports.editpracticalrubriks = async (req, res, next) => {
   }
 }
 
+exports.deletepracticalrubriks = async (req, res, next) => {
+  const {studentClass, subject, projectId} = req.query;
+  const model = getThemeFormat(studentClass);
+  try {
+  
+    const deletionResult = await model.findByIdAndDelete(projectId);
+    if (!deletionResult) {
+      return res.status(404).send("Rubrik not found or already deleted");
+    }
+    console.log(`Rubrik with ID ${projectId} deleted successfully`);
+    res.redirect(`/themefillupform?studentClass=${studentClass}&subject=${subject}`);
+  } catch (err) {
+    console.error("Error deleting rubrik:", err);
+    res.status(500).send("Internal Server Error");
+  }
 
+}
 exports.getThemeDataFromDB = async (req,res,next) => {
   try {
     const { roll, studentClass, section, subject } = req.query;

@@ -3,29 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ThemeSlip</title>
+  <title>Themes Slip</title>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 5px;
+    }
+    th, td {
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  Theme Slip <br>
-<table border="1" style="border-collapse: collapse;">
-  <tr>
-    <th rowspan="2">Roll</th>
-    <th rowspan="2">Name</th>
-    <th colspan="2">Nepali</th>
-  </tr>
-  <tr>
-    <th>Percentage</th>
-    <th>Grade</th>
-  </tr>
-  <% themeslip.forEach((data)=>{%>
-  <tr>
-    
-    <td><%= data.roll %></td>
-    <td><%= data.name %></td>
- 
-  </tr>
-  <%})%>
-</table>
+  <h2 style="text-align:center;">Theme Slip Summary</h2>
 
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">Roll</th>
+        <th rowspan="2">Name</th>
+        <% if (themeslip.length > 0) { %>
+          <% themeslip[0].subjects.forEach((subject) => { %>
+            <th colspan="2"><%= subject.name %></th>
+          <% }) %>
+        <% } %>
+      </tr>
+      <tr>
+     
+       
+        <% if (themeslip.length > 0) { %>
+          <% themeslip[0].subjects.forEach(() => { %>
+            <th>Percentage</th>
+            <th>Grade</th>
+          <% }) %>
+        <% } %>
+      </tr>
+    </thead>
+    <tbody>
+      <% themeslip.forEach((student) => { %>
+        <tr>
+          <td><%= student.roll %></td>
+          <td><%= student.name %></td>
+          <% student.subjects.forEach((subject) => { 
+              const totalLearningOutcomes = subject.themes.reduce((acc, theme) => acc + theme.learningOutcomes.length, 0);
+              const totalObtainedAfter = subject.themes.reduce((acc, theme) => acc + theme.overallTotalAfter, 0);
+              const percentage = totalLearningOutcomes > 0 ? (totalObtainedAfter / (4 * totalLearningOutcomes)) * 100 : 0;
+              
+              let grade = "Invalid";
+              if (percentage >= 90 && percentage <= 100) grade = "A+";
+              else if (percentage >= 80 && percentage < 90) grade = "A";
+              else if (percentage >= 70 && percentage < 80) grade = "B+";
+              else if (percentage >= 60 && percentage < 70) grade = "B";
+              else if (percentage >= 50 && percentage < 60) grade = "C+";
+              else if (percentage >= 40 && percentage < 50) grade = "C";
+              else if (percentage >= 20 && percentage < 40) grade = "D";
+              else if (percentage >= 0 && percentage < 20) grade = "E";
+          %>
+            <td><%= percentage.toFixed(2) %>%</td>
+            <td><%= grade %></td>
+          <% }) %>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
 </body>
 </html>

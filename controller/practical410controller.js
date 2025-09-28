@@ -200,7 +200,7 @@ exports.showpracticalDetailForm = async (req, res) => {
   
   try {
 
-    
+
     
     const { studentClass, section, subject,terminal } = req.query;
   const result = await marksheetSetup.findOne(
@@ -1978,6 +1978,18 @@ exports.seerubriks = async (req, res, next) => {
     if (!projectFormatData.length && !practicalFormatData.length && !lessonData.length) {
       return res.status(404).send("Rubrik not found");
     }
+
+const subjectList = await newsubject.find()
+const uniqueSub = new Set(subjectList.map(s=>s.newsubject));
+const classList = await studentClass.find();
+const uniqueClass = new Set(classList.map(c=>c.studentClass));
+
+
+for(const sub of uniqueSub)
+{
+  
+}
+    
     res.render("theme/seerubriks", { projectFormatData, practicalFormatData, lessonData,studentClass,section,subject,terminal, ...await getSidenavData(req) });
   } 
   catch (err) {
@@ -2103,4 +2115,10 @@ exports.saveAttendance = async (req,res,next)=>
     console.log(err);
     res.status(500).send("Internal Server Error");
   }
+}
+async function getAcademicYear()
+{
+  const data = await marksheetSetup.find();
+  return data[0].academicYear;
+
 }

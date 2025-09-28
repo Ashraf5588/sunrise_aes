@@ -115,7 +115,8 @@ const getThemeFormat = (studentClass) => {
 // For student evaluation data (uses ThemeEvaluationSchema)
 const getStudentThemeData = (studentClass) => {
   // Collection name: themeForStudent{class}
-  const collectionName = `themeForStudent${studentClass}`;
+  const academicYear = getAcademicYear();
+  const collectionName = `themeForStudent${studentClass}-${academicYear}`;
   console.log(`Getting student theme data model for class ${studentClass} using collection ${collectionName}`);
   
   // Check if model already exists
@@ -985,6 +986,11 @@ else
     throw err;
   }
 };
+async function getAcademicYear()
+{
+  const data =  await marksheetSetup.find();
+  return data[0].academicYear;
 
+}
 
 

@@ -707,6 +707,7 @@ document.querySelectorAll(".marks-radio-project").forEach(radio => {
     document.querySelector('input[name="reg"]').value = reg;
 
     if(roll && name && reg) {
+      fillAttendance();
       // Fetch existing data from server
       const response = await fetch(`/getPracticalData?roll=${roll}&reg=${reg}&studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>`);
       const practicalData = await response.json();
@@ -866,5 +867,40 @@ document.querySelectorAll(".marks-radio-project").forEach(radio => {
   }
 </script>
 
+<input type="text" id="attendanceData" value='<%= JSON.stringify(attendanceData) %>' style="display:none;">
+<input type="text" id="marksheetSetting" value="<%=JSON.stringify(marksheetSetting)%>" style="display:none;">
+<script>
+
+  function fillAttendance()
+  {
+  const roll = document.getElementById('roll').value;
+  const name = document.getElementById('name').value;
+  const attendanceData = JSON.parse(document.getElementById('attendanceData').value);
+  const marksheetSetting = JSON.parse(document.getElementById('marksheetSetting').value);
+  const terminalname = document.getElementById('terminal').value;
+  console.log("Attendance Data on load:", attendanceData);
+  if(roll && name) {
+    attendanceData.forEach(record => {
+      if(record.roll === roll.toString()) {
+        if(terminalname===marksheetSetting[0].terminals[0].name)
+      {
+        document.getElementById('attendanceDays').value = record.firstTerm || 0;
+        calculateAttendanceMarks();
+      }
+      else if (terminalname===marksheetSetting[0].terminals[1].name) {
+        document.getElementById('attendanceDays').value = record.secondTerm || 0;
+        calculateAttendanceMarks();
+      }
+        else if (terminalname===marksheetSetting[0].terminals[2].name) {
+        document.getElementById('attendanceDays').value = record.finalTerm || 0;
+        calculateAttendanceMarks();
+        }
+        
+      }
+    });
+
+  }
+  }
+</script>
 </body>
 </html>

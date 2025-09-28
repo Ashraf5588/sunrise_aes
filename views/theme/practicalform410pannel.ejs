@@ -470,6 +470,10 @@
                
 
                Create प्रयोगात्मक कार्य (शारीरिक र सिर्जनात्मक कला) को मूल्याङ्कन (रुब्रिक्स)
+              <%} else if(subject==="NEPALI"){%>
+                Create सुनाइ र बोलाइको आन्तरिक मूल्याङ्कनका आधार (20 marks)
+              <%}else if(subject==="ENGLISH"){%>
+                Create Listeing and Speaking Rubriks (20 marks)
               <%}%>
             </div>
         </a>
@@ -482,12 +486,16 @@
               <%}else if(subject==="SOCIAL"){%>
                 Create Practical/ProjectWork Rubriks
               <%}else if(subject==="HEALTH"){%>
-                Create परियोजना कार्य (स्वास्थ्य) को मूल्याङ्कन (रुब्रिक्स) 
+                    Create परियोजना कार्य (स्वास्थ्य) को मूल्याङ्कन (रुब्रिक्स) 
+                <%}else if(subject==="NEPALI"){%>
+                  Create पढाई र लेखाइको मूल्याङ्कनमुल्यान्ग्कन आधार  Rubriks (16 marks)
+              <%}else if(subject==="ENGLISH"){%>
+                  Create Reading & Writing Rubriks (16 marks)
               <%}%>
               
             </div>
         </a>
-        <% if(subject==="SCIENCE" || subject==="MATHEMATICS" || subject==="SOCIAL" || subject==="HEALTH"){%>
+        <% if(subject==="SCIENCE" || subject==="MATHEMATICS" || subject==="SOCIAL" || subject==="HEALTH" || subject==="NEPALI" || subject==="ENGLISH"){%>
          <a href="/practicalform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
           <div class="compact-action-icon">⚙️</div>
           <div class="compact-action-title">Add Practical </div>
@@ -497,6 +505,10 @@
         <a href="/practicalslip?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>" class="compact-action-card">
           <div class="compact-action-icon">📋</div>
           <div class="compact-action-title">Practical Marks Slip</div>
+        </a>
+         <a href="/attendance?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>" class="compact-action-card">
+          <div class="compact-action-icon">📋</div>
+          <div class="compact-action-title">Add Attendance</div>
         </a>
       </div>
     </div>

@@ -29,7 +29,7 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+       background: linear-gradient(135deg, #87CEEB 0%, #2380cb 50%, #B0E0E6 100%);
       color: white;
       padding: 30px;
       text-align: center;
@@ -58,7 +58,7 @@
     }
 
     .section-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #87CEEB 0%, #2380cb 50%, #B0E0E6 100%);
       color: white;
       padding: 15px 20px;
       font-size: 1.2rem;
@@ -98,7 +98,7 @@
 
     .form-control:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #667eea ;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
@@ -127,7 +127,7 @@
     }
 
     th {
-      background: #667eea;
+      background: #66a4ea;
       color: white;
       font-weight: 600;
       position: sticky;
@@ -173,7 +173,7 @@
     }
 
     .radio-group input[type="radio"]:checked + label {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #667eea 0%, #377cf4 100%);
       color: white;
       border-color: #5a67d8;
     }
@@ -294,7 +294,7 @@
     }
 
     .evaluation-table th, .table-container table th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #2864bf 0%, #5188e7 100%);
       color: white;
       padding: 15px 12px;
       text-align: left;
@@ -685,6 +685,7 @@ function calcTotal(unitIdx, projectIdx) {
     document.querySelector('input[name="reg"]').value = reg;
 
     if(roll && name && reg) {
+      fillAttendance()
       // Fetch existing data from server
       const response = await fetch(`/getPracticalData?roll=${roll}&reg=${reg}&studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>`);
       const practicalData = await response.json();
@@ -838,6 +839,42 @@ if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
 
       }
     }
+</script>
+
+<input type="text" id="attendanceData" value='<%= JSON.stringify(attendanceData) %>' style="display:none;">
+<input type="text" id="marksheetSetting" value="<%=JSON.stringify(marksheetSetting)%>" style="display:none;">
+<script>
+
+  function fillAttendance()
+  {
+  const roll = document.getElementById('roll').value;
+  const name = document.getElementById('name').value;
+  const attendanceData = JSON.parse(document.getElementById('attendanceData').value);
+  const marksheetSetting = JSON.parse(document.getElementById('marksheetSetting').value);
+  const terminalname = document.getElementById('terminal').value;
+  console.log("Attendance Data on load:", attendanceData);
+  if(roll && name) {
+    attendanceData.forEach(record => {
+      if(record.roll === roll.toString()) {
+        if(terminalname===marksheetSetting[0].terminals[0].name)
+      {
+        document.getElementById('attendanceDays').value = record.firstTerm || 0;
+        calculateAttendanceMarks();
+      }
+      else if (terminalname===marksheetSetting[0].terminals[1].name) {
+        document.getElementById('attendanceDays').value = record.secondTerm || 0;
+        calculateAttendanceMarks();
+      }
+        else if (terminalname===marksheetSetting[0].terminals[2].name) {
+        document.getElementById('attendanceDays').value = record.finalTerm || 0;
+        calculateAttendanceMarks();
+        }
+        
+      }
+    });
+
+  }
+  }
 </script>
 </body>
 </html>

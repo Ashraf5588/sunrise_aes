@@ -30,6 +30,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 20px;
+
       padding: 2rem;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -140,7 +141,7 @@
       align-items: center;
       margin-bottom: 0.5rem;
       padding: 0.75rem;
-      background: rgba(39, 174, 96, 0.05);
+     
       border-radius: 8px;
       border-left: 3px solid #27ae60;
     }
@@ -331,19 +332,24 @@
 
     <div class="form-card">
       <form action="/sciencepractical?studentClass=<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" method="POST" id="sciencePracticalForm">
+        <!-- Hidden field for lesson ID when editing -->
+        <% if (typeof editing !== 'undefined' && editing && typeof lessonData !== 'undefined' && lessonData._id) { %>
+          <input type="hidden" name="lessonId" value="<%= lessonData._id %>">
+        <% } %>
+        
         <div class="form-row">
           <div class="form-group">
             <label for="studentClass">Student Class</label>
-            <input type="text" name="studentClass" id="studentClass" value="<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" readonly>
+            <input type="text" name="studentClass" id="studentClass" value="<%= (typeof editing !== 'undefined' && editing && typeof lessonData !== 'undefined') ? lessonData.studentClass : (typeof studentClass !== 'undefined' ? studentClass : '') %>" readonly>
           </div>
          
           <div class="form-group">
             <label for="subject">Subject</label>
-            <input type="text" name="subject" id="subject" placeholder="Enter subject name (e.g., Science)" value="<%=subject%>" required>
+            <input type="text" name="subject" id="subject" placeholder="Enter subject name (e.g., Science)" value="<%= (typeof editing !== 'undefined' && editing && typeof lessonData !== 'undefined') ? lessonData.subject : (typeof subject !== 'undefined' ? subject : '') %>" required>
           </div>
           <div class="form-group">
             <label for="academicYear">Terminal</label>
-            <input type="text" name="terminal" id="academicYear" placeholder="Enter Terminal example: First, Second, Third" required value="<%=terminal%>">
+            <input type="text" name="terminal" id="academicYear" placeholder="Enter Terminal example: First, Second, Third" required value="<%= (typeof editing !== 'undefined' && editing && typeof lessonData !== 'undefined') ? lessonData.terminal : (typeof terminal !== 'undefined' ? terminal : '') %>">
           </div>
         </div>
 
@@ -366,11 +372,158 @@
       </form>
     </div>
   </div>
+<!-- Replace the existing table section (around line 300) with this improved version -->
 
+<!-- Existing Lesson Data Display Table -->
+<% if (typeof lessonData !== 'undefined' && lessonData && lessonData.length > 0) { %>
+<div class="form-card" style="margin-top: 2rem;">
+  <div class="header-card" style="margin-bottom: 1rem; padding: 1rem;">
+    <h3 style="color: #4a90e2; margin: 0;">📚 Existing Lesson Configuration</h3>
+    <p style="margin: 0.5rem 0 0 0; color: #7f8c8d;">Current units and practicals setup</p>
+  </div>
+  
+  <div class="table-container" style="overflow-x: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <table class="data-table" style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden;">
+      <thead>
+        <tr style="background: linear-gradient(135deg, #4a90e2, #357abd); color: white;">
+          <th style="padding: 1rem 0.75rem; text-align: center; font-weight: 600; border: none;">S.N</th>
+          <th style="padding: 1rem 0.75rem; text-align: center; font-weight: 600; border: none;">Unit Name</th>
+          <th style="padding: 1rem 0.75rem; text-align: center; font-weight: 600; border: none;">Portion</th>
+          <th style="padding: 1rem 0.75rem; text-align: center; font-weight: 600; border: none;">Practicals</th>
+          <th style="padding: 1rem 0.75rem; text-align: center; font-weight: 600; border: none;">Project Works</th>
+          <th style="padding: 1rem 0.75rem; text-align: center; font-weight: 600; border: none;">Terminal</th>
+          <th style="padding: 1rem 0.75rem; text-align: center; font-weight: 600; border: none;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% let globalUnitIndex = 0; %>
+        <% lessonData.forEach((lesson) => { %>
+          <% lesson.totalLessons.forEach((totalLesson) => { %>
+            <% totalLesson.units.forEach((unit, unitIndex) => { %>
+              <% globalUnitIndex++; %>
+              <tr style="<%= globalUnitIndex % 2 === 0 ? 'background-color: #f8f9fa;' : 'background-color: white;' %> transition: all 0.3s ease;" 
+                  onmouseover="this.style.backgroundColor='#e3f2fd'; this.style.transform='translateY(-1px)'" 
+                  onmouseout="this.style.backgroundColor='<%= globalUnitIndex % 2 === 0 ? '#f8f9fa' : 'white' %>'; this.style.transform='translateY(0)'">
+                
+                <!-- Serial Number -->
+                <td style="padding: 1rem 0.75rem; text-align: center; border: 1px solid #dee2e6; font-weight: 600; color: #4a90e2;">
+                  <%= globalUnitIndex %>
+                </td>
+                
+                <!-- Unit Name -->
+                <td style="padding: 1rem 0.75rem; text-align: center; border: 1px solid #dee2e6; font-weight: 500; color: #2c3e50;">
+                  <div >
+                    <%= unit.unitName || 'N/A' %>
+                  </div>
+                </td>
+                
+                <!-- Portion -->
+                <td style="padding: 1rem 0.75rem; text-align: center; border: 1px solid #dee2e6; color: #5a6c7d;">
+                  <%= unit.portion || 'Not specified' %>
+                </td>
+                
+                <!-- Practicals -->
+                <td style="padding: 1rem 0.75rem; border: 1px solid #dee2e6;">
+                  <% if (unit.practicals && unit.practicals.length > 0) { %>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center;">
+                      <% unit.practicals.forEach((practical, pIndex) => { %>
+                        <span >
+                          P<%= pIndex + 1 %>: <%= practical %>
+                        </span>
+                      <% }); %>
+                    </div>
+                  <% } else { %>
+                    <span style="color: #95a5a6; font-style: italic; font-size: 0.9rem;">No practicals</span>
+                  <% } %>
+                </td>
+                
+                <!-- Project Works -->
+                <td style="padding: 1rem 0.75rem; border: 1px solid #dee2e6;">
+                  <% if (unit.projectworks && unit.projectworks.length > 0) { %>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center;">
+                      <% unit.projectworks.forEach((project, projIndex) => { %>
+                        <span style=" border-radius: 12px; font-size: 0.8rem; font-weight: 500; display: inline-block;">
+                          PW<%= projIndex + 1 %>: <%= project %>
+                        </span>
+                      <% }); %>
+                    </div>
+                  <% } else { %>
+                    <span style="color: #95a5a6; font-style: italic; font-size: 0.9rem;">No projects</span>
+                  <% } %>
+                </td>
+                
+                <!-- Terminal -->
+                <td style="padding: 1rem 0.75rem; text-align: center; border: 1px solid #dee2e6;">
+                  <div style=" padding: 0.4rem 0.8rem; border-radius: 15px; display: inline-block; font-size: 0.85rem; font-weight: 600;">
+                    <%= totalLesson.terminal || 'N/A' %>
+                  </div>
+                </td>
+                
+                <!-- Actions -->
+                <td style="padding: 1rem 0.75rem; text-align: center; border: 1px solid #dee2e6;">
+                  <div style="display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
+                    <a href="/editlessondata?lessonId=<%= totalLesson._id %>&studentClass=<%= studentClass %>&terminal=<%= terminal%>" style="text-decoration: none;">
+                      <button type="button" style="background: linear-gradient(135deg, #1286f3, #82b8f1); color: white; border: none; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);" 
+                              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(243, 156, 18, 0.4)'"
+                              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(243, 156, 18, 0.3)'">
+                         Edit
+                      </button>
+                    </a>
+                    <a href="/deletelessondata?lessonId=<%= totalLesson._id %>&studentClass=<%= studentClass %>&terminal=<%= terminal %>&subject=<%= subject %>&section=<%= section %>" onclick="return confirm('Are you sure you want to delete this lesson data?')" style="text-decoration: none;">
+                      <button type="button" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);"
+                              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(231, 76, 60, 0.4)'"
+                              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(231, 76, 60, 0.3)'">
+                        🗑️ Delete
+                      </button>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% }); %>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Summary Statistics -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+    <div style="background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 1rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);">
+      <div style="font-size: 1.5rem; font-weight: 700;">
+        <%= lessonData.reduce((acc, lesson) => acc + lesson.totalLessons.reduce((subAcc, totalLesson) => subAcc + totalLesson.units.length, 0), 0) %>
+      </div>
+      <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.25rem;">Total Units</div>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 1rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);">
+      <div style="font-size: 1.5rem; font-weight: 700;">
+        <%= lessonData.reduce((acc, lesson) => acc + lesson.totalLessons.reduce((subAcc, totalLesson) => subAcc + totalLesson.units.reduce((unitAcc, unit) => unitAcc + (unit.practicals ? unit.practicals.length : 0), 0), 0), 0) %>
+      </div>
+      <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.25rem;">Total Practicals</div>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 1rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);">
+      <div style="font-size: 1.5rem; font-weight: 700;">
+        <%= lessonData.reduce((acc, lesson) => acc + lesson.totalLessons.reduce((subAcc, totalLesson) => subAcc + totalLesson.units.reduce((unitAcc, unit) => unitAcc + (unit.projectworks ? unit.projectworks.length : 0), 0), 0), 0) %>
+      </div>
+      <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.25rem;">Total Projects</div>
+    </div>
+  </div>
+</div>
+<% } else { %>
+<div class="form-card" style="margin-top: 2rem; text-align: center; padding: 2rem;">
+  <div style="color: #95a5a6; font-size: 1.1rem;">
+    <i style="font-size: 2rem; margin-bottom: 1rem; display: block;">📚</i>
+    No existing lesson data found. Create your first unit above!
+  </div>
+</div>
+<% } %>
   <script>
     let unitIndex = 0;
+    let editing = <%= typeof editing !== 'undefined' && editing ? 'true' : 'false' %>;
+    let editingLessonData = editing ? <%- typeof lessonData !== 'undefined' && lessonData ? JSON.stringify(lessonData) : 'null' %> : null;
 
-    function addUnit() {
+    function addUnit(unitData = null) {
       const unitsContainer = document.getElementById('units-container');
 
       const unitDiv = document.createElement('div');
@@ -385,22 +538,27 @@
         
         <div class="form-group" style="margin-bottom: 1rem;">
           <label for="unitName_${unitIndex}">Unit Name</label>
-          <input type="text" name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name" required>
+          <input type="text" name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name" required value="${unitData ? unitData.unitName || '' : ''}">
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="unitPortion_${unitIndex}">Unit Portion</label>
+          <input type="text" name="units[${unitIndex}][portion]" id="unitPortion_${unitIndex}" placeholder="Enter unit portion" value="${unitData ? unitData.portion || '' : ''}">
         </div>
         
         <!-- Practicals Section -->
         <div style="margin-bottom: 1.5rem;">
           <h4 style="color: #27ae60; margin-bottom: 0.75rem; font-size: 1.1rem; display: flex; align-items: center;">
            <span style="margin-left: 0.5rem;">
-            <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %>
+            <% if(typeof subject !== 'undefined' && subject==="SCIENCE") { %> 🧪 Practicals <% }else if(typeof subject !== 'undefined' && subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %>
             </span>
           </h4>
           <div class="practicals-container" id="practicals-${unitIndex}"></div>
           <div class="btn-group" style="justify-content: flex-start; margin-top: 0.5rem;">
-            <button type="button" class="btn btn-success" onclick="addPractical(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add    <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %></button>
+            <button type="button" class="btn btn-success" onclick="addPractical(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add <% if(typeof subject !== 'undefined' && subject==="SCIENCE") { %> 🧪 Practicals <% }else if(typeof subject !== 'undefined' && subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %></button>
           </div>
         </div>
-        <% if (subject==="SCIENCE"){%>
+        <% if (typeof subject !== 'undefined' && subject==="SCIENCE"){%>
         <!-- Project Work Section -->
         <div style="margin-bottom: 1rem;">
           <h4 style="color: #3498db; margin-bottom: 0.75rem; font-size: 1.1rem; display: flex; align-items: center;">
@@ -416,13 +574,37 @@
       <%}%>
       `;
       
-
       unitsContainer.appendChild(unitDiv);
-      addPractical(unitIndex); // Add one practical by default
+      
+      // If editing and unitData exists, populate practicals and project works
+      if (unitData) {
+        console.log('Adding unit with data:', unitData);
+        
+        // Add existing practicals
+        if (unitData.practicals && unitData.practicals.length > 0) {
+          unitData.practicals.forEach((practical) => {
+            addPractical(unitIndex, practical);
+          });
+        } else {
+          addPractical(unitIndex); // Add empty practical if none exist
+        }
+        
+        // Add existing project works (only for SCIENCE subject)
+        <% if (typeof subject !== 'undefined' && subject === "SCIENCE") { %>
+        if (unitData.projectworks && unitData.projectworks.length > 0) {
+          unitData.projectworks.forEach((project) => {
+            addProjectWork(unitIndex, project);
+          });
+        }
+        <% } %>
+      } else {
+        addPractical(unitIndex); // Add one practical by default for new units
+      }
+      
       unitIndex++;
     }
 
-    function addPractical(unitIdx) {
+    function addPractical(unitIdx, practicalValue = '') {
       const practicalsContainer = document.getElementById(`practicals-${unitIdx}`);
       const practicalIndex = practicalsContainer.children.length;
 
@@ -432,7 +614,7 @@
       practicalDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
           <span style="color: #27ae60; font-weight: 600; min-width: 80px;">Practical ${practicalIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter practical name (e.g., To find the density of a solid)" required style="flex: 1;">
+          <input type="text" name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter practical name (e.g., To find the density of a solid)" required style="flex: 1;" value="${practicalValue}">
           <button type="button" class="btn btn-danger" onclick="removePractical(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
@@ -440,7 +622,7 @@
       practicalsContainer.appendChild(practicalDiv);
     }
 
-    function addProjectWork(unitIdx) {
+    function addProjectWork(unitIdx, projectValue = '') {
       const projectsContainer = document.getElementById(`projects-${unitIdx}`);
       const projectIndex = projectsContainer.children.length;
 
@@ -450,7 +632,7 @@
       projectDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
           <span style="color: #3498db; font-weight: 600; min-width: 90px;">Project ${projectIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work (e.g., Solar System Model)" required style="flex: 1;">
+          <input type="text" name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work (e.g., Solar System Model)" required style="flex: 1;" value="${projectValue}">
           <button type="button" class="btn btn-danger" onclick="removeProjectWork(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
@@ -468,12 +650,14 @@
     function removePractical(button) {
       if (confirm('Are you sure you want to remove this practical?')) {
         button.closest('.practical-item').remove();
+        updatePracticalNumbers(button.closest('.practicals-container'));
       }
     }
 
     function removeProjectWork(button) {
       if (confirm('Are you sure you want to remove this project work?')) {
         button.closest('.project-item').remove();
+        updateProjectNumbers(button.closest('.projects-container'));
       }
     }
 
@@ -487,9 +671,43 @@
       });
     }
 
-    // Add first unit by default when page loads
+    function updatePracticalNumbers(container) {
+      const practicals = container.querySelectorAll('.practical-item');
+      practicals.forEach((practical, index) => {
+        const label = practical.querySelector('span');
+        if (label) {
+          label.textContent = `Practical ${index + 1}:`;
+        }
+      });
+    }
+
+    function updateProjectNumbers(container) {
+      const projects = container.querySelectorAll('.project-item');
+      projects.forEach((project, index) => {
+        const label = project.querySelector('span');
+        if (label) {
+          label.textContent = `Project ${index + 1}:`;
+        }
+      });
+    }
+
+    // Initialize form when page loads
     window.onload = () => {
-      addUnit();
+      console.log('Page loaded. Editing:', editing);
+      console.log('Editing lesson data:', editingLessonData);
+      
+      if (editing && editingLessonData && editingLessonData.units) {
+        // Populate existing units when editing
+        console.log('Editing mode - populating existing data with', editingLessonData.units.length, 'units');
+        editingLessonData.units.forEach(unitData => {
+          console.log('Adding unit:', unitData);
+          addUnit(unitData);
+        });
+      } else {
+        // Add one empty unit by default for new forms
+        console.log('New form mode - adding empty unit');
+        addUnit();
+      }
     };
 
     // Form validation

@@ -283,4 +283,13 @@ student.get('/editpracticalrubriks',verifytoken,authorized,themecontroller.editp
 
 student.get('/deletepracticalrubriks',verifytoken,authorized,themecontroller.deletepracticalrubriks)
 student.get('/getThemeDataFromDB', verifytoken, authorized, themecontroller.getThemeDataFromDB);
+
+student.get('/editlessondata', verifytoken, authorized, practical410controller.editlessondata);
+student.get('/deletelessondata', verifytoken, authorized, practical410controller.deletelessondata);
+student.get('/attendance', verifytoken, authorized, practical410controller.attendance);
+student.post('/attendance', verifytoken, authorized, practical410controller.saveAttendance);
+
+student.get('/showrubriksforadmin', verifytoken, authorized,isAdmin, practical410controller.showrubriksforadmin);
+student.get('/seerubriks',verifytoken,authorized,isAdmin,practical410controller.seerubriks)
+
 module.exports = student;

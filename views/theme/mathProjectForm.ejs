@@ -672,7 +672,7 @@ function calculateTerminalMarks() {
     
     const terminalValue = terminalParams.get('terminal');
   
-    if(terminalValue === "FIRST-2082")
+    if(terminalValue !="FINAL")
   {
     const theoryMarks = parseFloat(document.getElementById('theoryMarks').value);
     document.getElementById('obtainedconvertedmarks').value = (( theoryMarks)/50*10).toFixed(2);
@@ -749,17 +749,20 @@ document.querySelectorAll(".marks-radio-project").forEach(radio => {
         btn.style.backgroundColor = '#2196f3'; // default color
         btn.style.color = 'white';
     });
+
     const clickedBtn = document.getElementById('studentData' + roll);
     clickedBtn.style.backgroundColor = 'darkblue'; // selected color
     clickedBtn.style.color = 'white';
     document.getElementById('roll').value = roll;
     document.getElementById('name').value = name;
     document.querySelector('input[name="reg"]').value = reg;
-
+  
     if(roll && name && reg) {
+        fillAttendance();
       // Fetch existing data from server
       const response = await fetch(`/getPracticalData?roll=${roll}&reg=${reg}&studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>`);
       const practicalData = await response.json();
+      
       console.log("Fetched data:", practicalData);
 
         if(practicalData.participationMarks) {
@@ -911,6 +914,42 @@ if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
       }
     }
   
+</script>
+
+<input type="text" id="attendanceData" value='<%= JSON.stringify(attendanceData) %>' style="display:none;">
+<input type="text" id="marksheetSetting" value="<%=JSON.stringify(marksheetSetting)%>" style="display:none;">
+<script>
+
+  function fillAttendance()
+  {
+  const roll = document.getElementById('roll').value;
+  const name = document.getElementById('name').value;
+  const attendanceData = JSON.parse(document.getElementById('attendanceData').value);
+  const marksheetSetting = JSON.parse(document.getElementById('marksheetSetting').value);
+  const terminalname = document.getElementById('terminal').value;
+  console.log("Attendance Data on load:", attendanceData);
+  if(roll && name) {
+    attendanceData.forEach(record => {
+      if(record.roll === roll.toString()) {
+        if(terminalname===marksheetSetting[0].terminals[0].name)
+      {
+        document.getElementById('attendanceDays').value = record.firstTerm || 0;
+        calculateAttendanceMarks();
+      }
+      else if (terminalname===marksheetSetting[0].terminals[1].name) {
+        document.getElementById('attendanceDays').value = record.secondTerm || 0;
+        calculateAttendanceMarks();
+      }
+        else if (terminalname===marksheetSetting[0].terminals[2].name) {
+        document.getElementById('attendanceDays').value = record.finalTerm || 0;
+        calculateAttendanceMarks();
+        }
+        
+      }
+    });
+
+  }
+  }
 </script>
 </body>
 </html>

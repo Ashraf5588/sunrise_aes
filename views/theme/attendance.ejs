@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Attendance</title>
+</head>
+<body>
+  <h1>Attendance Entry</h1>
+  <form action="/attendance?studentClass=<%=studentClass%>&section=<%=section%>&terminal=<%=terminal%>&academicYear=<%=academicYear%>&subject=<%=subject%>" method="POST">
+    <table border="1" cellspacing="0" cellpadding="5">
+      <tr>
+        <th>Reg No.</th>
+        <th>Roll</th>
+        <th>Name</th>
+        <th>Class</th>
+        <th>Section</th>
+        <th>First Term</th>
+        <th>Second Term</th>
+        <th>Third Term</th>
+        <th>Final Term</th>
+      </tr>
+      <% studentData.forEach((student,index) => { %>
+        <tr>
+          <td><input type="text" name="students[<%= index %>][reg]" value="<%= student.reg %>" required></td>
+          <td><input type="text" name="students[<%= index %>][roll]" value="<%= student.roll %>" required></td>
+          <td><input type="text" name="students[<%= index %>][name]" value="<%= student.name %>" required></td>
+          <td><input type="text" name="students[<%= index %>][class]" value="<%= student.studentClass %>" required></td>
+          <td><input type="text" name="students[<%= index %>][section]" value="<%= student.section %>" ></td>
+          <td><input type="number" name="students[<%= index %>][firstTerm]" min="0" max="100" value="<%= attendanceData[index]?.firstTerm || '' %>"></td>
+          <td><input type="number" name="students[<%= index %>][secondTerm]" min="0" max="100" value="<%= attendanceData[index]?.secondTerm || '' %>"></td>
+          <td><input type="number" name="students[<%= index %>][thirdTerm]" min="0" max="100" value="<%= attendanceData[index]?.thirdTerm || '' %>"></td>
+          <td><input type="number" name="students[<%= index %>][finalTerm]" min="0" max="100" value="<%= attendanceData[index]?.finalTerm || '' %>"></td>
+        </tr>
+      <% }); %>
+    </table>
+    <button type="submit">Submit Attendance</button>
+  </form>
+</body>
+</html>

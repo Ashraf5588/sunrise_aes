@@ -9,6 +9,7 @@ const { rootDir } = require("../utils/path");
 const { studentSchema, studentrecordschema } = require("../model/adminschema");
 const { classSchema, subjectSchema,terminalSchema } = require("../model/adminschema");
 const {newsubjectSchema,marksheetsetupSchema } = require("../model/adminschema");
+const {attendanceSchema} = require("../model/attendanceschema");
 const { name } = require("ejs");
 const subjectlist = mongoose.model("subjectlist", subjectSchema, "subjectlist");
 const studentClass = mongoose.model("studentClass", classSchema, "classlist");
@@ -19,7 +20,8 @@ const terminal = mongoose.model("terminal", terminalSchema, "terminal");
 const {ThemeEvaluationSchema,practicalSchema,scienceprojectSchema, practicalprojectSchema} = require("../model/themeformschema");
 const {themeSchemaFor1,scienceSchema,FinalPracticalSlipSchema} = require("../model/themeschema");
 const { get } = require("http");
- const marksheetSetup = new mongoose.model("marksheetSetting", marksheetsetupSchema,"marksheetSetting");
+const student = require("../routers/mainpage");
+ const marksheetSetup =  mongoose.model("marksheetSetting", marksheetsetupSchema,"marksheetSetting");
 
 
 
@@ -31,7 +33,13 @@ const scienceProjectModel = mongoose.model('scienceproject', scienceprojectSchem
 
 
 
-
+const attendanceModel = (studentClass, section, year) => {
+  // to Check if model already exists
+  if (mongoose.models[`Attendance_${studentClass}_${section}_${year}`]) {
+    return mongoose.models[`Attendance_${studentClass}_${section}_${year}`];
+  }
+  return mongoose.model(`Attendance_${studentClass}_${section}_${year}`, attendanceSchema, `Attendance_${studentClass}_${section}_${year}`);
+};
 
 
 const getSubjectSlipModelForPractical = (subject, studentClass, section, terminal, year) => {
@@ -199,10 +207,14 @@ exports.showpracticalDetailForm = async (req, res) => {
   { "terminals.name": terminal },
   { "terminals.$": 1 } // project only the matched terminal
 ).lean();
-
+console.log("result variable=", result);
+const marksheetSetting = await marksheetSetup.find();
 const workingDays = result?.terminals?.[0]?.workingDays || 0;
+console.log("year", marksheetSetting[0]?.academicYear);
+const attendancemodel = attendanceModel(studentClass, section, marksheetSetting[0]?.academicYear);
+const attendanceData = await attendancemodel.find({}).lean();
 
-console.log(`Working days for terminal ${terminal}:`, workingDays);
+
     const studentData = await studentRecord.find({studentClass:studentClass,section:section}).lean();
     const practicalFormat = getThemeFormat(studentClass);
     const practicalFormatData = await practicalFormat.find({
@@ -276,6 +288,8 @@ console.log(`Working days for terminal ${terminal}:`, workingDays);
         projectFormatData,
         studentData,
         workingDays,
+        attendanceData,
+        marksheetSetting,
       });
 
       
@@ -335,6 +349,130 @@ console.log(`Working days for terminal ${terminal}:`, workingDays);
         projectFormatData,
         studentData,
         workingDays,
+        attendanceData,
+        marksheetSetting,
+      });
+
+      
+    } 
+     else if (subject === "NEPALI" ) {
+      console.log('🔬 === SUBJECT DETECTED ===');      
+      console.log('=== SEARCHING FOR SCIENCE DATA ===');
+      console.log('ScienceModel:', typeof ScienceModel);
+      
+      const ScienceData = await ScienceModel.find({
+        studentClass: studentClass,
+        terminal: terminal,
+        subject: subject
+      }).lean();
+      
+      console.log('✅ Science data query completed');
+      console.log('Science data found:', ScienceData.length, 'records');
+      
+      if (ScienceData.length > 0) {
+        console.log('📊 Science data preview:');
+        ScienceData.forEach((data, index) => {
+          console.log(`Record ${index + 1}:`, {
+            id: data._id,
+            studentClass: data.studentClass,
+            subject: data.subject,
+            unitsCount: data.units ? data.units.length : 0
+          });
+        });
+      } else {
+        console.log('⚠️  NO SCIENCE DATA FOUND');
+        console.log('Let me check what science data exists...');
+        
+          const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
+          console.log('Total science records in database:', allScienceData.length);
+          console.log(allScienceData)
+          if (allScienceData.length > 0) {
+            console.log('Available science data:');
+            allScienceData.forEach((data, index) => {
+              console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
+            });
+        } else {
+          console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
+        }
+      }
+      
+      console.log('🎨 Rendering practicalprojectform...');
+
+      return res.render("theme/nepaliProjectForm", {
+        ...await getSidenavData(req),
+        editing: false,
+        studentClass,
+        section,
+        subject,
+        practicalFormatData, 
+        ScienceData,
+        terminal,
+        projectFormatData,
+        studentData,
+        workingDays,
+          attendanceData,
+        marksheetSetting,
+      });
+
+      
+    } 
+    else if (subject === "ENGLISH" ) {
+      console.log('🔬 === SUBJECT DETECTED ===');      
+      console.log('=== SEARCHING FOR SCIENCE DATA ===');
+      console.log('ScienceModel:', typeof ScienceModel);
+      
+      const ScienceData = await ScienceModel.find({
+        studentClass: studentClass,
+        terminal: terminal,
+        subject: subject
+      }).lean();
+      
+      console.log('✅ Science data query completed');
+      console.log('Science data found:', ScienceData.length, 'records');
+      
+      if (ScienceData.length > 0) {
+        console.log('📊 Science data preview:');
+        ScienceData.forEach((data, index) => {
+          console.log(`Record ${index + 1}:`, {
+            id: data._id,
+            studentClass: data.studentClass,
+            subject: data.subject,
+            unitsCount: data.units ? data.units.length : 0
+          });
+        });
+      } else {
+        console.log('⚠️  NO SCIENCE DATA FOUND');
+        console.log('Let me check what science data exists...');
+        
+          const allScienceData = await ScienceModel.find({studentClass:studentClass,terminal:terminal}).lean();
+          console.log('Total science records in database:', allScienceData.length);
+          console.log(allScienceData)
+          if (allScienceData.length > 0) {
+            console.log('Available science data:');
+            allScienceData.forEach((data, index) => {
+              console.log(`${index + 1}. Class: "${data.studentClass}", Subject: "${data.subject}"`);
+            });
+        } else {
+          console.log('❌ NO SCIENCE DATA EXISTS IN DATABASE AT ALL');
+        }
+      }
+      
+      console.log('🎨 Rendering practicalprojectform...');
+
+      return res.render("theme/englishProjectForm", {
+        ...await getSidenavData(req),
+        editing: false,
+        studentClass,
+        section,
+        subject,
+        practicalFormatData, 
+        ScienceData,
+        terminal,
+        projectFormatData,
+        studentData,
+        workingDays,
+          attendanceData,
+        marksheetSetting,
       });
 
       
@@ -393,6 +531,8 @@ console.log(`Working days for terminal ${terminal}:`, workingDays);
         projectFormatData,
         studentData,
         workingDays,
+          attendanceData,
+        marksheetSetting,
       });
 
       
@@ -452,6 +592,8 @@ console.log(`Working days for terminal ${terminal}:`, workingDays);
         projectFormatData,
         studentData,
         workingDays,
+          attendanceData,
+        marksheetSetting,
       });
 
       
@@ -474,6 +616,8 @@ console.log(`Working days for terminal ${terminal}:`, workingDays);
         projectFormatData,
         studentData,
         workingDays,
+          attendanceData,
+        marksheetSetting,
       });
     }
     
@@ -493,7 +637,7 @@ console.log(`Working days for terminal ${terminal}:`, workingDays);
 exports.savepracticalDetailForm = async (req, res) => { 
 
    try {
-    const { roll, name, studentClass, section, terminal } = req.body;
+    const { subject,roll, name, studentClass, section, terminal } = req.body;
     const Practical = getStudentThemeData(studentClass);
 
     // Validate required fields
@@ -575,10 +719,7 @@ exports.savepracticalDetailForm = async (req, res) => {
 
       await newPractical.save();
 
-      res.status(201).json({
-        message: 'Practical data created successfully',
-        data: newPractical
-      });
+      res.render("/theme/success",{link:"practicaldetailform",studentClass,section,subject,terminal})
     }
 
   } catch (error) {
@@ -719,6 +860,130 @@ console.log(marksheetSetting)
      console.log("projectdata",sciencepracticaldata);
      console.log("lesson Data", lessonData)
       res.render("theme/mathslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+
+    }
+  }
+  else if(subject==="NEPALI")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/nepalislipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+
+    
+     
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/nepalislip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+
+    }
+  }
+  else if(subject==="NEPALI")
+  {
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,acadamicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/englishslipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+     const acadamicYear = marksheetSetting[0].acadamicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+
+    
+     
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/englishslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
 
     }
   }
@@ -869,17 +1134,49 @@ exports.sciencepracticalForm = async (req,res,next)=>
 {
   try
   {
-const { studentClass, section, subject,terminal } = req.query;
+const { studentClass, section, subject,terminal,editing } = req.query;
 if(subject==="HEALTH")
 {
-  return res.render("theme/healthpracticalform",{studentClass,section,subject,terminal});
+
+   const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+  return res.render("theme/healthpracticalform",
+    {studentClass,section,subject,terminal,lessonData,editing:false});
 }
 else
 {
+ const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
 
 
     console.log(studentClass,section,subject,terminal)
-    res.render("theme/sciencepracticalform",{studentClass,section,subject,terminal});
+    console.log("lesson data=",lessonData)
+    res.render("theme/sciencepracticalform",{studentClass,section,subject,terminal,lessonData,editing:false});
 }
 
   }catch(err)
@@ -1018,12 +1315,7 @@ else
       
       await existingConfig.save();
       
-      console.log('Updated existing science practical configuration');
-      return res.status(200).json({
-        success: true,
-        message: 'Science practical configuration updated successfully',
-        data: existingConfig
-      });
+      res.redirect(`/practicalform?studentClass=${studentClass}&section=${section || ''}&subject=${subject}&terminal=${terminal}`);
     } else {
       // Create new configuration
       const newSciencePractical = new ScienceModel({
@@ -1039,11 +1331,7 @@ else
       await newSciencePractical.save();
       
       console.log('Created new science practical configuration');
-      return res.status(201).json({
-        success: true,
-        message: 'Science practical configuration saved successfully',
-        data: newSciencePractical
-      });
+      res.redirect(`/practicalform?studentClass=${studentClass}&section=${section || ''}&subject=${subject}&terminal=${terminal}`);
     }
 
   } catch (err) {
@@ -1125,11 +1413,7 @@ exports.saveScienceData = async (req,res,next)=>
       await existingRecord.save();
       
       console.log('Updated existing science student record');
-      return res.status(200).json({
-        success: true,
-        message: 'Science student record updated successfully',
-        data: existingRecord
-      });
+      res.redirect(`/practicalform?studentClass=${studentClass}&section=${section || ''}&subject=${subject}&terminal=${terminal}`);
     } else {
       // Create new record
       const newScienceStudentRecord = new scienceProjectModel({
@@ -1147,11 +1431,7 @@ exports.saveScienceData = async (req,res,next)=>
       await newScienceStudentRecord.save();
 
       console.log('Created new science student record');
-      return res.status(201).json({
-        success: true,
-        message: 'Science student record created successfully',
-        data: newScienceStudentRecord
-      });
+     res.redirect(`/practicalform?studentClass=${studentClass}&section=${section || ''}&subject=${subject}&terminal=${terminal}`); 
     }
   } catch (err) {
     console.error('Error saving science practical data:', err);
@@ -1230,11 +1510,7 @@ exports.savepracticalprojectform = async (req, res, next) => {
 
     const doc = await model.findOneAndUpdate(filter, update, options);
 
-    return res.status(201).json({
-      success: true,
-      message: 'Science student record saved successfully',
-      data: doc
-    });
+   res.render("theme/success",{link:"practicaldetailform",studentClass,section,subject,terminal});
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: 'Internal server error', details: err.message });
@@ -1508,9 +1784,11 @@ if(roll && reg)
 
   console.log("searching in model:", model);
   const response = await model.findOne({ studentClass:studentClass, section:section, subject:subject, terminalName:terminal, roll:roll, reg:reg });
-  console.log("Found response:", response);
-  if(response)
-  {
+
+
+ 
+  if (response) {
+  
      res.json(response);
   }
   else
@@ -1653,19 +1931,21 @@ exports.projectrubrikscreatesave = async (req, res) => {
     res.status(500).send("Internal Server Error: " + err.message);
   }
 }
-exports.showrubriksForAdmin = async (req, res, next) => {
+exports.showrubriksforadmin = async (req, res, next) => {
   try {
     const subjectList = await newsubject.find().lean();
     const studentClassdata = await studentClass.find({}).lean();
-    res.render("theme/showrubriksforadmin", { subjectList, studentClassdata, ...await getSidenavData(req) });
+    const setup = await marksheetSetup.find({}).lean();
+    res.render("theme/showrubriksforadmin", { subjectList, editing:false,studentClassdata, setup, ...await getSidenavData(req) });
+
   } catch (err) {
     console.error("Error fetching rubriks:", err);
     res.status(500).send("Internal Server Error");
   }
 };
-exports.seeRubriksForAdmin = async (req, res, next) => {
+exports.seerubriks = async (req, res, next) => {
   try {
-    const { studentClass, subject } = req.query;
+    const { studentClass, subject ,section,terminal} = req.query;
     if (!studentClass || !subject) {
       return res.status(400).send("Student class and subject are required");
     }
@@ -1698,8 +1978,9 @@ exports.seeRubriksForAdmin = async (req, res, next) => {
     if (!projectFormatData.length && !practicalFormatData.length && !lessonData.length) {
       return res.status(404).send("Rubrik not found");
     }
-    res.render("theme/showrubrikdata", { projectFormatData, practicalFormatData, lessonData, ...await getSidenavData(req) });
-  } catch (err) {
+    res.render("theme/seerubriks", { projectFormatData, practicalFormatData, lessonData,studentClass,section,subject,terminal, ...await getSidenavData(req) });
+  } 
+  catch (err) {
     console.error("Error fetching rubrik:", err);
     res.status(500).send("Internal Server Error");
   }
@@ -1734,6 +2015,92 @@ exports.editprojectrubriks = async (req, res, next) => {
     });
   }catch (err) {
     console.error("Error fetching rubrik for editing:", err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+exports.editlessondata = async (req, res, next) => {
+
+  try {
+    const { studentClass: classParam ,subject,terminal,editing,lessonId} = req.query;
+    if(lessonId)
+    {
+      const lessonData = await ScienceModel.findById(lessonId).lean();
+      console.log("lesson data for editing=",lessonData)
+      if (!lessonData) {
+      return res.status(404).send("Lesson data not found for the specified ID");
+      }
+      res.render("theme/sciencepracticalform", {
+        lessonData,
+        studentClass: classParam,
+        subject,
+        terminal,
+        editing: true,
+        ...await getSidenavData(req)
+      });
+
+
+  } }
+  catch (err) {
+    console.error("Error fetching rubrik for editing:", err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+exports.deletelessondata = async (req, res, next) => {
+  const {lessonId,studentClass,section,subject,terminal} = req.query;
+  try {
+    if(!lessonId)
+    {
+      return res.status(400).send("Lesson ID is required");
+    }
+    const lessonData = await ScienceModel.findByIdAndDelete(lessonId);
+    if(!lessonData)
+    {
+      return res.status(404).send("Lesson data not found");
+    }
+    res.redirect(`/practicalform?studentClass=${studentClass}&section=${section}&subject=${subject}&terminal=${terminal}`);
+
+  } catch (err) {
+    console.error("Error deleting lesson data:", err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+exports.attendance = async (req,res,next)=>
+{
+
+  const { studentClass, section, subject, terminal } = req.query;
+const studentData = await studentRecord.find({studentClass:studentClass,section:section}).lean();
+const marksheetSetting = await marksheetSetup.find({});
+const academicYear = marksheetSetting[0].academicYear;
+const attendance = attendanceModel(studentClass,section,academicYear);
+const attendanceData = await attendance.find({academicYear:academicYear}).lean();
+
+  res.render("theme/attendance",{...await getSidenavData(req), studentClass, section, subject, terminal, studentData,academicYear, attendanceData});
+}
+exports.saveAttendance = async (req,res,next)=>
+{
+  try
+  {
+    const { studentClass, section, subject, terminal ,acadamicYear} = req.query;
+    const marksheetSetting = await marksheetSetup.find({});
+    const academicYear = marksheetSetting[0].academicYear;
+    const model = attendanceModel(studentClass,section,academicYear);
+    const students = req.body.students; // Array of { roll, attendance, participation }
+    await model.bulkWrite(
+  students.map(s => ({
+    updateOne: {
+      filter: { reg: s.reg, academicYear }, // or _id if you pass it
+      update: { $set: s },
+      upsert: true // create new if not exists
+    }
+  }))
+);
+
+    res.redirect(`/attendance?studentClass=${studentClass}&section=${section}&subject=${subject}&terminal=${terminal}`);
+  }catch(err)
+  {
+    console.log(err);
     res.status(500).send("Internal Server Error");
   }
 }

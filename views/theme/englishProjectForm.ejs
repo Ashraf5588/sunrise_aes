@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Practical Project Form</title>
+  <title>English Project Evaluation Form</title>
   <style>
     * {
       margin: 0;
@@ -12,47 +12,48 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #e8f4fd 0%, #c3dafe 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
       padding: 20px;
+      color: #2c3e50;
     }
 
     .container {
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
       background: white;
       border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       overflow: hidden;
     }
 
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 25px;
+      padding: 30px;
       text-align: center;
     }
 
     .header h1 {
-      font-size: 28px;
+      font-size: 2rem;
+      font-weight: 600;
       margin-bottom: 10px;
     }
 
     .header p {
-      font-size: 16px;
       opacity: 0.9;
+      font-size: 1.1rem;
     }
 
-    .form-container {
+    .form-content {
       padding: 30px;
     }
 
     .section {
-      background: #fafcff;
-      border: 2px solid #c3dafe;
-      border-radius: 12px;
-      margin: 20px 0;
+      margin-bottom: 40px;
+      border: 1px solid #e9ecef;
+      border-radius: 10px;
       overflow: hidden;
     }
 
@@ -60,12 +61,13 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       padding: 15px 20px;
-      font-size: 18px;
+      font-size: 1.2rem;
       font-weight: 600;
     }
 
     .section-content {
-      padding: 20px;
+      padding: 25px;
+      background: #f8f9fa;
     }
 
     .form-row {
@@ -83,17 +85,15 @@
     .form-group label {
       font-weight: 600;
       margin-bottom: 8px;
-      color: #2d3748;
-      font-size: 14px;
+      color: #495057;
     }
 
     .form-control {
       padding: 12px 15px;
-      border: 2px solid #c3dafe;
+      border: 2px solid #e9ecef;
       border-radius: 8px;
-      font-size: 16px;
+      font-size: 14px;
       transition: all 0.3s ease;
-      background: white;
     }
 
     .form-control:focus {
@@ -102,53 +102,40 @@
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-    .form-control:readonly {
-      background: #f0f7ff;
-      color: #4a5568;
+    .form-control[readonly] {
+      background-color: #e9ecef;
+      cursor: not-allowed;
     }
 
-    /* Enhanced Table Styles */
-    .evaluation-table, table {
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
       width: 100%;
       border-collapse: collapse;
-      margin: 15px 0;
       background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      border: 2px solid #c3dafe;
     }
 
-    .evaluation-table th, table th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 15px 12px;
+    th, td {
+      padding: 12px;
       text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    th {
+      background: #667eea;
+      color: white;
       font-weight: 600;
-      font-size: 16px;
-      border: 2px solid #5a67d8;
-      border-bottom: 2px solid #4c51bf;
+      position: sticky;
+      top: 0;
     }
 
-    .evaluation-table td, table td {
-      padding: 12px 15px;
-      border: 1px solid #c3dafe;
-      vertical-align: middle;
-      font-size: 15px;
-      line-height: 1.6;
-      border-right: 1px solid #c3dafe;
-    }
-
-    .evaluation-table tr:hover, table tr:hover {
-      background-color: #f0f7ff;
-    }
-
-    .evaluation-table tr:nth-child(even), table tr:nth-child(even) {
-      background-color: #fafcff;
-    }
-
-    .evaluation-table td:last-child, table td:last-child {
-      border-right: 2px solid #c3dafe;
+    tr:hover {
+      background-color: #f8f9fa;
     }
 
     .radio-group {
@@ -193,18 +180,18 @@
 
     .unit-section {
       background: white;
-      border: 1px solid #c3dafe;
+      border: 1px solid #dee2e6;
       border-radius: 10px;
       margin: 20px 0;
       overflow: hidden;
     }
 
     .unit-header {
-      background: #28a745;
+      background: #495057;
       color: white;
-      padding: 12px 15px;
+      padding: 15px 20px;
+      font-size: 1.1rem;
       font-weight: 600;
-      font-size: 18px;
     }
 
     .unit-content {
@@ -212,15 +199,14 @@
     }
 
     .practical-section {
-      background: #fafcff;
-      border: 1px solid #c3dafe;
+      border: 1px solid #e9ecef;
       border-radius: 8px;
       margin: 15px 0;
       overflow: hidden;
     }
 
     .practical-header {
-      background: #007bff;
+      background: #6c757d;
       color: white;
       padding: 10px 15px;
       font-weight: 600;
@@ -228,11 +214,12 @@
 
     .practical-content {
       padding: 15px;
+      background: #f8f9fa;
     }
 
     .project-section {
-      background: #fafcff;
-      border: 1px solid #c3dafe;
+      background: white;
+      border: 1px solid #dee2e6;
       border-radius: 8px;
       margin: 15px 0;
       overflow: hidden;
@@ -254,13 +241,23 @@
       border: 2px solid #2196f3;
       border-radius: 8px;
       padding: 15px;
-      margin: 20px 0;
+      margin: 10px 0;
       text-align: center;
     }
 
     .total-display label {
       font-weight: 600;
-      font-size: 16px;
+      color: #1976d2;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .total-display input {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      border: none;
+      background: transparent;
       color: #1976d2;
     }
 
@@ -268,19 +265,64 @@
       background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
       color: white;
       border: none;
-      padding: 15px 30px;
-      font-size: 18px;
+      padding: 15px 40px;
+      font-size: 1.1rem;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
-      width: 100%;
-      margin-top: 30px;
+      display: block;
+      margin: 30px auto;
+      min-width: 200px;
     }
 
     .submit-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    /* Enhanced Table Styles */
+    .evaluation-table, .table-container table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border: 2px solid #c3dafe;
+    }
+
+    .evaluation-table th, .table-container table th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 16px;
+      border: 2px solid #5a67d8;
+      border-bottom: 2px solid #4c51bf;
+    }
+
+    .evaluation-table td, .table-container table td {
+      padding: 12px 15px;
+      border: 1px solid #c3dafe;
+      vertical-align: middle;
+      font-size: 15px;
+      line-height: 1.6;
+      border-right: 1px solid #c3dafe;
+    }
+
+    .evaluation-table tr:hover, .table-container table tr:hover {
+      background-color: #f0f7ff;
+    }
+
+    .evaluation-table tr:nth-child(even), .table-container table tr:nth-child(even) {
+      background-color: #fafcff;
+    }
+
+    .evaluation-table td:last-child, .table-container table td:last-child {
+      border-right: 2px solid #c3dafe;
     }
 
     @media (max-width: 768px) {
@@ -293,11 +335,15 @@
         border-radius: 10px;
       }
       
-      .header h1 {
-        font-size: 24px;
+      .header {
+        padding: 20px;
       }
       
-      .form-container {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .form-content {
         padding: 20px;
       }
     }
@@ -306,50 +352,46 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Practical Project Evaluation Form</h1>
-      <p>Student Assessment and Evaluation System</p>
+      <h1>Nepali Project Evaluation Form</h1>
+      <p>Complete evaluation form for practical and project work assessment</p>
     </div>
-    
-    <div class="form-container">
+
+    <div class="form-content">
       <form action="/practicalprojectform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>" method="POST">
         
         <!-- Student Information Section -->
         <div class="section">
-              
           <div class="section-header">Student Information</div>
-
-          <div class="studentname">
+          <div class="section-content">
+              <div class="studentname">
             <% studentData.forEach((studentname) => { %>
               <input type="button" name="" id="studentData<%= studentname.roll %>" value="<%= studentname.name %>" style="background-color:#2196f3; color:white; border-radius: 7px; margin:1%; padding:5px; border:none; font-weight: bold; font-size: 16px;" onclick="fill('<%= studentname.roll %>','<%= studentname.name %>','<%= studentname.reg %>')">
             <% }); %>
           </div><input type="hidden" name="reg" >
-          <div class="section-content">
             <div class="form-row">
-
-              
               <div class="form-group">
                 <label for="roll">Roll Number</label>
-                <input type="text" name="roll" id="roll" class="form-control" placeholder="Enter Roll Number">
+                <input type="text" name="roll" id="roll" class="form-control" placeholder="Enter Roll Number" required>
               </div>
               <div class="form-group">
                 <label for="name">Student Name</label>
-                <input type="text" name="name" id="name" class="form-control" placeholder="Enter Student Name">
+                <input type="text" name="name" id="name" class="form-control" placeholder="Enter Student Name" required>
               </div>
               <div class="form-group">
                 <label for="studentClass">Class</label>
-                <input type="text" name="studentClass" id="studentClass" value="<%= studentClass %>" class="form-control" readonly>
+                <input type="text" name="studentClass" id="studentClass" class="form-control" value="<%= studentClass %>" readonly>
               </div>
               <div class="form-group">
                 <label for="section">Section</label>
-                <input type="text" name="section" id="section" value="<%= section %>" class="form-control" readonly>
+                <input type="text" name="section" id="section" class="form-control" value="<%= section %>" readonly>
               </div>
               <div class="form-group">
                 <label for="subject">Subject</label>
-                <input type="text" name="subject" id="subject" value="<%= subject %>" class="form-control" readonly>
+                <input type="text" name="subject" id="subject" class="form-control" value="<%= subject %>" readonly>
               </div>
               <div class="form-group">
                 <label for="terminal">Terminal</label>
-                <input type="text" id="terminal" name="terminalName" class="form-control" readonly>
+                <input type="text" id="terminal" name="terminalName" class="form-control" placeholder="Terminal will be auto-filled" readonly>
               </div>
             </div>
           </div>
@@ -362,10 +404,10 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="attendanceDays">Total Attendance Days</label>
-                <input type="number" name="totalAttendance" id="attendanceDays" class="form-control" placeholder="Enter Total Attendance Days" oninput="calculateAttendanceMarks()">
+                <input type="number" name="totalAttendance" id="attendanceDays" class="form-control" placeholder="Enter attendance days" oninput="calculateAttendanceMarks()">
               </div>
               <div class="form-group">
-                <label for="attendanceMarks">Attendance Marks</label>
+                <label for="attendanceMarks">Attendance Marks (Auto-calculated)</label>
                 <input type="number" name="attendanceMarks" id="attendanceMarks" class="form-control" readonly step="0.1">
               </div>
             </div>
@@ -381,31 +423,31 @@
                 <thead>
                   <tr>
                     <th>आधार</th>
-                    <th>सूचक</th>
                     <th>स्तर</th>
+                    <th>विवरण</th>
                     <th>अंक</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td rowspan="4">सक्रियता र सहभागिता</td>
-                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा सक्रियतापूर्वक भाग लिएको, आफ्ना विचार निर्वाध र स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका सम्पूर्ण कार्य स्वयंमले पूरा गरेको</td>
                     <td>सर्वोत्कृष्ट</td>
+                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा सक्रियतापूर्वक भाग लिएको</td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="2" id="part2"> <label for="part2">२</label></div></td>
                   </tr>
                   <tr>
-                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा कम सक्रियतापूर्वक भाग लिएको, आफ्ना विचार स्वतन्त्र रूपमा प्रस्तुत गरेको, दिइएका अधिकांश कार्य पूरा गरेको</td>
                     <td>उत्कृष्ट</td>
+                    <td>सिकाइमा जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा कम सक्रियतापूर्वक भाग लिएको</td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="1.5" id="part1_5"> <label for="part1_5">१.५</label></div></td>
                   </tr>
                   <tr>
-                    <td>सिकाइमा कम जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा निर्देशानुसार भाग लिएको, आफ्ना विचार आंशिक रूपमा मात्र प्रस्तुत गरेको, दिइएका कार्य आधा मात्र पूरा गरेको</td>
                     <td>मध्यम</td>
+                    <td>सिकाइमा कम जिज्ञासा राख्दै, समूह छलफल र अन्तरक्रियामा निर्देशानुसार भाग लिएको</td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="1" id="part1"> <label for="part1">१</label></div></td>
                   </tr>
                   <tr>
-                    <td>सिकाइप्रति उदासीन रहेमा, समूह छलफल र अन्तरक्रियामा सक्रियता नदेखाएको, आफ्ना विचार प्रस्तुत गर्न साथी वा शिक्षकको सहयोग चाहिएको, अरुको सहयोगमा दिइएको कार्य पूरा गरेको</td>
                     <td>सामान्य</td>
+                    <td>सिकाइप्रति उदासीन रहेमा, समूह छलफल र अन्तरक्रियामा सक्रियता नदेखाएको</td>
                     <td><div class="radio-group"><input type="radio" name="participationMarks" value="0.5" id="part0_5"> <label for="part0_5">०.५</label></div></td>
                   </tr>
                 </tbody>
@@ -416,15 +458,15 @@
 
         <!-- Terminal Marks Section -->
         <div class="section">
-          <div class="section-header">Terminal Marks Evaluation</div>
+          <div class="section-header">Terminal Marks</div>
           <div class="section-content">
             <div class="form-row">
               <div class="form-group">
-                <label for="theoryMarks">Terminal Marks</label>
-                <input type="number" name="theoryMarks" id="theoryMarks" class="form-control" placeholder="Enter Terminal Marks" step="0.1" oninput="calculateTerminalMarks()">
+                <label for="theoryMarks">Terminal Exam Marks</label>
+                <input type="number" name="theoryMarks" id="theoryMarks" class="form-control" placeholder="Enter terminal marks" step="0.1" oninput="calculateTerminalMarks()">
               </div>
               <div class="form-group">
-                <label for="obtainedconvertedmarks">Converted Terminal Marks</label>
+                <label for="obtainedconvertedmarks">Converted Marks (Auto-calculated)</label>
                 <input type="number" name="terminalMarks" id="obtainedconvertedmarks" class="form-control" readonly step="0.1">
               </div>
             </div>
@@ -432,22 +474,23 @@
         </div>
         <!-- Practical/Project Work Section -->
         <div class="section">
-          <div class="section-header">Practical/Project Work Evaluation</div>
+          <div class="section-header">Listening & Speaking (20)</div>
           <div class="section-content">
             
-            <% ScienceData.forEach((item,itemIdx) => { %>
-              <% item.units.forEach((unit,idx)=>{ %>
+            <% ScienceData.forEach((item, itemIdx) => { %>
+              <% item.units.forEach((unit, idx) => { %>
                 <div class="unit-section">
                   <div class="unit-header">
                     Unit: <%= unit.unitName %>
                     <input type="hidden" name="unit[<%= idx %>][unitName]" value="<%= unit.unitName %>">
                   </div>
                   <div class="unit-content">
-                    
-                    <% unit.practicals.forEach((practical,prindx)=>{ %>
+                    <!-- Practicals and Projects Alternating -->
+                    <% unit.practicals.forEach((practical, prindx) => { %>
+                      <!-- Practical <%= prindx + 1 %> -->
                       <div class="practical-section">
                         <div class="practical-header">
-                          Practical <%= prindx + 1 %>: <%= practical %>
+                          Listening & Speaking <%= prindx + 1 %>: <%= practical %>
                           <input type="hidden" name="unit[<%= idx %>][practicals][<%= prindx %>][practicalName]" value="<%= practical %>">
                         </div>
                         <div class="practical-content">
@@ -460,7 +503,6 @@
                                   <th>परिक्षण पक्ष</th>
                                   <th>सूचक</th>
                                   <th>अंक</th>
-                                  <th>Remarks</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -470,9 +512,8 @@
                                     <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
                                     <% let firstThemeRow = true; %>
 
-                                    <% theme.learningOutcome.forEach(function(lo,loIdx) { %>
+                                    <% theme.learningOutcome.forEach(function(lo, loIdx) { %>
                                       <% let loRowspan = lo.indicators.length; %>
-                                      <% let mulyIndex = iIndex; %>
 
                                       <% lo.indicators.forEach(function(ind, indIndex) { %>
                                         <tr>
@@ -490,15 +531,14 @@
                                           <td>
                                             <div class="radio-group">
                                               <input type="radio" 
-                                                     value="<%= ind.indicatorsMarks %> || <%= ind.indicatorName %> || <%= lo.learningOutcomeName %> " 
+                                                     value="<%= ind.indicatorsMarks %>" 
                                                      class="marks-radio"
-                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>] "
+                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>]"
                                                      data-practical="<%= idx %>-<%= prindx %>"
                                                      id="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
                                               <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
                                             </div>
                                           </td>
-                                          <td></td>
                                         </tr>
                                       <% }) %>
                                       <% iIndex++ %>
@@ -516,25 +556,11 @@
                           </div>
                         </div>
                       </div>
-                    <% }) %>
-                  </div>
-                </div>
-              <% }) %>
-            <% }) %>
-            
-            <!-- Project Work Section -->
-            <% ScienceData.forEach((item) => { %>
-              <% item.units.forEach((unit,idx)=>{ %>
-                <% unit.projectworks.forEach((project,prindx)=>{ %>
-                  <div class="unit-section">
-                    <div class="unit-header">
-                      Project Work - <%= unit.unitName%>
-                    </div>
-                    <div class="unit-content">
+
+                      <!-- Project Work <%= prindx + 1 %> -->
                       <div class="project-section">
-                        <div class="project-header">
-                          Project <%= prindx + 1 %>: <%= project %>
-                          <input type="hidden" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectName]" value="<%= project %>">
+                       Reading and Writing (16) <%= prindx + 1 %>
+                          <input type="hidden" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectName]" value="">
                         </div>
                         <div class="project-content">
                           <div class="table-container">
@@ -545,12 +571,11 @@
                                   <th>आधार</th>
                                   <th>पक्ष</th>
                                   <th>सूचक</th>
-                                 
-                                  <th>प्राप्तांक</th>
+                                  <th>अंक</th>
                                 </tr>
                               </thead>
-                              <tbody>
-                                <% let iIndex = 0 %>
+                               <tbody>
+                                
                                 <% projectFormatData.forEach(function(doc) { %>
                                   <% doc.themes.forEach(function(theme) { %>
                                     <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
@@ -596,19 +621,18 @@
                                 <% }) %>
                               </tbody>
                             </table>
-                              <div class="total-display">
+                          </div>
+                           <div class="total-display">
                             <label>Total Project Marks</label>
                             <input type="number" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectMarks]" 
                                    value="0" id="project-total-<%= idx %>-<%= prindx %>" 
                                    class="form-control" readonly>
                           </div>
-                          </div>
-                         
                         </div>
                       </div>
-                    </div>
+                    <% }) %>
                   </div>
-                <% }) %>
+                </div>
               <% }) %>
             <% }) %>
           </div>
@@ -624,8 +648,8 @@
 
   </form>
 
-  <input type="number" value="<%=workingDays%>" id="totalWorkingDays" style="display:none;">
 
+<input type="number" value="<%=workingDays%>" id="totalWorkingDays" style="display:none;">
 
 
 
@@ -650,13 +674,13 @@ function calculateTerminalMarks() {
     if(terminalValue != "FINAL")
   {
     const theoryMarks = parseFloat(document.getElementById('theoryMarks').value);
-    document.getElementById('obtainedconvertedmarks').value = (theoryMarks/50)*10;
+    document.getElementById('obtainedconvertedmarks').value = (( theoryMarks)/50*10).toFixed(2);
   }
 }
 
     function calculateAttendanceMarks() {
      const attendanceDays = parseInt(document.getElementById('attendanceDays').value, 10) || 0;
-      const totalWorkingDays = document.getElementById('totalWorkingDays').value || 0;
+         const totalWorkingDays = document.getElementById('totalWorkingDays').value || 0;
     
       const attendancePercentage = (attendanceDays / totalWorkingDays) * 100;
       console.log(attendancePercentage);
@@ -697,7 +721,8 @@ document.querySelectorAll(".marks-radio").forEach(radio => {
   });
 });
   </script>
-   <script>
+<!-- Project total calculation -->
+<script>
 document.querySelectorAll(".marks-radio-project").forEach(radio => {
   radio.addEventListener("change", e => {
     let group = e.target.dataset.project;   // e.g. "0-1"
@@ -712,26 +737,31 @@ document.querySelectorAll(".marks-radio-project").forEach(radio => {
 });
   </script>
 
- 
+
+
   
 
 <script>
   async function fill(roll,name,reg) {
+     const buttons = document.querySelectorAll("[id^='studentData']");
+    buttons.forEach(btn => {
+        btn.style.backgroundColor = '#2196f3'; // default color
+        btn.style.color = 'white';
+    });
+    const clickedBtn = document.getElementById('studentData' + roll);
+    clickedBtn.style.backgroundColor = 'darkblue'; // selected color
+    clickedBtn.style.color = 'white';
     document.getElementById('roll').value = roll;
     document.getElementById('name').value = name;
     document.querySelector('input[name="reg"]').value = reg;
 
     if(roll && name && reg) {
-      // Fetch existing data from server
       fillAttendance()
+      // Fetch existing data from server
       const response = await fetch(`/getPracticalData?roll=${roll}&reg=${reg}&studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>`);
       const practicalData = await response.json();
       console.log("Fetched data:", practicalData);
-if(practicalData===null)
-{
-  clearForm();
-  return;
-}
+
         if(practicalData.participationMarks) {
           document.querySelector(`input[name="participationMarks"][value="${practicalData.participationMarks}"]`).checked = true;
 
@@ -908,43 +938,15 @@ if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
         calculateAttendanceMarks();
       }
         else if (terminalname===marksheetSetting[0].terminals[2].name) {
-        document.getElementById('attendanceDays').value = record.thirdTerm || 0;
-        calculateAttendanceMarks();
-        }
-        else if (terminalname===marksheetSetting[0].terminals[3].name) {
         document.getElementById('attendanceDays').value = record.finalTerm || 0;
         calculateAttendanceMarks();
         }
+        
       }
     });
 
   }
   }
-  
 </script>
-<script>
-  const ScienceData = <%- JSON.stringify(ScienceData) %>;
-
-function clearForm() {
-  // Clear text/number inputs
- 
-  document.getElementById('theoryMarks').value = '';
-  document.getElementById('obtainedconvertedmarks').value = '';
-
-  // ✅ Uncheck all radios properly
-  document.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.checked = false;
-  });
-
-  // (Optional) Reset practical/project totals if you have them
-  document.querySelectorAll('[id^="practical-total-"]').forEach(el => el.value = '0');
-  document.querySelectorAll('[id^="project-total-"]').forEach(el => el.value = '0');
-
-  console.log("Form cleared.");
-}
-
-</script>
-
-
 </body>
 </html>

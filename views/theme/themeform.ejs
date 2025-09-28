@@ -946,10 +946,12 @@
       if(themeData.learningOutcomes && themeData.learningOutcomes.length > 0) {
         themeData.learningOutcomes.forEach((outcome, outcomeIndex) => {
           // Set evaluation date
-          if(outcome.evaluationDate) {
+          if(outcome.evaluationDateBefore
+
+          ) {
             const dateInput = document.getElementById(`nepali-datepicker${originalThemeIndex}${outcomeIndex}`);
             if(dateInput) {
-              dateInput.value = outcome.evaluationDate;
+              dateInput.value = outcome.evaluationDateBefore;
             }
           }
           
@@ -1171,13 +1173,13 @@
               <input type="hidden" class="theme-field" name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][name]" value="<%= outcome.learningOutcomeName %>">
               
               <div class="form-group">
-                <label for="evaluationDate_<%= themeItemIndex %>_<%= outcomeIndex %>">Evaluation Date</label>
+                <label for="evaluationDateBefore_<%= themeItemIndex %>_<%= outcomeIndex %>">Evaluation Date Before</label>
                  <p>
  <input type="text" 
-       id="nepali-datepicker<%= themeItemIndex %><%= outcomeIndex %>" 
+       id="nepali-datepickerBefore<%= themeItemIndex %><%= outcomeIndex %>" 
        placeholder="YYYY-MM-DD" 
        class="theme-field nepali-datepicker" 
-       name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][evaluationDate]"  
+       name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][evaluationDateBefore]"  
        />
  </p>
  <script src="https://nepalidatepicker.sajanmaharjan.com.np/v5/nepali.datepicker/js/nepali.datepicker.v5.0.6.min.js" type="text/javascript"></script>
@@ -1231,6 +1233,7 @@
                       </td>
                     <% }); %>
                     <td>
+                      
                       <input type="number" 
                              id="totalBefore_<%= themeItemIndex %>_<%= outcomeIndex %>" 
                              class="theme-field"
@@ -1241,7 +1244,15 @@
                   </tr>
                   <tr>
                     <td colspan="<%= outcome.indicators.length + 1 %>" class="section-header" style="color: #2980b9;">थप सहायता पछि (After Intervention)</td>
+                    
+                     
                   </tr>
+                  <tr><td>Evaluation Date After <br><input type="text" 
+       id="nepali-datepickerAfter<%= themeItemIndex %><%= outcomeIndex %>" 
+       placeholder="YYYY-MM-DD" 
+       class="theme-field nepali-datepicker" 
+       name="subjects[0][themes][<%= themeItemIndex %>][learningOutcomes][<%= outcomeIndex %>][evaluationDateAfter]"  
+       /></tr></td>
                   <tr>
                     <% outcome.indicators.forEach((indicator, indicatorIndex) => { %>
                       <td>
@@ -1762,359 +1773,110 @@
         }
         
         // Function to populate the form with theme data
-        function populateFormWithThemeData(themeData, studentIndex = null) {
-          try {
-            console.log("Populating form with theme data for student index:", studentIndex, themeData);
-            
-            // Store the current theme data for future reference
-            if (studentIndex !== null) {
-              currentThemeDataByStudent[studentIndex] = themeData;
-              // Set edit mode for this specific student
-              isEditModeByStudent[studentIndex] = true;
-            }
-            currentThemeData = themeData; // Also keep in the global for backward compatibility
-            isEditMode = true; // For global compatibility
-            
-            // First, make sure a theme is selected
-            const themeNameId = studentIndex !== null ? `themeName-${studentIndex}` : 'themeName';
-            const themeNameElement = document.getElementById(themeNameId);
-            
-            if (!themeNameElement) {
-              console.error(`Theme name element not found with ID: ${themeNameId}`);
-              return;
-            }
-            
-            const themeName = themeNameElement.value;
-            if (!themeName) {
-              alert("Please select a theme first before loading previous data");
-              return;
-            }
-            
-            // Get the active wrapper for the selected theme and student
-            const activeWrapperSelector = studentIndex !== null 
-              ? `.learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display: block"], .learning-outcome-wrapper[data-student-index="${studentIndex}"][style*="display:block"]`
-              : '.learning-outcome-wrapper[style*="display: block"], .learning-outcome-wrapper[style*="display:block"]';
-            
-            const activeWrapper = document.querySelector(activeWrapperSelector);
-            if (!activeWrapper) {
-              console.error("No active learning outcome wrapper found for student index:", studentIndex);
-              return;
-            }
-            
-            const themeIndex = activeWrapper.dataset.themeIndex;
-            
-            // Map learning outcomes to their names for easy lookup
-            const learningOutcomeMap = {};
-            themeData.learningOutcomes.forEach(outcome => {
-              learningOutcomeMap[outcome.name] = outcome;
-            });
-            
-            // Process each learning outcome section in the active wrapper
-            const outcomeContainers = activeWrapper.querySelectorAll('.learning-outcome-section');
-            
-            outcomeContainers.forEach((container, index) => {
-              // Get the learning outcome name from the h2
-              const outcomeNameElement = container.querySelector('h2');
-              if (!outcomeNameElement) return;
-              
-              const outcomeName = outcomeNameElement.textContent.trim();
-              const outcome = learningOutcomeMap[outcomeName];
-              
-              // Skip if no data for this outcome
-              if (!outcome) return;
-              
-              // Set the evaluation date if it exists
-              const dateInput = container.querySelector('input.nepali-datepicker') || container.querySelector('input[type="date"]');
-              if (dateInput && outcome.evaluationDate) {
-                // For Nepali datepicker, set the value directly as string
-                if (dateInput.classList.contains('nepali-datepicker')) {
-                  dateInput.value = outcome.evaluationDate;
-                } else {
-                  // For regular date input, format as YYYY-MM-DD
-                  const date = new Date(outcome.evaluationDate);
-                  if (!isNaN(date)) {
-                    const formattedDate = date.toISOString().split('T')[0];
-                    dateInput.value = formattedDate;
-                  }
-                }
-              }
-              
-              // Create indicator map for easy lookup
-              const indicatorMap = {};
-              if (outcome.indicators) {
-                outcome.indicators.forEach(indicator => {
-                  indicatorMap[indicator.name] = indicator;
-                });
-              }
-              
-              // Get the table for this learning outcome
-              const table = container.querySelector('table.evaluation-table');
-              if (!table) return;
-              
-              // Get table header row to match indicators by name
-              const headerRow = table.querySelector('thead tr');
-              if (!headerRow) return;
-              
-              const headerCells = headerRow.querySelectorAll('th');
-              const indicatorNames = Array.from(headerCells)
-                .slice(0, -1) // Exclude last column (Total Marks)
-                .map(cell => cell.textContent.trim());
-              
-              // Process 'Before Intervention' inputs
-              const beforeRow = table.querySelector('tbody tr:first-child');
-              if (beforeRow) {
-                const beforeInputs = beforeRow.querySelectorAll('.marks-input.indicator-before');
-                
-                beforeInputs.forEach((input, i) => {
-                  if (i >= indicatorNames.length) return;
-                  
-                  const indicatorName = indicatorNames[i];
-                  const indicator = indicatorMap[indicatorName];
-                  
-                  if (indicator && indicator.marksBeforeIntervention !== undefined) {
-                    // Set the value directly to the marks
-                    input.value = parseFloat(indicator.marksBeforeIntervention) || 0;
-                    
-                    // Also update the hidden input
-                    const hiddenInput = input.closest('td').querySelector('input[type="hidden"]');
-                    if (hiddenInput) {
-                      hiddenInput.value = input.value;
-                    }
-                  }
-                });
-                
-                // Update total before intervention
-                const totalBeforeInput = beforeRow.querySelector(`input[id^="totalBefore_${themeIndex}_"]`);
-                if (totalBeforeInput && outcome.totalMarksBeforeIntervention !== undefined) {
-                  totalBeforeInput.value = outcome.totalMarksBeforeIntervention;
-                }
-              }
-              
-              // Process 'After Intervention' inputs
-              const afterRow = table.querySelector('tbody tr:nth-child(3)');
-              if (afterRow) {
-                const afterInputs = afterRow.querySelectorAll('.marks-input.indicator-after');
-                
-                afterInputs.forEach((input, i) => {
-                  if (i >= indicatorNames.length) return;
-                  
-                  const indicatorName = indicatorNames[i];
-                  const indicator = indicatorMap[indicatorName];
-                  
-                  if (indicator && indicator.marksAfterIntervention !== undefined) {
-                    // Set the value directly to the marks
-                    input.value = parseFloat(indicator.marksAfterIntervention) || 0;
-                    
-                    // Also update the hidden input
-                    const hiddenInput = input.closest('td').querySelector('input[type="hidden"]');
-                    if (hiddenInput) {
-                      hiddenInput.value = input.value;
-                    }
-                  }
-                });
-                
-                // Update total after intervention
-                const totalAfterInput = afterRow.querySelector(`input[id^="totalAfter_${themeIndex}_"]`);
-                if (totalAfterInput && outcome.totalMarksAfterIntervention !== undefined) {
-                  totalAfterInput.value = outcome.totalMarksAfterIntervention;
-                }
-              }
-              
-              // Process tools used inputs
-              const toolsRow = table.querySelector('tbody tr:nth-child(5)');
-              if (toolsRow && outcome.indicators) {
-                const toolsInputs = toolsRow.querySelectorAll('input[type="text"]');
-                
-                toolsInputs.forEach((input, i) => {
-                  if (i >= indicatorNames.length) return;
-                  
-                  const indicatorName = indicatorNames[i];
-                  const indicator = indicatorMap[indicatorName];
-                  
-                  if (indicator && indicator.toolsUsed) {
-                    input.value = indicator.toolsUsed;
-                  }
-                });
-              }
-              
-              // Update the outcome totals display
-              updateLearningOutcomeTotal(index, 'Before');
-              updateLearningOutcomeTotal(index, 'After');
-            });
-            
-            // Update overall theme totals
-            if (themeData.overallTotalBefore !== undefined) {
-              const overallBeforeField = document.getElementById(`overallTotalBefore_${themeIndex}`);
-              if (overallBeforeField) {
-                overallBeforeField.value = themeData.overallTotalBefore;
-              }
-            }
-            
-            if (themeData.overallTotalAfter !== undefined) {
-              const overallAfterField = document.getElementById(`overallTotalAfter_${themeIndex}`);
-              if (overallAfterField) {
-                overallAfterField.value = themeData.overallTotalAfter;
-              }
-            }
-            
-            // Calculate overall totals to make sure everything is in sync
-            calculateOverallTotals();
-            
-            // Show edit mode notification
-            showEditModeNotification();
-            
-            // Show a success message with animation
-            const toastMessage = document.createElement('div');
-            toastMessage.className = 'toast-message';
-            toastMessage.innerHTML = '<i class="fa fa-check-circle"></i> Previous data loaded successfully';
-            toastMessage.style.position = 'fixed';
-            toastMessage.style.top = '20px';
-            toastMessage.style.left = '50%';
-            toastMessage.style.transform = 'translateX(-50%)';
-            toastMessage.style.background = 'rgba(76, 175, 80, 0.9)';
-            toastMessage.style.color = 'white';
-            toastMessage.style.padding = '12px 24px';
-            toastMessage.style.borderRadius = '8px';
-            toastMessage.style.zIndex = '1000';
-            toastMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-            toastMessage.style.display = 'flex';
-            toastMessage.style.alignItems = 'center';
-            toastMessage.style.gap = '10px';
-            document.body.appendChild(toastMessage);
-            
-            // Remove the message after 3 seconds with animation
-            setTimeout(() => {
-              toastMessage.style.opacity = '0';
-              toastMessage.style.transform = 'translateX(-50%) translateY(-20px)';
-              toastMessage.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-              setTimeout(() => {
-                if (toastMessage.parentNode) {
-                  document.body.removeChild(toastMessage);
-                }
-              }, 500);
-            }, 3000);
-            
-          } catch (error) {
-            console.error('Error populating form with theme data:', error);
-            hideLoadingIndicator();
-          }
-        }
-
-        const rollInput = document.getElementById('roll');
-        const themeNameSelect = document.getElementById('themeName');
-        
+      // Update the populateThemeData function in your script section
+function populateThemeData(themeName, allThemes) {
+  console.log("Populating data for theme:", themeName);
   
-        function resetForm() {
-          isEditMode = false;
-          currentThemeData = null;
-          
-          // Hide the edit mode notification if visible
-          const editNotice = document.getElementById('edit-mode-notice');
-          if (editNotice) {
-            editNotice.style.display = 'none';
-          }
-          
-          // Reset theme dropdown styling
-          const themeSelect = document.getElementById('themeName');
-          Array.from(themeSelect.options).forEach(option => {
-            option.style.backgroundColor = '';
-            option.style.fontWeight = '';
-            option.style.color = '';
-            option.removeAttribute('data-has-evaluation');
-            // Reset option text if it contains (eval)
-            if (option.textContent.includes(' (')) {
-              option.textContent = option.value;
-            }
-          });
-          
-          // Reset the submit button text
-          updateSubmitButtonText(false);
-          
-          // Don't clear form fields - just reset the state
+  // Find the specific theme data
+  const themeData = allThemes.find(theme => theme.themeName === themeName);
+  if (!themeData) {
+    console.log("No data found for theme:", themeName);
+    return;
+  }
+  
+  // Find the theme wrapper that matches this theme name
+  const themeWrapper = document.querySelector(`.learning-outcome-wrapper[data-theme="${themeName}"]`);
+  if (!themeWrapper) {
+    console.log("Theme wrapper not found for:", themeName);
+    return;
+  }
+  
+  // Get the original theme index from the wrapper
+  const originalThemeIndex = themeWrapper.dataset.themeIndex;
+  console.log("Using original theme index:", originalThemeIndex);
+  
+  // Populate learning outcomes for this specific theme
+  if(themeData.learningOutcomes && themeData.learningOutcomes.length > 0) {
+    themeData.learningOutcomes.forEach((outcome, outcomeIndex) => {
+      
+      // Set evaluation date BEFORE - Fixed to handle both date formats
+      if(outcome.evaluationDateBefore && outcome.evaluationDateBefore !== "0") {
+        const dateBeforeInput = document.getElementById(`nepali-datepickerBefore${originalThemeIndex}${outcomeIndex}`);
+        if(dateBeforeInput) {
+          dateBeforeInput.value = outcome.evaluationDateBefore;
+          console.log(`Set evaluationDateBefore for outcome ${outcomeIndex}:`, outcome.evaluationDateBefore);
         }
         
-        // Update the submit button text based on mode
-        function updateSubmitButtonText(isEdit, studentIndex = null) {
-          let submitButtonSelector = '.submit-btn';
-          
-          if (studentIndex !== null) {
-            // Find button within the specific form
-            const formSelector = `#themeEvaluationForm-${studentIndex}`;
-            submitButtonSelector = `${formSelector} .submit-btn`;
-          }
-          
-          const submitButton = document.querySelector(submitButtonSelector);
-          if (submitButton) {
-            submitButton.textContent = isEdit ? 'Update Evaluation' : 'Save Evaluation';
-          } else {
-            console.error(`Submit button not found for selector: ${submitButtonSelector}`);
-          }
+        // Also try alternative selector in case the ID format is different
+        const altDateBeforeInput = themeWrapper.querySelector(`input[name*="[evaluationDateBefore]"][name*="[${outcomeIndex}]"]`);
+        if(altDateBeforeInput && !dateBeforeInput) {
+          altDateBeforeInput.value = outcome.evaluationDateBefore;
+          console.log(`Set evaluationDateBefore (alt selector) for outcome ${outcomeIndex}:`, outcome.evaluationDateBefore);
         }
+      }
+      
+      // Set evaluation date AFTER - NEW: Handle evaluationDateAfter
+      if(outcome.evaluationDateAfter && outcome.evaluationDateAfter !== "0") {
+        // Try multiple possible selectors for the "after" date input
+        const dateAfterInput = document.getElementById(`nepali-datepickerAfter${originalThemeIndex}${outcomeIndex}`) ||
+                              themeWrapper.querySelector(`input[name*="[evaluationDateAfter]"][name*="[${outcomeIndex}]"]`);
         
-        // Show notification when themes are available for editing and highlight options in dropdown
-        function showThemeNotification(availableThemes) {
-          // Create theme list for display
-          const themeList = availableThemes.map(theme => 
-            `<li style="margin: 5px 0;"><strong>${theme.name}</strong> (${theme.count} ${theme.count === 1 ? 'evaluation' : 'evaluations'})</li>`
-          ).join('');
-          
-          // Create notification element
-          let notification = document.getElementById('theme-notification');
-          if (!notification) {
-            notification = document.createElement('div');
-            notification.id = 'theme-notification';
-            notification.style.position = 'fixed';
-            notification.style.top = '80px';
-            notification.style.right = '20px';
-            notification.style.maxWidth = '320px';
-            notification.style.padding = '15px';
-            notification.style.background = 'rgba(52, 152, 219, 0.95)';
-            notification.style.color = 'white';
-            notification.style.borderRadius = '8px';
-            notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-            notification.style.zIndex = '1000';
-            notification.style.fontSize = '0.9rem';
-            notification.style.animationName = 'fadeInRight';
-            notification.style.animationDuration = '0.5s';
-            document.body.appendChild(notification);
-          }
-          
-          notification.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 8px; font-size: 1.1rem;">Previous Data Available</div>
-            <p style="margin: 0 0 8px 0;">This student has existing evaluations for:</p>
-            <ul style="margin: 0; padding-left: 20px;">
-              ${themeList}
-            </ul>
-            <p style="margin: 8px 0 0 0; font-style: italic;">Select a theme to edit previous data.</p>
-          `;
-          
-          // Auto remove after 8 seconds
-          setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-              if (notification.parentNode) {
-                document.body.removeChild(notification);
-              }
-            }, 500);
-          }, 8000);
-          
-          // Highlight themes with existing data in the dropdown
-          highlightExistingThemes(availableThemes);
-          
-          // If there's just one theme, automatically select it
-          if (availableThemes.length === 1) {
-            const themeSelect = document.getElementById('themeName');
-            const themeOption = Array.from(themeSelect.options).find(opt => opt.value === availableThemes[0].name);
-            
-            if (themeOption) {
-              themeSelect.value = availableThemes[0].name;
-              // Trigger the change event to load the appropriate outcomes
-              const event = new Event('change', { bubbles: true });
-              themeSelect.dispatchEvent(event);
-            }
-          }
+        if(dateAfterInput) {
+          dateAfterInput.value = outcome.evaluationDateAfter;
+          console.log(`Set evaluationDateAfter for outcome ${outcomeIndex}:`, outcome.evaluationDateAfter);
+        } else {
+          console.warn(`Could not find evaluationDateAfter input for outcome ${outcomeIndex}`);
         }
+      }
+      
+      // Populate indicators (existing code)
+      if(outcome.indicators && outcome.indicators.length > 0) {
+        outcome.indicators.forEach((indicator, indicatorIndex) => {
+          const beforeInput = document.getElementById(`indicatorBefore_${originalThemeIndex}_${outcomeIndex}_${indicatorIndex}`);
+          const afterInput = document.getElementById(`indicatorAfter_${originalThemeIndex}_${outcomeIndex}_${indicatorIndex}`);
+          
+          if (beforeInput) {
+            beforeInput.value = indicator.marksBeforeIntervention || 0;
+            // Also update the hidden input (these will have updated names after filterLearningOutcomes)
+            const hiddenBefore = themeWrapper.querySelector(`input[name*="[marksBeforeIntervention]"][name*="[${outcomeIndex}]"][name*="[${indicatorIndex}]"]`);
+            if(hiddenBefore) hiddenBefore.value = indicator.marksBeforeIntervention || 0;
+          }
+          
+          if (afterInput) {
+            afterInput.value = indicator.marksAfterIntervention || 0;
+            // Also update the hidden input
+            const hiddenAfter = themeWrapper.querySelector(`input[name*="[marksAfterIntervention]"][name*="[${outcomeIndex}]"][name*="[${indicatorIndex}]"]`);
+            if(hiddenAfter) hiddenAfter.value = indicator.marksAfterIntervention || 0;
+          }
+          
+          // Update tools used
+          const toolInput = themeWrapper.querySelector(`input[name*="[toolsUsed]"][name*="[${outcomeIndex}]"][name*="[${indicatorIndex}]"]`);
+          if (toolInput && indicator.toolsUsed && indicator.toolsUsed !== "0") {
+            toolInput.value = indicator.toolsUsed;
+          }
+        });
+      }
+      
+      // Set totals for this learning outcome
+      const totalBefore = document.getElementById(`totalBefore_${originalThemeIndex}_${outcomeIndex}`);
+      const totalAfter = document.getElementById(`totalAfter_${originalThemeIndex}_${outcomeIndex}`);
+      const outcomeBeforeDisplay = document.getElementById(`outcomeBeforeDisplay_${originalThemeIndex}_${outcomeIndex}`);
+      const outcomeAfterDisplay = document.getElementById(`outcomeAfterDisplay_${originalThemeIndex}_${outcomeIndex}`);
+      
+      if(totalBefore) totalBefore.value = outcome.totalMarksBeforeIntervention || 0;
+      if(totalAfter) totalAfter.value = outcome.totalMarksAfterIntervention || 0;
+      if(outcomeBeforeDisplay) outcomeBeforeDisplay.textContent = outcome.totalMarksBeforeIntervention || 0;
+      if(outcomeAfterDisplay) outcomeAfterDisplay.textContent = outcome.totalMarksAfterIntervention || 0;
+    });
+    
+    // Set overall theme totals
+    const overallTotalBefore = document.getElementById(`overallTotalBefore_${originalThemeIndex}`);
+    const overallTotalAfter = document.getElementById(`overallTotalAfter_${originalThemeIndex}`);
+    
+    if(overallTotalBefore) overallTotalBefore.value = themeData.overallTotalBefore || 0;
+    if(overallTotalAfter) overallTotalAfter.value = themeData.overallTotalAfter || 0;
+  }
+}
         
         
        

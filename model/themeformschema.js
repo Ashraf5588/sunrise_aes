@@ -58,10 +58,15 @@ const ThemeEvaluationSchema = new mongoose.Schema({
                 required: true,
                 set: handleArrayOrSingle 
               },
-              evaluationDate: { 
+              evaluationDateBefore: { 
                 type: String,
                 set: handleArrayOrSingle 
               },
+                 evaluationDateAfter: { 
+                type: String,
+                set: handleArrayOrSingle 
+              },
+
               
               // Indicators for each learning outcome
               indicators: [

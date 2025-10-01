@@ -743,9 +743,9 @@ try
     if(terminal==="FINAL")
     {
       const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
-        
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
+
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -788,8 +788,8 @@ console.log(marksheetSetting)
     else
     { 
       const marksheetSetting = await marksheetSetup.find();
-      const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+      const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -806,8 +806,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -850,8 +850,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -868,8 +868,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -912,8 +912,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -930,8 +930,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -974,8 +974,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -992,8 +992,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -1036,8 +1036,8 @@ console.log(marksheetSetting)
     else 
     { 
     const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -1054,8 +1054,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -1098,8 +1098,8 @@ console.log(marksheetSetting)
     else 
     { 
     const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
 
@@ -1500,8 +1500,8 @@ exports.savepracticalprojectform = async (req, res, next) => {
 
     // Get the model for this subject/class/section/year
     const marksheetSetting = await marksheetSetup.find();
-    const acadamicYear = marksheetSetting[0].acadamicYear;
-    const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+    const academicYear = marksheetSetting[0].academicYear;
+    const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
 
     // --- UPSERT: update if exists, otherwise insert ---
     const filter = { reg, roll, studentClass, section, subject, terminalName: terminal };
@@ -1545,8 +1545,8 @@ exports.internalReport = async (req, res) => {
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -1589,8 +1589,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-      const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+      const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
       res.render("theme/scienceinternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
@@ -1603,8 +1603,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -1647,8 +1647,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-      const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+      const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
       res.render("theme/MathinternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
@@ -1659,8 +1659,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -1703,8 +1703,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-      const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+      const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
       res.render("theme/socialinternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
@@ -1715,8 +1715,8 @@ console.log(marksheetSetting)
     if(terminal==="FINAL")
     {
 const marksheetSetting = await marksheetSetup.find();
-     const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section,  acadamicYear);
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
 
      const sciencepracticaldata = await model.aggregate([
        {
@@ -1759,8 +1759,8 @@ console.log(marksheetSetting)
     else
     { 
     const marksheetSetting = await marksheetSetup.find();
-      const acadamicYear = marksheetSetting[0].acadamicYear;
-       const model = getPracticalProjectModel(subject, studentClass, section, acadamicYear);
+      const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
         const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
      const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
       res.render("theme/healthInternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
@@ -1776,11 +1776,12 @@ exports.getPracticalData = async (req, res, next) =>
 
 const { studentClass, section, subject, terminal,roll,reg } = req.query;
 console.log(studentClass, section, subject, terminal,roll,reg,subject);
-
+const marksheetSetting= await marksheetSetup.find();
+const academicYear= marksheetSetting[0].academicYear;
 
 if(roll && reg)
 {
-  const model = getPracticalProjectModel(subject, studentClass, section, req.query.academicYear);
+  const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
 
   console.log("searching in model:", model);
   const response = await model.findOne({ studentClass:studentClass, section:section, subject:subject, terminalName:terminal, roll:roll, reg:reg });

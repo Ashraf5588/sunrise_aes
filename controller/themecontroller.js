@@ -20,6 +20,10 @@ const {ThemeEvaluationSchema} = require("../model/themeformschema");
 // Use the already created model from the schema file
 
 const {themeSchemaFor1} = require("../model/themeschema")
+const {marksheetsetupSchema} = require("../model/adminschema");
+ const marksheetSetup =  mongoose.model("marksheetSetting", marksheetsetupSchema,"marksheetSetting");
+
+
 
 app.set("view engine", "ejs");
 app.set("view", path.join(rootDir, "views"));

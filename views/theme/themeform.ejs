@@ -810,7 +810,7 @@
 </head>
 <body>
 <nav class="nav-header">
-  <h1>Class <%= studentClass %><%=section%> - <%= subject %> Theme Evaluation</h1>
+  <h1>Class <%= studentClass %>-<%=section%> | <%= subject %> Theme Evaluation</h1>
 </nav>
 
 <div class="container">
@@ -838,6 +838,12 @@
   async function autofill(roll, name) {
       
       if(roll && name) {
+        //change background color of selected button
+        document.querySelectorAll('.student-nav-button').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        
+
+
         document.getElementById('roll').value = roll;
         document.getElementById('name').value = name;
         
@@ -1342,10 +1348,7 @@
         Save Evaluation
       </button>
       
-      <!-- Debug button (remove in production) -->
-      <button type="button" onclick="debugFormData()" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-top: 10px; width: 100%;">
-        Debug Form Data
-      </button>
+     
     </form>
    
   </div>

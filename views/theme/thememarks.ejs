@@ -31,7 +31,7 @@
     }
     
     .subject-header {
-      background-color: #4CAF50;
+      background-color: #3978cf;
       color: white;
       padding: 15px 20px;
       font-size: 18px;
@@ -180,14 +180,50 @@
       font-style: italic;
     }
     
-    @media (max-width: 768px) {
-      .marks-table {
-        font-size: 10px;
+    /* Responsive table for mobile */
+    @media (max-width: 700px) {
+      .table-container {
+        max-width: 100vw;
+        overflow-x: auto;
+        padding-bottom: 8px;
       }
-      
+      .marks-table {
+        min-width: 500px;
+        font-size: 11px;
+      }
+      .marks-table th.student-info:nth-child(1),
+      .marks-table td.student-info:nth-child(1) {
+        width: 40px;
+        min-width: 40px;
+        font-size: 11px;
+      }
+      .marks-table th.student-info:nth-child(2),
+      .marks-table td.student-info:nth-child(2) {
+        width: 90px;
+        min-width: 90px;
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90px;
+      }
       .marks-table th,
       .marks-table td {
-        padding: 4px;
+        padding: 4px 2px;
+        font-size: 11px;
+      }
+    }
+    @media (max-width: 480px) {
+      .marks-table {
+        min-width: 350px;
+        font-size: 10px;
+      }
+      .marks-table th.student-info:nth-child(2),
+      .marks-table td.student-info:nth-child(2) {
+        width: 60px;
+        min-width: 60px;
+        max-width: 60px;
+        font-size: 10px;
       }
     }
   </style>
@@ -196,7 +232,7 @@
   <div class="container">
     <h1>Theme Evaluation Marks Report</h1>
     
-    <!-- Filter Section -->
+    <!-- Filter Section
     <div style="background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
       <h3>Filter Options</h3>
       <form method="GET" action="/thememarksofstudent" style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
@@ -238,7 +274,7 @@
         </div>
       </form>
     </div>
-    
+     -->
     <% if (themeData && themeData.length > 0) { %>
       <% 
         // Group data by subject

@@ -679,19 +679,21 @@ exports.thememarksOfStudent = async (req, res) => {
 }
 exports.themewisemarks = async (req, res) => {
   try {
-    const { studentClass, section, subject } = req.query;
+    const { studentClass, section, subject,terminal } = req.query;
       const ThemeModel = getStudentThemeData(studentClass);
     const themewisemarks = await ThemeModel.find({
       studentClass: studentClass,
       section: section,
-      
     }).lean();
+    const marksheetSetting = await marksheetSetup.find({}).lean();
     return res.render("theme/themewisemarks", {
       ...await getSidenavData(req),
       editing: false,
       studentClass,
       section,
+      marksheetSetting,
       subject,
+      terminal,
       themewisemarks,
     });
   } catch (error) {
@@ -701,13 +703,14 @@ exports.themewisemarks = async (req, res) => {
 }
 exports.themeslip =  async (req, res) => {
   try {
-    const { studentClass, section, subject } = req.query;
+    const { studentClass, section, subject ,terminal} = req.query;
       const ThemeModel = getStudentThemeData(studentClass);
     const themeslip = await ThemeModel.find({
       studentClass: studentClass,
       section: section,
       
     }).lean();
+    const marksheetSetting = await marksheetSetup.find({}).lean();
     return res.render("theme/themeslip", {
       ...await getSidenavData(req),
       editing: false,
@@ -715,6 +718,8 @@ exports.themeslip =  async (req, res) => {
       section,
       subject,
       themeslip,
+      marksheetSetting,
+      terminal,
     });
   } catch (error) {
     console.error('Error fetching theme slip:', error);

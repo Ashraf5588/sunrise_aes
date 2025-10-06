@@ -492,6 +492,7 @@
                         <div class="practical-header">
                           सुनाइ र बोलाइ <%= prindx + 1 %>: <%= practical %>
                           <input type="hidden" name="unit[<%= idx %>][practicals][<%= prindx %>][practicalName]" value="<%= practical %>">
+                          
                         </div>
                         <div class="practical-content">
                           <div class="table-container">
@@ -531,9 +532,9 @@
                                           <td>
                                             <div class="radio-group">
                                               <input type="radio" 
-                                                     value="<%= ind.indicatorsMarks %>" 
+                                                     value="<%= ind.indicatorsMarks %>||<%= ind.indicatorName %>||<%= theme.themeName %>||<%= lo.learningOutcomeName %>" 
                                                      class="marks-radio"
-                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>]"
+                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][<%= iIndex %>]"
                                                      data-practical="<%= idx %>-<%= prindx %>"
                                                      id="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
                                               <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
@@ -713,9 +714,13 @@ document.querySelectorAll(".marks-radio").forEach(radio => {
     let group = e.target.dataset.practical;   // e.g. "0-1"
     let totalInput = document.getElementById("practical-total-" + group);
 
-    // सबै radio जसमा data-practical = यो group छ, र checked
+    // Get all checked radios for this practical group
     let checked = document.querySelectorAll(`input[data-practical="${group}"]:checked`);
-    let total = Array.from(checked).reduce((sum, r) => sum + parseInt(r.value), 0);
+    let total = Array.from(checked).reduce((sum, r) => {
+      // Extract just the marks (first part before ||)
+      let marks = r.value.split('||')[0];
+      return sum + parseInt(marks);
+    }, 0);
 
     totalInput.value = total;
   });
@@ -803,17 +808,24 @@ if (practical.criteria && Array.isArray(practical.criteria)) {
     radioGroups[radio.name].push(radio);
   });
   
-  // Match criteria with radio groups (assuming they are in the same order)
+  // Match criteria with radio groups
   let groupNames = Object.keys(radioGroups);
   practical.criteria.forEach((c, criteriaIdx) => {
     if (criteriaIdx < groupNames.length) {
       let mark = c.practicalIndicatorMarks.toString().trim();
+      let indicator = c.practicalIndicator || '';
+      let adhar = c.practicalAdhar || '';
+      let outcome = c.practicalOutcome || '';
+      
       let radiosInGroup = radioGroups[groupNames[criteriaIdx]];
       
-      // Find and check the matching radio in this group
-      let matchingRadio = radiosInGroup.find(radio => 
-        radio.value.split('||')[0].trim() === mark
-      );
+      // Find matching radio by comparing all parts
+      let matchingRadio = radiosInGroup.find(radio => {
+        let parts = radio.value.split('||');
+        return parts[0].trim() === mark && 
+               parts[1].trim() === indicator.trim() && 
+               parts[2].trim() === adhar.trim();
+      });
       
       if (matchingRadio) {
         matchingRadio.checked = true;

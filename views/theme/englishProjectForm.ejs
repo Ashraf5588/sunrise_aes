@@ -531,9 +531,9 @@
                                           <td>
                                             <div class="radio-group">
                                               <input type="radio" 
-                                                     value="<%= ind.indicatorsMarks %>" 
+                                                     value="<%= ind.indicatorsMarks %>||<%= ind.indicatorName %>||<%= lo.learningOutcomeName %>" 
                                                      class="marks-radio"
-                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>]"
+                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][<%= iIndex %>]"
                                                      data-practical="<%= idx %>-<%= prindx %>"
                                                      id="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
                                               <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>

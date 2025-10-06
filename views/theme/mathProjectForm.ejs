@@ -492,6 +492,8 @@
                         <div class="practical-header">
                           Practical/Project कार्य सञ्चालन र कार्यसम्पादन <%= prindx + 1 %>: <%= practical %>
                           <input type="hidden" name="unit[<%= idx %>][practicals][<%= prindx %>][practicalName]" value="<%= practical %>">
+                           <input type="hidden" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectName]" value="<%= practical %>">
+                          
                         </div>
                         <div class="practical-content">
                           <div class="table-container">
@@ -531,9 +533,9 @@
                                           <td>
                                             <div class="radio-group">
                                               <input type="radio" 
-                                                     value="<%= ind.indicatorsMarks %>" 
+                                                     value="<%= ind.indicatorsMarks %>||<%= ind.indicatorName %>||<%= lo.learningOutcomeName %>" 
                                                      class="marks-radio"
-                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][theme-<%= iIndex %>][lo-<%= loIdx %>]"
+                                                     name="unit[<%= idx %>][practicals][<%= prindx %>][criteria][<%= iIndex %>]"
                                                      data-practical="<%= idx %>-<%= prindx %>"
                                                      id="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>">
                                               <label for="practical_<%= idx %>_<%= prindx %>_<%= iIndex %>_<%= indIndex %>"><%= ind.indicatorsMarks %></label>
@@ -561,7 +563,7 @@
                       <div class="project-section">
                         <div class="project-header">
                         प्रस्तुतीकरण र अभिलेखीकरण <%= prindx + 1 %>
-                          <input type="hidden" name="unit[<%= idx %>][projectWorks][<%= prindx %>][projectName]" value="">
+                          
                         </div>
                         <div class="project-content">
                           <div class="table-container">

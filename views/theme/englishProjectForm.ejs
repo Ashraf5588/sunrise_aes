@@ -938,15 +938,41 @@ if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
         calculateAttendanceMarks();
       }
         else if (terminalname===marksheetSetting[0].terminals[2].name) {
+        document.getElementById('attendanceDays').value = record.thirdTerm || 0;
+        calculateAttendanceMarks();
+        }
+        else if (terminalname===marksheetSetting[0].terminals[3].name) {
         document.getElementById('attendanceDays').value = record.finalTerm || 0;
         calculateAttendanceMarks();
         }
-        
       }
     });
 
   }
   }
+  
+</script>
+<script>
+  const ScienceData = <%- JSON.stringify(ScienceData) %>;
+
+function clearForm() {
+  // Clear text/number inputs
+ 
+  document.getElementById('theoryMarks').value = '';
+  document.getElementById('obtainedconvertedmarks').value = '';
+
+  // ✅ Uncheck all radios properly
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.checked = false;
+  });
+
+  // (Optional) Reset practical/project totals if you have them
+  document.querySelectorAll('[id^="practical-total-"]').forEach(el => el.value = '0');
+  document.querySelectorAll('[id^="project-total-"]').forEach(el => el.value = '0');
+
+  console.log("Form cleared.");
+}
+
 </script>
 </body>
 </html>

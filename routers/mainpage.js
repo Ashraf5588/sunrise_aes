@@ -291,5 +291,6 @@ student.post('/attendance', verifytoken, authorized, practical410controller.save
 
 student.get('/showrubriksforadmin', verifytoken, authorized,isAdmin, practical410controller.showrubriksforadmin);
 student.get('/seerubriks',verifytoken,authorized,isAdmin,practical410controller.seerubriks)
+student.get('/indicatorwisereport',verifytoken,authorized,practical410controller.indicatorwiserecord)
 
 module.exports = student;

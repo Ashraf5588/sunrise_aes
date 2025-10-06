@@ -456,6 +456,12 @@
           <div class="compact-action-icon">📊</div>
           <div class="compact-action-title">View Record Unit Wise</div>
         </a>
+        <% if (subject==="MATHEMATICS"){ %>
+          <a href="/indicatorwisereport?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>" class="compact-action-card">
+          <div class="compact-action-icon">📊</div>
+          <div class="compact-action-title">Indicator Wise Report</div>
+        </a>
+        <%}%>
 
         <a href="/themefillupform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
           <div class="compact-action-icon">⚙️</div>

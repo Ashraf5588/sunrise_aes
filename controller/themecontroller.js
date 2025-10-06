@@ -428,7 +428,9 @@ exports.themefillupformsave = async (req, res) => {
       const ThemeModel = getThemeFormat(studentClass);
       // Update the existing record with new data
       await ThemeModel.findByIdAndUpdate(projectId, req.body);
-      return res.redirect(`/themefillupform?studentClass=${studentClass}&subject=${subject}&terminal=${terminal}`);
+
+      return res.render("theme/success", {link:"themefillupform",studentClass,subject,section:"",terminal,editing:false});
+     
 
     }
     else
@@ -449,11 +451,7 @@ exports.themefillupformsave = async (req, res) => {
     console.log(`Theme filled successfully for class ${studentClass}`);
     
     // Send a more user-friendly response
-    return res.render("theme/theme-success", {
-      message: `Theme configuration for Class ${studentClass} was created successfully!`,
-      studentClass: studentClass,
-      backUrl: "/theme"
-    });
+    return res.render("theme/success", {link:"themefillupform",studentClass,section:"",subject,terminal,editing:false});
   } 
 }catch(err) {
     console.error("Error in theme controller:", err);
@@ -944,7 +942,7 @@ exports.editpracticalrubriks = async (req, res, next) => {
 }
 
 exports.deletepracticalrubriks = async (req, res, next) => {
-  const {studentClass, subject, projectId} = req.query;
+  const {studentClass, subject, projectId,terminal} = req.query;
   const model = getThemeFormat(studentClass);
   try {
   
@@ -953,7 +951,7 @@ exports.deletepracticalrubriks = async (req, res, next) => {
       return res.status(404).send("Rubrik not found or already deleted");
     }
     console.log(`Rubrik with ID ${projectId} deleted successfully`);
-    res.redirect(`/themefillupform?studentClass=${studentClass}&subject=${subject}`);
+    res.redirect(`/themefillupform?studentClass=${studentClass}&subject=${subject}&terminal=${terminal}`);
   } catch (err) {
     console.error("Error deleting rubrik:", err);
     res.status(500).send("Internal Server Error");

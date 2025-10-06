@@ -2123,3 +2123,33 @@ async function getAcademicYear()
   return data[0].academicYear;
 
 }
+exports.indicatorwiserecord = async (req,res,next)=>
+{
+  try
+  {
+    const { studentClass, section, subject, terminal } = req.query;
+    const indicatorwiseReport = await getPracticalProjectModel(subject, studentClass, section, await getAcademicYear()).find({studentClass:studentClass,section:section,subject:subject}).lean();
+    console.log("report data=",indicatorwiseReport);
+const practicalFormat = getThemeFormat(studentClass);
+    const practicalFormatData = await practicalFormat.find({
+      studentClass: studentClass,
+      subject: subject
+    }).lean();
+    const projectFormat = getProjectThemeFormat(studentClass)
+    const projectFormatData = await projectFormat.find({
+      studentClass: studentClass,
+      subject: subject
+    }).lean();
+    
+   
+
+
+    res.render("theme/mathInternal2report",{...await getSidenavData(req), studentClass, section, subject, terminal, indicatorwiseReport, practicalFormatData, projectFormatData});
+
+
+  }catch(err)
+  {
+    console.log(err);
+    res.status(500).send("Internal Server Error");
+  }
+}

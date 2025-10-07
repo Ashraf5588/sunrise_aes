@@ -137,21 +137,63 @@
             <% 
             let serialNumber = 1;
             
-            // Process Practicals
+            // Consolidate activities by name
+            const consolidatedActivities = new Map();
+            
+            // Process all units to consolidate activities
             student.unit.forEach(function(unit) {
+              // Process practicals
               unit.practicals.forEach(function(practical) {
+                const activityName = practical.practicalName || 'Practical Activity';
+                if (!consolidatedActivities.has(activityName)) {
+                  consolidatedActivities.set(activityName, {
+                    name: activityName,
+                    practicalData: null,
+                    projectData: null
+                  });
+                }
+                consolidatedActivities.get(activityName).practicalData = practical;
+              });
+              
+              // Process projects
+              unit.projectWorks.forEach(function(project) {
+                const activityName = project.projectName || 'Project Work';
+                if (!consolidatedActivities.has(activityName)) {
+                  consolidatedActivities.set(activityName, {
+                    name: activityName,
+                    practicalData: null,
+                    projectData: null
+                  });
+                }
+                consolidatedActivities.get(activityName).projectData = project;
+              });
+            });
+            
+            // Display consolidated activities
+            consolidatedActivities.forEach(function(activity, activityName) {
             %>
             <tr>
               <td><%= serialNumber++ %></td>
-              <td class="practical-name">🔬 <%= practical.practicalName || 'Practical Activity' %></td>
+              <td class="activity-name">
+                <% if (activity.practicalData && activity.projectData) { %>
+                  🔬📋 <%= activityName %>
+                <% } else if (activity.practicalData) { %>
+                  🔬 <%= activityName %>
+                <% } else { %>
+                  📋 <%= activityName %>
+                <% } %>
+              </td>
               
               <!-- Practical Theme Marks -->
               <% practicalFormatData.forEach(function(doc) { %>
                 <% doc.themes.forEach(function(theme) { %>
                   <% 
-                  let marks = '';
-                  if (practical.criteria && practical.criteria.length > 0) {
-                    const criterion = practical.criteria.find(c => c.practicalIndicator === theme.themeName);
+                  let marks = '-';
+                  if (activity.practicalData && activity.practicalData.criteria && activity.practicalData.criteria.length > 0) {
+                    const criterion = activity.practicalData.criteria.find(c => 
+                      c.practicalAdhar === theme.themeName || 
+                      c.practicalIndicator === theme.themeName
+                    );
                     marks = criterion ? criterion.practicalIndicatorMarks || '0' : '0';
                   }
                   %>
@@ -159,41 +201,16 @@
                 <% }) %>
               <% }) %>
               
-              <!-- Project Theme Marks (empty for practicals) -->
-              <% projectFormatData.forEach(function(doc) { %>
-                <% doc.themes.forEach(function(theme) { %>
-                  <td>-</td>
-                <% }) %>
-              <% }) %>
-              
-              <td class="total-cell"><%= practical.practicalMarks || 0 %></td>
-            </tr>
-            <% 
-              });
-            });
-            
-            // Process Projects
-            student.unit.forEach(function(unit) {
-              unit.projectWorks.forEach(function(project) {
-            %>
-            <tr>
-              <td><%= serialNumber++ %></td>
-              <td class="project-name">📋 <%= project.projectName || 'Project Work' %></td>
-              
-              <!-- Practical Theme Marks (empty for projects) -->
-              <% practicalFormatData.forEach(function(doc) { %>
-                <% doc.themes.forEach(function(theme) { %>
-                  <td>-</td>
-                <% }) %>
-              <% }) %>
-              
               <!-- Project Theme Marks -->
               <% projectFormatData.forEach(function(doc) { %>
                 <% doc.themes.forEach(function(theme) { %>
                   <% 
-                  let marks = '';
-                  if (project.criteria && project.criteria.length > 0) {
-                    const criterion = project.criteria.find(c => c.projectIndicator === theme.themeName);
+                  let marks = '-';
+                  if (activity.projectData && activity.projectData.criteria && activity.projectData.criteria.length > 0) {
+                    const criterion = activity.projectData.criteria.find(c => 
+                      c.projectAdhar === theme.themeName || 
+                      c.projectIndicator === theme.themeName
+                    );
                     marks = criterion ? criterion.projectIndicatorMarks || '0' : '0';
                   }
                   %>
@@ -201,10 +218,12 @@
                 <% }) %>
               <% }) %>
               
-              <td class="total-cell"><%= project.projectMarks || 0 %></td>
+              <td class="total-cell">
+                <%= (activity.practicalData ? (activity.practicalData.practicalMarks || 0) : 0) + 
+                    (activity.projectData ? (activity.projectData.projectMarks || 0) : 0) %>
+              </td>
             </tr>
             <% 
-              });
             });
             %>
           </tbody>

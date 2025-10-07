@@ -1459,149 +1459,206 @@ exports.savepracticalprojectform = async (req, res, next) => {
     // Add debugging for raw data
     console.log('Raw req.body.unit:', JSON.stringify(req.body.unit, null, 2));
 
-    // Process criteria for practicals and projects
+    // Process and consolidate criteria for practicals and projects
     req.body.unit.forEach((unit, unitIndex) => {
       console.log(`\n--- Processing Unit ${unitIndex}: ${unit.unitName} ---`);
       
       unit.practicals = unit.practicals || [];
       unit.projectWorks = unit.projectWorks || [];
 
-      // --- PRACTICALS ---
+      // Create a map to consolidate activities with same names
+      const consolidatedActivities = new Map();
+
+      // --- PROCESS PRACTICALS ---
       unit.practicals.forEach((practical, practicalIndex) => {
         console.log(`\nProcessing Practical ${practicalIndex}:`, practical.practicalName);
         console.log('Raw practical.criteria:', practical.criteria);
         
-        if (!practical.criteria) {
-          console.log('No criteria found for practical, setting empty array');
-          practical.criteria = [];
-          return;
+        const activityName = practical.practicalName;
+        
+        if (!consolidatedActivities.has(activityName)) {
+          consolidatedActivities.set(activityName, {
+            activityName: activityName,
+            practicalCriteria: [],
+            projectCriteria: [],
+            practicalMarks: practical.practicalMarks || 0,
+            projectMarks: 0
+          });
         }
 
-        // Process practical criteria - handle simplified array format
-        const criteriaArray = [];
+        const activity = consolidatedActivities.get(activityName);
         
-        // Check if criteria is an array (new simplified format)
-        if (Array.isArray(practical.criteria)) {
-          practical.criteria.forEach((criteriaValue, index) => {
-            console.log(`Processing criteria array item ${index}:`, criteriaValue);
-            
-            if (criteriaValue && typeof criteriaValue === 'string') {
-              const parts = criteriaValue.split('||');
-              console.log('Split parts:', parts);
+        if (practical.criteria) {
+          // Process practical criteria - handle simplified array format
+          const criteriaArray = [];
+          
+          // Check if criteria is an array (new simplified format)
+          if (Array.isArray(practical.criteria)) {
+            practical.criteria.forEach((criteriaValue, index) => {
+              console.log(`Processing practical criteria array item ${index}:`, criteriaValue);
               
-              if (parts.length >= 3) {
-                const criteriaItem = {
-                  practicalIndicatorMarks: parts[0].trim(),
-                  practicalIndicator: parts[1].trim(),
-                  practicalAdhar: parts[2].trim(),
-                  practicalOutcome: parts[3] ? parts[3].trim() : ''
-                };
-                console.log('Created criteria item:', criteriaItem);
-                criteriaArray.push(criteriaItem);
+              if (criteriaValue && typeof criteriaValue === 'string') {
+                const parts = criteriaValue.split('||');
+                console.log('Split parts:', parts);
+                
+                if (parts.length >= 3) {
+                  const criteriaItem = {
+                    practicalIndicatorMarks: parts[0].trim(),
+                    practicalIndicator: parts[1].trim(),
+                    practicalAdhar: parts[2].trim(),
+                    practicalOutcome: parts[3] ? parts[3].trim() : ''
+                  };
+                  console.log('Created practical criteria item:', criteriaItem);
+                  criteriaArray.push(criteriaItem);
+                }
               }
-            }
-          });
-        } else {
-          // Handle old object format for backward compatibility
-          Object.keys(practical.criteria).forEach(key => {
-            const value = practical.criteria[key];
-            console.log(`Processing criteria key: ${key}, value: ${value}`);
-            
-            if (value && typeof value === 'string') {
-              const parts = value.split('||');
-              console.log('Split parts:', parts);
+            });
+          } else {
+            // Handle old object format for backward compatibility
+            Object.keys(practical.criteria).forEach(key => {
+              const value = practical.criteria[key];
+              console.log(`Processing practical criteria key: ${key}, value: ${value}`);
               
-              if (parts.length >= 3) {
-                const criteriaItem = {
-                  practicalIndicatorMarks: parts[0].trim(),
-                  practicalIndicator: parts[1].trim(),
-                  practicalAdhar: parts[2].trim(),
-                  practicalOutcome: parts[3] ? parts[3].trim() : ''
-                };
-                console.log('Created criteria item:', criteriaItem);
-                criteriaArray.push(criteriaItem);
-              } else if (parts.length === 1) {
-                // Fallback for old format (just marks)
-                const criteriaItem = {
-                  practicalIndicatorMarks: parts[0].trim()
-                };
-                console.log('Created fallback criteria item:', criteriaItem);
-                criteriaArray.push(criteriaItem);
+              if (value && typeof value === 'string') {
+                const parts = value.split('||');
+                console.log('Split parts:', parts);
+                
+                if (parts.length >= 3) {
+                  const criteriaItem = {
+                    practicalIndicatorMarks: parts[0].trim(),
+                    practicalIndicator: parts[1].trim(),
+                    practicalAdhar: parts[2].trim(),
+                    practicalOutcome: parts[3] ? parts[3].trim() : ''
+                  };
+                  console.log('Created practical criteria item:', criteriaItem);
+                  criteriaArray.push(criteriaItem);
+                } else if (parts.length === 1) {
+                  // Fallback for old format (just marks)
+                  const criteriaItem = {
+                    practicalIndicatorMarks: parts[0].trim()
+                  };
+                  console.log('Created fallback practical criteria item:', criteriaItem);
+                  criteriaArray.push(criteriaItem);
+                }
+              } else {
+                console.log('Practical value is not a string or is empty:', typeof value, value);
               }
-            } else {
-              console.log('Value is not a string or is empty:', typeof value, value);
-            }
-          });
+            });
+          }
+          
+          activity.practicalCriteria = criteriaArray;
+          console.log('Final practical criteria for', activityName, ':', activity.practicalCriteria);
         }
-        
-        practical.criteria = criteriaArray;
-        console.log('Final practical criteria:', practical.criteria);
       });
 
-      // --- PROJECTS ---
+      // --- PROCESS PROJECTS ---
       unit.projectWorks.forEach((project, projectIndex) => {
-        console.log(`\nProcessing Project ${projectIndex}:`);
+        console.log(`\nProcessing Project ${projectIndex}:`, project.projectName);
         console.log('Raw project.criteria:', project.criteria);
         
-        if (!project.criteria) {
-          console.log('No criteria found for project, setting empty array');
-          project.criteria = [];
-          return;
+        const activityName = project.projectName;
+        
+        if (!consolidatedActivities.has(activityName)) {
+          consolidatedActivities.set(activityName, {
+            activityName: activityName,
+            practicalCriteria: [],
+            projectCriteria: [],
+            practicalMarks: 0,
+            projectMarks: project.projectMarks || 0
+          });
         }
 
-        // Process project criteria - handle simplified array format
-        const criteriaArray = [];
+        const activity = consolidatedActivities.get(activityName);
+        activity.projectMarks = project.projectMarks || 0;
         
-        // Check if criteria is an array (new simplified format)
-        if (Array.isArray(project.criteria)) {
-          project.criteria.forEach((criteriaValue, index) => {
-            console.log(`Processing project criteria array item ${index}:`, criteriaValue);
-            
-            if (criteriaValue && typeof criteriaValue === 'string') {
-              const parts = criteriaValue.split('||');
-              console.log('Project split parts:', parts);
+        if (project.criteria) {
+          // Process project criteria - handle simplified array format
+          const criteriaArray = [];
+          
+          // Check if criteria is an array (new simplified format)
+          if (Array.isArray(project.criteria)) {
+            project.criteria.forEach((criteriaValue, index) => {
+              console.log(`Processing project criteria array item ${index}:`, criteriaValue);
               
-              if (parts.length >= 3) {
-                const criteriaItem = {
-                  projectIndicatorMarks: parts[0].trim(),
-                  projectIndicator: parts[1].trim(),
-                  projectAdhar: parts[2].trim(),
-                  projectOutcome: parts[3] ? parts[3].trim() : ''
-                };
-                console.log('Created project criteria item:', criteriaItem);
-                criteriaArray.push(criteriaItem);
+              if (criteriaValue && typeof criteriaValue === 'string') {
+                const parts = criteriaValue.split('||');
+                console.log('Project split parts:', parts);
+                
+                if (parts.length >= 3) {
+                  const criteriaItem = {
+                    projectIndicatorMarks: parts[0].trim(),
+                    projectIndicator: parts[1].trim(),
+                    projectAdhar: parts[2].trim(),
+                    projectOutcome: parts[3] ? parts[3].trim() : ''
+                  };
+                  console.log('Created project criteria item:', criteriaItem);
+                  criteriaArray.push(criteriaItem);
+                }
               }
-            }
-          });
-        } else {
-          // Handle old object format for backward compatibility
-          Object.keys(project.criteria).forEach(key => {
-            const value = project.criteria[key];
-            console.log(`Processing project criteria key: ${key}, value: ${value}`);
-            
-            if (value && typeof value === 'string') {
-              const parts = value.split('||');
-              console.log('Project split parts:', parts);
+            });
+          } else {
+            // Handle old object format for backward compatibility
+            Object.keys(project.criteria).forEach(key => {
+              const value = project.criteria[key];
+              console.log(`Processing project criteria key: ${key}, value: ${value}`);
               
-              if (parts.length >= 3) {
-                const criteriaItem = {
-                  projectIndicatorMarks: parts[0].trim(),
-                  projectIndicator: parts[1].trim(),
-                  projectAdhar: parts[2].trim(),
-                  projectOutcome: parts[3] ? parts[3].trim() : ''
-                };
-                console.log('Created project criteria item:', criteriaItem);
-                criteriaArray.push(criteriaItem);
+              if (value && typeof value === 'string') {
+                const parts = value.split('||');
+                console.log('Project split parts:', parts);
+                
+                if (parts.length >= 3) {
+                  const criteriaItem = {
+                    projectIndicatorMarks: parts[0].trim(),
+                    projectIndicator: parts[1].trim(),
+                    projectAdhar: parts[2].trim(),
+                    projectOutcome: parts[3] ? parts[3].trim() : ''
+                  };
+                  console.log('Created project criteria item:', criteriaItem);
+                  criteriaArray.push(criteriaItem);
+                }
+              } else {
+                console.log('Project value is not a string or is empty:', typeof value, value);
               }
-            } else {
-              console.log('Project value is not a string or is empty:', typeof value, value);
-            }
+            });
+          }
+          
+          activity.projectCriteria = criteriaArray;
+          console.log('Final project criteria for', activityName, ':', activity.projectCriteria);
+        }
+      });
+
+      // Convert consolidated activities back to the expected format
+      // But now combine activities with same names
+      const newPracticals = [];
+      const newProjectWorks = [];
+
+      consolidatedActivities.forEach((activity, activityName) => {
+        // Only create practical entry if there are practical criteria
+        if (activity.practicalCriteria.length > 0) {
+          newPracticals.push({
+            practicalName: activityName,
+            practicalMarks: activity.practicalMarks,
+            criteria: activity.practicalCriteria
           });
         }
-        
-        project.criteria = criteriaArray;
-        console.log('Final project criteria:', project.criteria);
+
+        // Only create project entry if there are project criteria
+        if (activity.projectCriteria.length > 0) {
+          newProjectWorks.push({
+            projectName: activityName,
+            projectMarks: activity.projectMarks,
+            criteria: activity.projectCriteria
+          });
+        }
       });
+
+      // Update the unit with consolidated data
+      unit.practicals = newPracticals;
+      unit.projectWorks = newProjectWorks;
+
+      console.log('\n--- CONSOLIDATED ACTIVITIES ---');
+      console.log('Practicals:', unit.practicals.length);
+      console.log('Projects:', unit.projectWorks.length);
     });
 
     console.log('\n--- FINAL PROCESSED DATA ---');

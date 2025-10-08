@@ -378,8 +378,9 @@ exports.themeformSave = async (req, res) => {
         redirect: `/themeform?subject=${subject}&studentClass=${studentClass}` 
       });
     } else {
+      const terminal = req.query.terminal || '';
       // If it's a regular form submission, redirect
-      res.redirect(`/themeform?subject=${subject}&studentClass=${studentClass}`);
+      res.render("theme/success", {link:"themeform",studentClass,section,subject,editing:false,terminal});
     }
   } catch (err) {
     console.error("Error saving theme form data:", err);

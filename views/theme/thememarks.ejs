@@ -232,49 +232,7 @@
   <div class="container">
     <h1>Theme Evaluation Marks Report</h1>
     
-    <!-- Filter Section
-    <div style="background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h3>Filter Options</h3>
-      <form method="GET" action="/thememarksofstudent" style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 200px;">
-          <label for="studentClass" style="display: block; margin-bottom: 5px; font-weight: bold;">Class:</label>
-          <select name="studentClass" id="studentClass" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-            <option value="">All Classes</option>
-            <% const uniqueClasses = [...new Set((studentClassdata || []).map(item => item.studentClass))].sort((a, b) => parseInt(a) - parseInt(b)); %>
-            <% uniqueClasses.forEach(cls => { %>
-              <option value="<%= cls %>" <%= (selectedClass || '') === cls ? 'selected' : '' %>>Class <%= cls %></option>
-            <% }); %>
-          </select>
-        </div>
-        
-        <div style="flex: 1; min-width: 200px;">
-          <label for="section" style="display: block; margin-bottom: 5px; font-weight: bold;">Section:</label>
-          <select name="section" id="section" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-            <option value="">All Sections</option>
-            <% const uniqueSections = [...new Set((studentClassdata || []).map(item => item.section))].sort(); %>
-            <% uniqueSections.forEach(sec => { %>
-              <option value="<%= sec %>" <%= (selectedSection || '') === sec ? 'selected' : '' %>><%= sec %></option>
-            <% }); %>
-          </select>
-        </div>
-        
-        <div style="flex: 1; min-width: 200px;">
-          <label for="subject" style="display: block; margin-bottom: 5px; font-weight: bold;">Subject:</label>
-          <select name="subject" id="subject" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-            <option value="">All Subjects</option>
-            <% const uniqueSubjects = new Set((newsubjectList || []).map(item => item.newsubject)); %>
-            <% uniqueSubjects.forEach(function(subj) { %>
-              <option value="<%= subj %>" <%= (selectedSubject || '') === subj ? 'selected' : '' %>><%= subj %></option>
-            <% }); %>
-          </select>
-        </div>
-        
-        <div>
-          <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Apply Filter</button>
-        </div>
-      </form>
-    </div>
-     -->
+ 
     <% if (themeData && themeData.length > 0) { %>
       <% 
         // Group data by subject
@@ -354,17 +312,7 @@
                             <th colspan="<%= indicatorCount * 2 %>"><%= outcome.name %></th>
                           <% }); %>
                           
-                          <% learningOutcomes.forEach(outcome => { %>
-                            <th rowspan="3" class="total-row">LO Total Before</th>
-                            <th rowspan="3" class="total-row">LO Total After</th>
-                          <% }); %>
-                          
-                          <th rowspan="3" class="total-row">Overall Before</th>
-                          <th rowspan="3" class="total-row">Overall After</th>
-                          <th rowspan="3" class="total-row">% Before</th>
-                          <th rowspan="3" class="total-row">% After</th>
-                          <th rowspan="3" class="total-row">Grade Before</th>
-                          <th rowspan="3" class="total-row">Grade After</th>
+                        
                         </tr>
                       
                       <tr>
@@ -437,35 +385,7 @@
                             %>
                           <% }); %>
                           
-                          <!-- Display LO Totals -->
-                          <% loTotals.forEach(total => { %>
-                            <td class="total-row"><%= total.before %></td>
-                            <td class="total-row"><%= total.after %></td>
-                          <% }); %>
                           
-                          <td class="total-row"><%= overallBefore %></td>
-                          <td class="total-row"><%= overallAfter %></td>
-                          
-                          <% 
-                            // Calculate grades (assuming grades based on percentage)
-                            const percentageBefore = maxPossibleMarks > 0 ? (overallBefore / maxPossibleMarks) * 100 : 0;
-                            const percentageAfter = maxPossibleMarks > 0 ? (overallAfter / maxPossibleMarks) * 100 : 0;
-                            function getGrade(percentage) {
-                              if (percentage >= 80) return { grade: 'A+', class:  'grade-excellent' };
-                              if (percentage >= 70) return { grade: 'A', class: 'grade-excellent' };
-                              if (percentage >= 60) return { grade: 'B+', class: 'grade-good' };
-                              if (percentage >= 50) return { grade: 'B', class: 'grade-good' };
-                              if (percentage >= 40) return { grade: 'C+', class: 'grade-average' };
-                              if (percentage >= 30) return { grade: 'C', class: 'grade-average' };
-                              return { grade: 'D', class: 'grade-needs-improvement' };
-                            }
-                            const gradeBefore = getGrade(percentageBefore);
-                            const gradeAfter = getGrade(percentageAfter);
-                          %>
-                          <td class="total-row"><%= percentageBefore.toFixed(2) %>%</td>
-                          <td class="total-row"><%= percentageAfter.toFixed(2) %>%</td>
-                          <td class="total-row <%= gradeBefore.class %>"><%= gradeBefore.grade %></td>
-                          <td class="total-row <%= gradeAfter.class %>"><%= gradeAfter.grade %></td>
                         </tr>
                       <% }); %>
                     </tbody>

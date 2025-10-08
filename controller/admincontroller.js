@@ -285,7 +285,14 @@ const token = generateToken(user);
       secure: false,   // change to true if using HTTPS
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
-      return res.redirect("/");
+           if (user.role === "NEWSADMIN") {
+  return res.redirect('/newsadmin');
+} else if (user.role === "ADMIN") {
+  return res.redirect('/admin/term/FIRST');
+} else {
+  return res.redirect('/');
+}
+
     }
    catch (err) {
     console.log(err);

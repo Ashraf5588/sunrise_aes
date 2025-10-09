@@ -366,7 +366,13 @@
     </div>
 
     <div class="form-card">
-      <form action="/sciencepractical?studentClass=<%= typeof studentClass !== 'undefined' ? studentClass : '' %>" method="POST" id="sciencePracticalForm">
+      <form action="/sciencepractical?studentClass=<%= typeof studentClass !== 'undefined' ? studentClass : '' %><% if (typeof editing !== 'undefined' && editing && typeof lessonData !== 'undefined' && lessonData._id) { %>&lessonId=<%= lessonData._id %>&editing=true<% } %>" method="POST" id="sciencePracticalForm">
+        
+        <!-- Hidden field for lesson ID when editing -->
+        <% if (typeof editing !== 'undefined' && editing && typeof lessonData !== 'undefined' && lessonData._id) { %>
+          <input type="hidden" name="lessonId" value="<%= lessonData._id %>">
+        <% } %>
+
         <div class="form-row">
           <div class="form-group">
             <label for="studentClass">Student Class</label>
@@ -546,10 +552,13 @@
   </div>
 </div>
 <% } %>
+
   <script>
     let unitIndex = 0;
+    let editing = <%= typeof editing !== 'undefined' && editing ? 'true' : 'false' %>;
+    let editingLessonData = editing ? <%- typeof lessonData !== 'undefined' && lessonData ? JSON.stringify(lessonData) : 'null' %> : null;
 
-    function addUnit() {
+    function addUnit(unitData = null) {
       const unitsContainer = document.getElementById('units-container');
 
       const unitDiv = document.createElement('div');
@@ -564,22 +573,22 @@
         
         <div class="form-group" style="margin-bottom: 1rem;">
           <label for="unitName_${unitIndex}">Unit Name</label>
-          <input type="text" name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name" required>
+          <input type="text" name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name" required value="${unitData ? unitData.unitName || '' : ''}">
         </div>
         
         <div class="form-group" style="margin-bottom: 1.5rem;">
           <label style="margin-bottom: 0.75rem; color: #27ae60; font-weight: 600;">Choose Portion for this Unit:</label>
           <div class="radio-group">
             <label class="radio-option">
-              <input type="radio" name="units[${unitIndex}][portion]" value="Health" required>
+              <input type="radio" name="units[${unitIndex}][portion]" value="Health" required ${unitData && unitData.portion === 'Health' ? 'checked' : ''}>
               <span>Health</span>
             </label>
             <label class="radio-option">
-              <input type="radio" name="units[${unitIndex}][portion]" value="Physical" required>
+              <input type="radio" name="units[${unitIndex}][portion]" value="Physical" required ${unitData && unitData.portion === 'Physical' ? 'checked' : ''}>
               <span>Physical</span>
             </label>
             <label class="radio-option">
-              <input type="radio" name="units[${unitIndex}][portion]" value="CreativeSkill" required>
+              <input type="radio" name="units[${unitIndex}][portion]" value="CreativeSkill" required ${unitData && unitData.portion === 'CreativeSkill' ? 'checked' : ''}>
               <span>Creative Skill</span>
             </label>
           </div>
@@ -589,12 +598,12 @@
         <div style="margin-bottom: 1.5rem;">
           <h4 style="color: #27ae60; margin-bottom: 0.75rem; font-size: 1.1rem; display: flex; align-items: center;">
            <span style="margin-left: 0.5rem;">
-            <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %>
+            <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } else { %> 🏃 Health Activities <% } %>
             </span>
           </h4>
           <div class="practicals-container" id="practicals-${unitIndex}"></div>
           <div class="btn-group" style="justify-content: flex-start; margin-top: 0.5rem;">
-            <button type="button" class="btn btn-success" onclick="addPractical(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add    <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } %></button>
+            <button type="button" class="btn btn-success" onclick="addPractical(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add <% if(subject==="SCIENCE") { %> 🧪 Practicals <% }else if(subject==="MATHEMATICS"){%> 📐 Practical/Project <% } else { %> 🏃 Health Activity <% } %></button>
           </div>
         </div>
         <% if (subject==="SCIENCE"){%>
@@ -608,14 +617,27 @@
             <button type="button" class="btn btn-success" onclick="addProjectWork(${unitIndex})" style="padding: 0.5rem 1rem; font-size: 0.9rem; background: linear-gradient(135deg, #3498db, #2980b9);">+ Add Project Work</button>
           </div>
         </div>
-        <%}else{%>
-        <p></p>
-      <%}%>
+        <%}%>
       `;
       
-
       unitsContainer.appendChild(unitDiv);
-      addPractical(unitIndex); // Add one practical by default
+      
+      // Add practicals based on edit data or add one empty practical
+      if (unitData && unitData.practicals && unitData.practicals.length > 0) {
+        unitData.practicals.forEach((practicalName, index) => {
+          addPracticalWithData(unitIndex, practicalName);
+        });
+      } else {
+        addPractical(unitIndex); // Add one practical by default
+      }
+      
+      // Add project works if editing and has project data
+      if (unitData && unitData.projectworks && unitData.projectworks.length > 0) {
+        unitData.projectworks.forEach((projectName, index) => {
+          addProjectWorkWithData(unitIndex, projectName);
+        });
+      }
+      
       unitIndex++;
     }
 
@@ -628,8 +650,26 @@
 
       practicalDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-          <span style="color: #27ae60; font-weight: 600; min-width: 80px;">Practical ${practicalIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter practical name (e.g., To find the density of a solid)" required style="flex: 1;">
+          <span style="color: #27ae60; font-weight: 600; min-width: 80px;">Activity ${practicalIndex + 1}:</span>
+          <input type="text" name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter activity name (e.g., Physical fitness test)" required style="flex: 1;">
+          <button type="button" class="btn btn-danger" onclick="removePractical(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
+        </div>
+      `;
+
+      practicalsContainer.appendChild(practicalDiv);
+    }
+
+    function addPracticalWithData(unitIdx, practicalName) {
+      const practicalsContainer = document.getElementById(`practicals-${unitIdx}`);
+      const practicalIndex = practicalsContainer.children.length;
+
+      const practicalDiv = document.createElement('div');
+      practicalDiv.className = 'practical-item';
+
+      practicalDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+          <span style="color: #27ae60; font-weight: 600; min-width: 80px;">Activity ${practicalIndex + 1}:</span>
+          <input type="text" name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter activity name" required style="flex: 1;" value="${practicalName}">
           <button type="button" class="btn btn-danger" onclick="removePractical(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
@@ -647,7 +687,25 @@
       projectDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
           <span style="color: #3498db; font-weight: 600; min-width: 90px;">Project ${projectIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work (e.g., Solar System Model)" required style="flex: 1;">
+          <input type="text" name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work (e.g., Health awareness campaign)" required style="flex: 1;">
+          <button type="button" class="btn btn-danger" onclick="removeProjectWork(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
+        </div>
+      `;
+
+      projectsContainer.appendChild(projectDiv);
+    }
+
+    function addProjectWorkWithData(unitIdx, projectName) {
+      const projectsContainer = document.getElementById(`projects-${unitIdx}`);
+      const projectIndex = projectsContainer.children.length;
+
+      const projectDiv = document.createElement('div');
+      projectDiv.className = 'project-item';
+
+      projectDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+          <span style="color: #3498db; font-weight: 600; min-width: 90px;">Project ${projectIndex + 1}:</span>
+          <input type="text" name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work" required style="flex: 1;" value="${projectName}">
           <button type="button" class="btn btn-danger" onclick="removeProjectWork(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
@@ -656,14 +714,14 @@
     }
 
     function removeUnit(button) {
-      if (confirm('Are you sure you want to remove this unit and all its practicals?')) {
+      if (confirm('Are you sure you want to remove this unit and all its activities?')) {
         button.closest('.unit-section').remove();
         updateUnitNumbers();
       }
     }
 
     function removePractical(button) {
-      if (confirm('Are you sure you want to remove this practical?')) {
+      if (confirm('Are you sure you want to remove this activity?')) {
         button.closest('.practical-item').remove();
       }
     }
@@ -684,9 +742,25 @@
       });
     }
 
-    // Add first unit by default when page loads
+    // Single window.onload function
     window.onload = () => {
-      addUnit();
+      if (editing && editingLessonData && editingLessonData.units) {
+        // Populate existing units when editing
+        editingLessonData.units.forEach(unitData => {
+          addUnit(unitData);
+        });
+        
+        // Pre-fill form fields
+        if (editingLessonData.subject) {
+          document.getElementById('subject').value = editingLessonData.subject;
+        }
+        if (editingLessonData.terminal) {
+          document.getElementById('academicYear').value = editingLessonData.terminal;
+        }
+      } else {
+        // Add empty unit for new forms
+        addUnit();
+      }
     };
 
     // Form validation
@@ -729,7 +803,7 @@
 
       if (!hasValidUnit) {
         e.preventDefault();
-        alert('Each unit must have at least one practical.');
+        alert('Each unit must have at least one activity.');
         return;
       }
     });

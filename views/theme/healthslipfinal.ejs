@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Practical Project Record</title>
+  <title>Health Final Practical Project Record</title>
    <style>
     /* Reset and base styles */
     * {
@@ -296,6 +296,13 @@
       font-weight: bold;
       background-color: #ecf0f1 !important;
     }
+
+    /* Final average styling */
+    .final-average {
+      font-weight: bold;
+      background-color: #e8f5e8 !important;
+      color: #27ae60;
+    }
   
   </style>
 </head>
@@ -310,11 +317,11 @@
       </div>
       <h3><%= marksheetSetting[0].address %></h3>
       <h3><%= marksheetSetting[0].phone %> | <%= marksheetSetting[0].email %> | <%= marksheetSetting[0].website %></h3>
-      <h3><%= terminal %> Terminal - <%= marksheetSetting[0].academicYear %></h3>
-      <h1>Science Practical & Project Slip</h1>
+      <h3>Final Report - <%= marksheetSetting[0].academicYear %></h3>
+      <h1>Health Final Practical & Project Report</h1>
     </div>
 
-  <form action="/practicalslipsave?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>&academicYear=<%= marksheetSetting[0].academicYear %>" method="POST">
+  <form action="/practicalslipsave?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=FINAL&academicYear=<%= marksheetSetting[0].academicYear %>" method="POST">
 
     <table border="1" cellspacing="0" cellpadding="5">
       <tr>
@@ -322,76 +329,95 @@
         <th>Name</th>
         <th>Class</th>
         <th>Section</th>
-        <th>Attendance & Participation</th>
-        <th>Project Work & Practical Work</th>
-        <th>Terminal Exam Marks</th>
-        <th>Total (This Terminal)</th>
-        <th>Final Average (All Terminals)</th>
+        <th>Avg Attendance & Participation (4)</th>
+        <th>Avg Project Work & Practical Work (36)</th>
+        <th>Avg Terminal Exam Marks (10)</th>
+        <th>Final Average Total (50)</th>
+        <th>Grade</th>
       </tr>
 
       <% sciencepracticaldata.forEach((student, index) => { %>
         <% 
-          let terminalTotals = [];
+          // Calculate averages across all terminals
+          let totalAttendanceParticipation = 0;
+          let totalPracticalProject = 0;
+          let totalTerminalMarks = 0;
+          let terminalCount = student.terminals.length;
 
-          student.terminals.forEach(term => {
-            let attendance = term.attendanceMarks || 0;
-            let participation = term.participationMarks || 0;
+          // Process each terminal
+          student.terminals.forEach(terminal => {
+            // Attendance + Participation for this terminal
+            let attendanceParticipation = (terminal.attendanceMarks || 0) + (terminal.participationMarks || 0);
+            totalAttendanceParticipation += attendanceParticipation;
 
-            // Group project works by portion
-            let portionGroups = {};
-            (term.unit || []).forEach(u => {
-              if (!portionGroups[u.portion]) portionGroups[u.portion] = [];
-              (u.projectWorks || []).forEach(p => {
-                portionGroups[u.portion].push(p.projectMarks || 0);
-              });
+            // Portion-wise calculation for both practicals and projects for this terminal
+            let portionWise = {};
+            
+            (terminal.unit || []).forEach(u => {
+              const portion = u.portion;
+              if (!portionWise[portion]) {
+                portionWise[portion] = [];
+              }
+              
+              // Add project work marks from this unit
+              if (u.projectWorks && u.projectWorks.length > 0) {
+                u.projectWorks.forEach(p => {
+                  portionWise[portion].push(p.projectMarks || 0);
+                });
+              }
+              
+              // Add practical marks from this unit
+              if (u.practicals && u.practicals.length > 0) {
+                u.practicals.forEach(p => {
+                  portionWise[portion].push(p.practicalMarks || 0);
+                });
+              }
             });
 
-            // Average project marks per portion
-            let projectTotal = Object.values(portionGroups).reduce((sum, arr) => {
-              if (arr.length === 0) return sum;
-              return sum + (arr.reduce((a, b) => a + b, 0) / arr.length);
-            }, 0);
-
-            let terminalMarks = term.terminalMarks || 0;
-
-            // Terminal total
-            let terminalTotal = attendance + participation + projectTotal + terminalMarks;
-            terminalTotals.push(terminalTotal);
+            // Calculate average for each portion and sum them up for this terminal
+            let practicalProjectMarks = 0;
+            for (let portion in portionWise) {
+              if (portionWise[portion].length > 0) {
+                let portionAverage = portionWise[portion].reduce((a, b) => a + b, 0) / portionWise[portion].length;
+                practicalProjectMarks += portionAverage;
+              }
+            }
+            
+            totalPracticalProject += practicalProjectMarks;
+            totalTerminalMarks += (terminal.terminalMarks || 0);
           });
 
-          // Final average of all terminals
-          let finalAverage = terminalTotals.length > 0 
-            ? (terminalTotals.reduce((a, b) => a + b, 0) / terminalTotals.length) 
-            : 0;
+          // Calculate averages
+          const avgAttendanceParticipation = terminalCount > 0 ? (totalAttendanceParticipation / terminalCount) : 0;
+          const avgPracticalProject = terminalCount > 0 ? (totalPracticalProject / terminalCount) : 0;
+          const avgTerminalMarks = terminalCount > 0 ? (totalTerminalMarks / terminalCount) : 0;
+
+          // Final total average
+          const finalAverageTotal = avgAttendanceParticipation + avgPracticalProject + avgTerminalMarks;
+
+          // Percentage for grade based on final average
+          const percentage = (finalAverageTotal / 50) * 100;
+          let grade = "";
+          if (percentage >= 90) grade = "A+";
+          else if (percentage >= 85) grade = "A";
+          else if (percentage >= 80) grade = "B+";
+          else if (percentage >= 70) grade = "B";
+          else if (percentage >= 60) grade = "C+";
+          else if (percentage >= 50) grade = "C";
+          else if (percentage >= 40) grade = "D";
+          else grade = "NG";
         %>
 
         <tr>
           <td><%= student._id.roll %></td>
-          <td><%= student._id.name %></td>
+          <td class="student-name"><%= student._id.name %></td>
           <td><%= student._id.studentClass %></td>
           <td><%= student._id.section %></td>
-          <td><%= (student.terminals[0]?.attendanceMarks || 0) + (student.terminals[0]?.participationMarks || 0) %></td>
-          <td>
-            <% 
-              // Show project total of the first terminal (current)
-              let firstTerm = student.terminals[0];
-              let firstProjects = {};
-              (firstTerm?.unit || []).forEach(u => {
-                if (!firstProjects[u.portion]) firstProjects[u.portion] = [];
-                (u.projectWorks || []).forEach(p => {
-                  firstProjects[u.portion].push(p.projectMarks || 0);
-                });
-              });
-              let projectTotalFirst = Object.values(firstProjects).reduce((sum, arr) => {
-                if (arr.length === 0) return sum;
-                return sum + (arr.reduce((a, b) => a + b, 0) / arr.length);
-              }, 0);
-            %>
-            <%= projectTotalFirst %>
-          </td>
-          <td><%= student.terminals[0]?.terminalMarks || 0 %></td>
-          <td><%= terminalTotals[0] || 0 %></td>
-          <td><%= finalAverage.toFixed(2) %></td>
+          <td><%= avgAttendanceParticipation.toFixed(1) %></td>
+          <td><%= avgPracticalProject.toFixed(1) %></td>
+          <td><%= avgTerminalMarks.toFixed(1) %></td>
+          <td class="final-average"><%= finalAverageTotal.toFixed(1) %></td>
+          <td class="grade"><%= grade %></td>
         </tr>
 
         <!-- Hidden inputs for saving -->
@@ -399,14 +425,32 @@
         <input type="hidden" name="slip[<%= index %>][name]" value="<%= student._id.name %>">
         <input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student._id.studentClass %>">
         <input type="hidden" name="slip[<%= index %>][section]" value="<%= student._id.section %>">
-        <input type="hidden" name="slip[<%= index %>][finalAverage]" value="<%= finalAverage.toFixed(2) %>">
+        <input type="hidden" name="slip[<%= index %>][avgAttendanceParticipation]" value="<%= avgAttendanceParticipation.toFixed(1) %>">
+        <input type="hidden" name="slip[<%= index %>][avgPracticalProject]" value="<%= avgPracticalProject.toFixed(1) %>">
+        <input type="hidden" name="slip[<%= index %>][avgTerminalMarks]" value="<%= avgTerminalMarks.toFixed(1) %>">
+        <input type="hidden" name="slip[<%= index %>][finalAverageTotal]" value="<%= finalAverageTotal.toFixed(1) %>">
+        <input type="hidden" name="slip[<%= index %>][grade]" value="<%= grade %>">
 
       <% }) %>
     </table>
 
-    <br>
-    <input type="submit" value="Save Slip">
+    <div style="margin-top: 20px; text-align: center;">
+      <input type="submit" value="💾 Save Final Report" style="
+        background: linear-gradient(135deg, #27ae60, #229954);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        transition: all 0.3s ease;
+      " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(39, 174, 96, 0.4)'" 
+         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(39, 174, 96, 0.3)'">
+    </div>
   </form>
-  </div>
+
+</div>
 </body>
 </html>

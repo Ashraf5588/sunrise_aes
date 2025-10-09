@@ -334,25 +334,40 @@
           // Attendance + Participation
           const attendanceParticipation = (student.attendanceMarks || 0) + (student.participationMarks || 0);
 
-          // Portion-wise averages
+          // Portion-wise calculation for both practicals and projects
           let portionWise = {};
+          
           student.unit.forEach(u => {
-            if (!portionWise[u.portion]) portionWise[u.portion] = [];
-            u.projectWorks.forEach(p => portionWise[u.portion].push(p.projectMarks || 0));
+            const portion = u.portion;
+            if (!portionWise[portion]) {
+              portionWise[portion] = [];
+            }
+            
+            // Add project work marks from this unit
+            if (u.projectWorks && u.projectWorks.length > 0) {
+              u.projectWorks.forEach(p => {
+                portionWise[portion].push(p.projectMarks || 0);
+              });
+            }
+            
+            // Add practical marks from this unit
+            if (u.practicals && u.practicals.length > 0) {
+              u.practicals.forEach(p => {
+                portionWise[portion].push(p.practicalMarks || 0);
+              });
+            }
           });
 
-          let projectTotal = 0;
+          // Calculate average for each portion and sum them up
+          let practicalProjectMarks = 0;
           for (let portion in portionWise) {
             if (portionWise[portion].length > 0) {
-              let avg = portionWise[portion].reduce((a, b) => a + b, 0) / portionWise[portion].length;
-              projectTotal += avg;
+              let portionAverage = portionWise[portion].reduce((a, b) => a + b, 0) / portionWise[portion].length;
+              practicalProjectMarks += portionAverage;
             }
           }
 
-          // Scale to 36 marks
-          const practicalProjectMarks = projectTotal; 
-
-          // Terminal
+          // Terminal marks
           const terminalMarks = student.terminalMarks || 0;
 
           // Final total
@@ -373,14 +388,14 @@
 
         <tr>
           <td><%= student.roll %></td>
-          <td><%= student.name %></td>
+          <td class="student-name"><%= student.name %></td>
           <td><%= student.studentClass %></td>
           <td><%= student.section %></td>
           <td><%= attendanceParticipation %></td>
-          <td><%= practicalProjectMarks %></td>
+          <td><%= practicalProjectMarks.toFixed(1) %></td>
           <td><%= terminalMarks %></td>
-          <td><%= totalMarks %></td>
-          <td><%= grade %></td>
+          <td class="total-marks"><%= totalMarks.toFixed(1) %></td>
+          <td class="grade"><%= grade %></td>
         </tr>
 
         <!-- Hidden inputs for saving -->
@@ -389,17 +404,33 @@
         <input type="hidden" name="slip[<%= index %>][studentClass]" value="<%= student.studentClass %>">
         <input type="hidden" name="slip[<%= index %>][section]" value="<%= student.section %>">
         <input type="hidden" name="slip[<%= index %>][attendanceParticipation]" value="<%= attendanceParticipation %>">
-        <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= practicalProjectMarks %>">
+        <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= practicalProjectMarks.toFixed(1) %>">
         <input type="hidden" name="slip[<%= index %>][terminal]" value="<%= terminalMarks %>">
-        <input type="hidden" name="slip[<%= index %>][total]" value="<%= totalMarks %>">
+        <input type="hidden" name="slip[<%= index %>][total]" value="<%= totalMarks.toFixed(1) %>">
         <input type="hidden" name="slip[<%= index %>][grade]" value="<%= grade %>">
 
       <% }) %>
     </table>
 
-    <br>
-    <input type="submit" value="Save Slip">
+    <div style="margin-top: 20px; text-align: center;">
+      <input type="submit" value="💾 Save Slip" style="
+        background: linear-gradient(135deg, #27ae60, #229954);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        transition: all 0.3s ease;
+      " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(39, 174, 96, 0.4)'" 
+         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(39, 174, 96, 0.3)'">
+    </div>
   </form>
+
+
+
 </div>
 </body>
 </html>

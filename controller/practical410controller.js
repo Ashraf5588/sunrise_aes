@@ -600,6 +600,11 @@ const attendanceData = await attendancemodel.find({}).lean();
     } 
     else 
       {
+         const ScienceData = await ScienceModel.find({
+        studentClass: studentClass,
+        terminal: terminal,
+        subject: subject
+      }).lean();
       console.log('📝 === NON-SCIENCE SUBJECT ===');
       console.log('Subject is not SCIENCE, rendering regular form');
       console.log('Subject value was:', `"${subject}"`);
@@ -607,11 +612,13 @@ const attendanceData = await attendancemodel.find({}).lean();
       console.log('🎨 Rendering practicaldetailform...');
       return res.render("theme/practicaldetailform", {
         ...await getSidenavData(req), 
-        editing: false, 
-        studentClass, 
-        section, 
-        subject, 
-        practicalFormatData,
+        ...await getSidenavData(req),
+        editing: false,
+        studentClass,
+        section,
+        subject,
+        practicalFormatData, 
+        ScienceData,
         terminal,
         projectFormatData,
         studentData,

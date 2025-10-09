@@ -480,6 +480,8 @@
                 Create सुनाइ र बोलाइको आन्तरिक मूल्याङ्कनका आधार (20 marks)
               <%}else if(subject==="ENGLISH"){%>
                 Create Listeing and Speaking Rubriks (20 marks)
+              <%}else{ %>
+                Create Practical Rubriks(20 marks)
               <%}%>
             </div>
         </a>
@@ -497,8 +499,10 @@
                   Create पढाई र लेखाइको मूल्याङ्कनमुल्यान्ग्कन आधार  Rubriks (16 marks)
               <%}else if(subject==="ENGLISH"){%>
                   Create Reading & Writing Rubriks (16 marks)
+              <%}else{ %>
+                Create ProjectWork Rubriks(16 marks)
+
               <%}%>
-              
             </div>
         </a>
         <% if(subject==="SCIENCE" || subject==="MATHEMATICS" || subject==="SOCIAL" || subject==="HEALTH" || subject==="NEPALI" || subject==="ENGLISH"){%>
@@ -506,7 +510,13 @@
           <div class="compact-action-icon">⚙️</div>
           <div class="compact-action-title">Add Practical </div>
         </a>
-        <%}%>
+        <%}else{%>
+          <a href="/practicalform?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject%>&terminal=<%=terminal%>" target="_blank" class="compact-action-card">
+          <div class="compact-action-icon">⚙️</div>
+          <div class="compact-action-title">Add Practical </div>
+        </a>
+
+          <%}%>
 
         <a href="/practicalslip?studentClass=<%= studentClass %>&section=<%= section %>&subject=<%= subject %>&terminal=<%= terminal %>" class="compact-action-card">
           <div class="compact-action-icon">📋</div>

@@ -1120,12 +1120,66 @@ console.log(marksheetSetting)
   }
 else
 {
-  const practicalDetail = getStudentThemeData(studentClass);
-  const practicalDetailData = await practicalDetail.find().lean();
+  if(terminal==="FINAL")
+    {
+      const marksheetSetting = await marksheetSetup.find();
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
 
 
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
 
-  res.render("theme/practicalslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, practicalDetailData});
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/projectpracticalslipfinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+      const marksheetSetting = await marksheetSetup.find();
+      const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+
+    
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/projectpracticalslip", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+
+    }
+  
 }
 }catch(err)
 {
@@ -1940,8 +1994,68 @@ console.log(marksheetSetting)
       res.render("theme/healthInternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
     }
   }
+  else
+  {
+   
+  
+    if(terminal==="FINAL")
+    {
+const marksheetSetting = await marksheetSetup.find();
+     const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section,  academicYear);
+
+     const sciencepracticaldata = await model.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           section: section,
+           subject: subject,
+         }
+       },
+       {
+         $group: {
+           _id: { roll: "$roll", name: "$name", studentClass: "$studentClass" ,section: "$section"}, terminals: { $push: "$$ROOT" }, attendanceTotalmarks: { $sum: "$attendanceMarks" }, participationTotalmarks: { $sum: "$participationMarks" },
+           
+         }
+       }
+     ]);
+
+
+     const lessonData = await ScienceModel.aggregate([
+       {
+         $match: {
+           studentClass: studentClass,
+           subject: subject
+         }
+       },
+       {
+         $group: {
+           _id: { studentClass: "$studentClass", subject: "$subject" },
+            totalLessons: { $push: "$$ROOT" }
+         }
+       }
+     ]);
+
+console.log(marksheetSetting)
+     console.log("projectdata",sciencepracticaldata);
+     console.log("lesson Data", lessonData)
+      res.render("theme/elseinternalReportFinal", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+    
+    else
+    { 
+    const marksheetSetting = await marksheetSetup.find();
+      const academicYear = marksheetSetting[0].academicYear;
+       const model = getPracticalProjectModel(subject, studentClass, section, academicYear);
+        const sciencepracticaldata = await model.find({studentClass:studentClass,terminalName:terminal,subject:subject});
+     const lessonData = await ScienceModel.find({studentClass:studentClass,terminal:terminal,subject:subject});
+      res.render("theme/elseInternalReport", {...await getSidenavData(req), editing: false, studentClass, section, subject, sciencepracticaldata, lessonData,terminal,marksheetSetting});
+    }
+  }
 
   }
+
+  
 
 exports.getPracticalData = async (req, res, next) => 
 {
@@ -1984,7 +2098,7 @@ if(roll && reg)
 exports.projectrubrikscreate = async (req, res, next) => {
   try {
   try {
-    const { studentClass: classParam ,subject} = req.query;
+    const { studentClass: classParam ,subject,terminal,section} = req.query;
      const {studentClass} = req.query;
       const projectFormat = getProjectThemeFormat(studentClass)
     const projectFormatData = await projectFormat.find({
@@ -2004,6 +2118,8 @@ exports.projectrubrikscreate = async (req, res, next) => {
         subject,
         projectFormatData,
         editing: false,
+        terminal,
+        section,
         ...await getSidenavData(req),
         existingData: null // Always start with null, let frontend load per subject
       });
@@ -2027,13 +2143,13 @@ exports.projectrubrikscreatesave = async (req, res) => {
   try {
     // Get studentClass from query or body
     const studentClass = req.query.studentClass || req.body.studentClass;
-      const {editing,subject,terminal,projectId}= req.query;
+    const {subject,section,terminal,editing,projectId} = req.query;
     if(editing==='true'){
 
       const projectModel = getProjectThemeFormat(studentClass);
       // Update the existing record with new data
       await projectModel.findByIdAndUpdate(projectId, req.body);
-      return res.redirect(`/projectrubrikscreate?studentClass=${studentClass}&subject=${subject}&terminal=${terminal}`);
+      return res.render("./theme/success", {link:"projectrubrikscreate",studentClass,subject,terminal,...await getSidenavData(req),section:"",});
 
     }
     else
@@ -2093,10 +2209,8 @@ exports.projectrubrikscreatesave = async (req, res) => {
     console.log(`Saved document structure:`, Object.keys(result.toObject()));
     const subjects = await newsubject.find({})
     // Send a more user-friendly response
-    return res.render("theme/theme-success", {
-      message: `Theme configuration for Class ${studentClass} was created successfully!`,
-      studentClass: studentClass,
-      backUrl: "/theme"
+    return res.render("theme/success", {
+     link:"projectrubrikscreate",studentClass,subject,terminal,...await getSidenavData(req),section:"",
     });
   }
   } catch(err) {

@@ -1188,6 +1188,7 @@ else
 }
  exports.saveSciencePractical = async (req, res, next) => {
   try {
+    
     console.log('Raw form data received:', JSON.stringify(req.body, null, 2));
     
     // Process and clean the form data

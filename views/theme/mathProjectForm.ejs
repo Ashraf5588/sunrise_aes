@@ -940,6 +940,7 @@ if(unit.projectWorks && Array.isArray(unit.projectWorks)) {
         if(terminalname===marksheetSetting[0].terminals[0].name)
       {
         document.getElementById('attendanceDays').value = record.firstTerm || 0;
+        console.log("value of working days from db", record.firstTerm);
         calculateAttendanceMarks();
       }
       else if (terminalname===marksheetSetting[0].terminals[1].name) {

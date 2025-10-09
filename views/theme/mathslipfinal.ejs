@@ -382,27 +382,27 @@
 
 <td><%=totalPracticalProjectMarks.toFixed(2)%></td>
  <% 
-      firstSecondMarks = 0;
+      firstMidSecondMarks = 0;
       
       if (student.terminals && student.terminals.length > 0) {
         student.terminals.forEach(t => {
-          if (t.terminalName === "FIRST-2082" || t.terminalName === "SECOND-2082") {
-            firstSecondMarks += t.terminalMarks || 0;
+          if (t.terminalName === "FIRST" || t.terminalName === "MID" || t.terminalName === "SECOND") {
+            firstMidSecondMarks += t.terminalMarks || 0;
             
           }
         });
       }
     %>
-<td><%=( firstSecondMarks.toFixed(2)/(totalTerminal-1)) %></td>
+<td><%=( firstMidSecondMarks.toFixed(2)/(totalTerminal-1)) %></td>
 <td><%=(((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal)+
   totalPracticalProjectMarks+
-  ( firstSecondMarks/(totalTerminal-1)) ).toFixed(2)
+  ( firstMidSecondMarks/(totalTerminal-1)) ).toFixed(2)
 
    %></td>
 
    <%OverallFinalPracticalMarks = ((( (student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal +
    totalPracticalProjectMarks +
-   ( firstSecondMarks/(totalTerminal-1)) ).toFixed(2))/36)*100 %>
+   ( firstMidSecondMarks/(totalTerminal-1)) ).toFixed(2))/36)*100 %>
 <td>
 <% if (OverallFinalPracticalMarks >= 90 && OverallFinalPracticalMarks <= 100) { %>
   A+
@@ -430,8 +430,8 @@
 <input type="hidden" name="slip[<%= index %>][section]" value="<%= student._id.section %>">
 <input type="hidden" name="slip[<%= index %>][attendanceParticipation]" value="<%= ((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal).toFixed(2) %>">
 <input type="hidden" name="slip[<%= index %>][practicalProject]" value="<%= totalPracticalProjectMarks.toFixed(2) %>">
-<input type="hidden" name="slip[<%= index %>][terminal]" value="<%= (firstSecondMarks/(totalTerminal-1)).toFixed(2) %>">
-<input type="hidden" name="slip[<%= index %>][total]" value="<%= (((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal)+totalPracticalProjectMarks+(firstSecondMarks/(totalTerminal-1))).toFixed(2) %>">
+<input type="hidden" name="slip[<%= index %>][terminal]" value="<%= (firstMidSecondMarks/(totalTerminal-1)).toFixed(2) %>">
+<input type="hidden" name="slip[<%= index %>][total]" value="<%= (((student.attendanceTotalmarks+student.participationTotalmarks)/totalTerminal)+totalPracticalProjectMarks+(firstMidSecondMarks/(totalTerminal-1))).toFixed(2) %>">
 <input type="hidden" name="slip[<%= index %>][grade]" value="<% if (OverallFinalPracticalMarks >= 90) { %>A+<% } else if (OverallFinalPracticalMarks >= 80) { %>A<% } else if (OverallFinalPracticalMarks >= 70) { %>B+<% } else if (OverallFinalPracticalMarks >= 60) { %>B<% } else if (OverallFinalPracticalMarks >= 50) { %>C+<% } else if (OverallFinalPracticalMarks >= 40) { %>C<% } else if (OverallFinalPracticalMarks >= 30) { %>D<% } else { %>NG<% } %>">
 
   <% }) %>

@@ -2234,9 +2234,9 @@ exports.showrubriksforadmin = async (req, res, next) => {
 };
 exports.seerubriks = async (req, res, next) => {
   try {
-    const { studentClass, subject ,section,terminal} = req.query;
-    if (!studentClass || !subject) {
-      return res.status(400).send("Student class and subject are required");
+    const {  subject ,section,terminal} = req.query;
+    if (!subject) {
+      return res.status(400).send("Subject is required");
     }
     const practicalFormat = getThemeFormat(studentClass);
     const practicalFormatData = await practicalFormat.find({

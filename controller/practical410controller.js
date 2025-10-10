@@ -2271,14 +2271,7 @@ exports.seerubriks = async (req, res, next) => {
 const subjectList = await newsubject.find()
 const uniqueSub = new Set(subjectList.map(s=>s.newsubject));
 const classList = await studentClass.find();
-const uniqueClass = new Set(classList.map(c=>c.studentClass));
-
-
-for(const sub of uniqueSub)
-{
-  
-}
-    
+const uniqueClass = new Set(classList.map(c=>c.studentClass)); 
     res.render("theme/seerubriks", { projectFormatData, practicalFormatData, lessonData,studentClass,section,subject,terminal, ...await getSidenavData(req) });
   } 
   catch (err) {

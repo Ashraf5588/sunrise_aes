@@ -1010,7 +1010,7 @@
           <textarea name="themes[${themeIdx}][learningOutcome][${outcomeIndex}][learningOutcomeName]" 
                  id="outcomeName_${themeIdx}_${outcomeIndex}" 
                  placeholder="Enter <% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %>" 
-                 required rows="1"
+                  rows="1"
                  oninput="autoResize(this); scheduleAutoSave();">${outcomeData ? outcomeData.learningOutcomeName || '' : ''}</textarea>
         </div>
         <div class="indicators-container" id="indicators-${themeIdx}-${outcomeIndex}"></div>

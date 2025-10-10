@@ -84,7 +84,8 @@
     }
 
     input[type="text"], 
-    input[type="number"] {
+    input[type="number"],
+    textarea {
       width: 100%;
       padding: 0.875rem 1rem;
       border: 2px solid #e9ecef;
@@ -93,10 +94,19 @@
       transition: all 0.3s ease;
       background: rgba(255, 255, 255, 0.8);
       color: #2c3e50;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    textarea {
+      min-height: 50px;
+      resize: vertical;
+      overflow: hidden;
     }
 
     input[type="text"]:focus, 
-    input[type="number"]:focus {
+    input[type="number"]:focus,
+    textarea:focus {
       outline: none;
       border-color: #27ae60;
       box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
@@ -558,6 +568,43 @@
     let editing = <%= typeof editing !== 'undefined' && editing ? 'true' : 'false' %>;
     let editingLessonData = editing ? <%- typeof lessonData !== 'undefined' && lessonData ? JSON.stringify(lessonData) : 'null' %> : null;
 
+    // Auto-resize textarea function
+    function autoResize(textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto';
+      
+      // Calculate the new height based on scrollHeight
+      const newHeight = Math.max(textarea.scrollHeight, 50); // Minimum 50px
+      const maxHeight = 200; // Maximum 200px
+      
+      // Set the height, but not more than maxHeight
+      textarea.style.height = Math.min(newHeight, maxHeight) + 'px';
+      
+      // If content exceeds maxHeight, enable scrolling
+      if (newHeight > maxHeight) {
+        textarea.style.overflowY = 'auto';
+      } else {
+        textarea.style.overflowY = 'hidden';
+      }
+    }
+
+    // Initialize auto-resize for existing textareas
+    function initializeAutoResize() {
+      document.querySelectorAll('textarea').forEach(textarea => {
+        autoResize(textarea);
+        
+        // Add event listeners for dynamic resizing
+        textarea.addEventListener('input', function() {
+          autoResize(this);
+        });
+        
+        textarea.addEventListener('paste', function() {
+          // Delay to allow paste content to be processed
+          setTimeout(() => autoResize(this), 10);
+        });
+      });
+    }
+
     function addUnit(unitData = null) {
       const unitsContainer = document.getElementById('units-container');
 
@@ -573,7 +620,8 @@
         
         <div class="form-group" style="margin-bottom: 1rem;">
           <label for="unitName_${unitIndex}">Unit Name</label>
-          <input type="text" name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name" required value="${unitData ? unitData.unitName || '' : ''}">
+          <textarea name="units[${unitIndex}][unitName]" id="unitName_${unitIndex}" placeholder="Enter unit name" required rows="1" 
+                    oninput="autoResize(this)">${unitData ? unitData.unitName || '' : ''}</textarea>
         </div>
         
         <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -638,6 +686,13 @@
         });
       }
       
+      // Initialize auto-resize for new textareas
+      setTimeout(() => {
+        unitDiv.querySelectorAll('textarea').forEach(textarea => {
+          autoResize(textarea);
+        });
+      }, 10);
+      
       unitIndex++;
     }
 
@@ -651,12 +706,19 @@
       practicalDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
           <span style="color: #27ae60; font-weight: 600; min-width: 80px;">Activity ${practicalIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter activity name (e.g., Physical fitness test)" required style="flex: 1;">
+          <textarea name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter activity name (e.g., Physical fitness test)" required 
+                    style="flex: 1;" rows="1" oninput="autoResize(this)"></textarea>
           <button type="button" class="btn btn-danger" onclick="removePractical(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
 
       practicalsContainer.appendChild(practicalDiv);
+      
+      // Initialize auto-resize for the new textarea
+      const textarea = practicalDiv.querySelector('textarea');
+      if (textarea) {
+        setTimeout(() => autoResize(textarea), 10);
+      }
     }
 
     function addPracticalWithData(unitIdx, practicalName) {
@@ -669,12 +731,19 @@
       practicalDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
           <span style="color: #27ae60; font-weight: 600; min-width: 80px;">Activity ${practicalIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter activity name" required style="flex: 1;" value="${practicalName}">
+          <textarea name="units[${unitIdx}][practicals][${practicalIndex}]" placeholder="Enter activity name" required 
+                    style="flex: 1;" rows="1" oninput="autoResize(this)">${practicalName}</textarea>
           <button type="button" class="btn btn-danger" onclick="removePractical(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
 
       practicalsContainer.appendChild(practicalDiv);
+      
+      // Initialize auto-resize for the new textarea
+      const textarea = practicalDiv.querySelector('textarea');
+      if (textarea) {
+        setTimeout(() => autoResize(textarea), 10);
+      }
     }
 
     function addProjectWork(unitIdx) {
@@ -687,12 +756,19 @@
       projectDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
           <span style="color: #3498db; font-weight: 600; min-width: 90px;">Project ${projectIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work (e.g., Health awareness campaign)" required style="flex: 1;">
+          <textarea name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work (e.g., Health awareness campaign)" required 
+                    style="flex: 1;" rows="1" oninput="autoResize(this)"></textarea>
           <button type="button" class="btn btn-danger" onclick="removeProjectWork(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
 
       projectsContainer.appendChild(projectDiv);
+      
+      // Initialize auto-resize for the new textarea
+      const textarea = projectDiv.querySelector('textarea');
+      if (textarea) {
+        setTimeout(() => autoResize(textarea), 10);
+      }
     }
 
     function addProjectWorkWithData(unitIdx, projectName) {
@@ -705,12 +781,21 @@
       projectDiv.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
           <span style="color: #3498db; font-weight: 600; min-width: 90px;">Project ${projectIndex + 1}:</span>
-          <input type="text" name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work" required style="flex: 1;" value="${projectName}">
+          <textarea name="units[${unitIdx}][projectworks][${projectIndex}]" placeholder="Enter project work" required 
+                    style="flex: 1;" rows="1" oninput="autoResize(this)">${projectName}</textarea>
           <button type="button" class="btn btn-danger" onclick="removeProjectWork(this)" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
         </div>
       `;
 
       projectsContainer.appendChild(projectDiv);
+      
+      // Initialize auto-resize for the newly added textarea
+      setTimeout(() => {
+        const newTextarea = projectDiv.querySelector('textarea');
+        if (newTextarea) {
+          autoResize(newTextarea);
+        }
+      }, 0);
     }
 
     function removeUnit(button) {
@@ -761,6 +846,14 @@
         // Add empty unit for new forms
         addUnit();
       }
+      
+      // Initialize auto-resize for all existing textareas
+      setTimeout(() => {
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+          autoResize(textarea);
+        });
+      }, 100);
     };
 
     // Form validation

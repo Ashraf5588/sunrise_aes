@@ -84,7 +84,8 @@
     }
 
     input[type="text"], 
-    input[type="number"] {
+    input[type="number"],
+    textarea {
       width: 100%;
       padding: 0.875rem 1rem;
       border: 2px solid #e9ecef;
@@ -93,10 +94,19 @@
       transition: all 0.3s ease;
       background: rgba(255, 255, 255, 0.8);
       color: #2c3e50;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    textarea {
+      min-height: 50px;
+      resize: vertical;
+      overflow: hidden;
     }
 
     input[type="text"]:focus, 
-    input[type="number"]:focus {
+    input[type="number"]:focus,
+    textarea:focus {
       outline: none;
       border-color: #3498db;
       box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
@@ -401,6 +411,162 @@
       .header-card h2 {
         font-size: 1.5rem;
       }
+
+      /* Enhanced mobile input styling */
+      input[type="text"], 
+      input[type="number"],
+      textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 1rem;
+        min-height: 50px;
+      }
+
+      textarea {
+        min-height: 80px;
+        max-height: 200px;
+      }
+
+      /* Make form groups full width on mobile */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      /* Better spacing for mobile */
+      .theme-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .outcome-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Mobile-friendly buttons */
+      .btn {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.95rem;
+        min-height: 44px; /* Touch target size */
+      }
+
+      /* Better mobile table */
+      .table-scroll-wrapper {
+        margin: 10px auto; /* Center align like form */
+        border-radius: 8px;
+        max-width: calc(100% - 2rem); /* Match form responsive behavior */
+      }
+
+      .data-table {
+        width: 100%;
+        min-width: 600px; /* Reduced minimum width for mobile */
+        font-size: 14px;
+      }
+
+      .data-table th,
+      .data-table td {
+        padding: 12px 8px;
+        font-size: 13px;
+      }
+
+      .data-table th {
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .action-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        display: block;
+        margin: 2px 0;
+        width: 100%;
+        text-align: center;
+      }
+
+      /* Show scroll hint on mobile */
+      .table-scroll-wrapper::after {
+        content: "👈 Scroll horizontally to see more";
+        display: block;
+        text-align: center;
+        padding: 10px;
+        font-size: 12px;
+        color: #666;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+      }
+    }
+
+    /* Extra small mobile devices */
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 0.5rem;
+      }
+
+      .form-card,
+      .header-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .theme-section,
+      .outcome-section {
+        padding: 0.75rem;
+      }
+
+      input[type="text"], 
+      input[type="number"],
+      textarea {
+        padding: 0.875rem;
+        font-size: 16px;
+      }
+
+      textarea {
+        min-height: 100px;
+      }
+
+      .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 1rem;
+      }
+
+      /* Ultra compact table for very small screens */
+      .table-scroll-wrapper {
+        margin: 5px auto; /* Center align like form */
+        max-width: calc(100% - 1rem); /* Match form responsive behavior */
+      }
+
+      .data-table {
+        min-width: 500px; /* Further reduced for very small screens */
+        font-size: 12px;
+      }
+
+      .data-table th,
+      .data-table td {
+        padding: 8px 4px;
+        font-size: 11px;
+      }
+
+      .action-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+      }
+
+      .marks-display {
+        padding: 4px 8px;
+        font-size: 12px;
+        min-width: 35px;
+      }
     }
 
     /* Loading state */
@@ -461,6 +627,163 @@
     .save-status-info {
       border-left-color: #2196F3;
     }
+
+    /* Table Styling */
+    .data-table {
+      width: 100%;
+      min-width: 800px; /* Minimum width to ensure proper layout */
+      border-collapse: collapse;
+      background: white;
+      border-radius: 0; /* Remove border radius as container handles it */
+      overflow: hidden;
+      border: none; /* Remove border as container handles it */
+      margin: 0; /* Remove margin as container handles spacing */
+    }
+
+    .data-table thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .data-table th {
+      padding: 18px 15px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      border-bottom: 3px solid #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+      padding: 16px 15px;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+      font-size: 15px;
+      color: #2c3e50;
+      font-weight: 500;
+    }
+
+    .data-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: #f8f9ff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    }
+
+    .data-table tbody tr:nth-child(even) {
+      background-color: #fafcff;
+    }
+
+    .data-table tbody tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+
+    /* Action buttons styling */
+    .data-table .action-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      margin: 2px;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .data-table .edit-btn {
+      background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+      color: white;
+    }
+
+    .data-table .edit-btn:hover {
+      background: linear-gradient(135deg, #29b6f6, #0288d1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(41, 182, 246, 0.3);
+    }
+
+    .data-table .delete-btn {
+      background: linear-gradient(135deg, #ef5350, #f44336);
+      color: white;
+    }
+
+    .data-table .delete-btn:hover {
+      background: linear-gradient(135deg, #f44336, #d32f2f);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    }
+
+    /* Marks display styling */
+    .marks-display {
+      background: linear-gradient(135deg, #e3f2fd, #f1f8ff);
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+      color: #1565c0;
+      min-width: 50px;
+      display: inline-block;
+    }
+
+    /* Scrollable table wrapper */
+    .table-scroll-wrapper {
+      overflow-x: auto;
+      overflow-y: visible;
+      margin: 20px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e8f4f8;
+      background: white;
+      max-width: 800px; /* Match container width */
+      width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-scroll-wrapper::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-scroll-wrapper::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .table-scroll-wrapper::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 10px;
+    }
+
+    .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #5bb3d4;
+    }
+
+    /* Table container */
+    .table-container {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e8f4f8;
+    }
+
+    .table-title {
+      color: #2c3e50;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #667eea;
+    }
   </style>
 </head>
 <body>
@@ -511,63 +834,103 @@
       </form>
     </div>
   </div>
-<table cellspacing="0" border="1" style="background-color: white;"> 
-  <thead>
-                                <tr>
-                                  <th>SN</th>
-                                  <th>आधार</th>
-                                  <th>पक्ष</th>
-                                  <th>सूचक</th>
-                                 
-                                  <th>प्राप्तांक</th>
-                                  <th>Action</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <% let iIndex = 0 %>
-                                <% projectFormatData.forEach(function(doc) { %>
-                                  <% doc.themes.forEach(function(theme) { %>
-                                    <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
-                                    <% let firstThemeRow = true; %>
+  
+  <!-- Scrollable Table Container -->
+  <div class="table-scroll-wrapper">
+    <table class="data-table"> 
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>आधार</th>
+          <th>पक्ष</th>
+          <th>सूचक</th>
+          <th>प्राप्तांक</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% let iIndex = 0 %>
+        <% projectFormatData.forEach(function(doc) { %>
+          <% doc.themes.forEach(function(theme) { %>
+            <% let themeRowspan = theme.learningOutcome.reduce((sum, lo) => sum + lo.indicators.length, 0); %>
+            <% let firstThemeRow = true; %>
 
-                                    <% theme.learningOutcome.forEach(function(lo,loIdx) { %>
-                                      <% let loRowspan = lo.indicators.length; %>
-                                      <% let mulyIndex = iIndex; %>
+            <% theme.learningOutcome.forEach(function(lo,loIdx) { %>
+              <% let loRowspan = lo.indicators.length; %>
+              <% let mulyIndex = iIndex; %>
 
-                                      <% lo.indicators.forEach(function(ind, indIndex) { %>
-                                        <tr>
-                                          <% if(firstThemeRow && indIndex === 0) { %>
-                                            <td rowspan="<%= themeRowspan %>"><%= iIndex+1 %></td>
-                                            <td rowspan="<%= themeRowspan %>"><%= theme.themeName %></td>
-                                            <% firstThemeRow = false; %>
-                                          <% } %>
+              <% lo.indicators.forEach(function(ind, indIndex) { %>
+                <tr>
+                  <% if(firstThemeRow && indIndex === 0) { %>
+                    <td rowspan="<%= themeRowspan %>"><%= iIndex+1 %></td>
+                    <td rowspan="<%= themeRowspan %>"><%= theme.themeName %></td>
+                    <% firstThemeRow = false; %>
+                  <% } %>
 
-                                          <% if(indIndex === 0) { %>
-                                            <td rowspan="<%= loRowspan %>"><%= lo.learningOutcomeName %></td>
-                                          <% } %>
+                  <% if(indIndex === 0) { %>
+                    <td rowspan="<%= loRowspan %>"><%= lo.learningOutcomeName %></td>
+                  <% } %>
 
-                                          <td><%= ind.indicatorName %></td>
-                                          <td>
-                                            <div class="radio-group">
-                                              
-     
-
-                                              <%= ind.indicatorsMarks %>
-                                            </div>
-                                          </td>
-                                          <td><a href="/editprojectrubriks?projectId=<%= doc._id %>&studentClass=<%= doc.studentClass %>&editing=true&subject=<%= doc.subject %>">Edit</a></td>
-                                        </tr>
-                                      <% }) %>
-                                      <% iIndex++ %>
-                                    <% }) %>
-                                  <% }) %>
-                                <% }) %>
-                              </tbody>
-</table>
+                  <td><%= ind.indicatorName %></td>
+                  <td>
+                    <div class="marks-display">
+                      <%= ind.indicatorsMarks %>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="/editprojectrubriks?projectId=<%= doc._id %>&studentClass=<%= doc.studentClass %>&editing=true&subject=<%= doc.subject %>" 
+                       class="action-btn edit-btn">Edit</a>
+                  </td>
+                </tr>
+              <% }) %>
+              <% iIndex++ %>
+            <% }) %>
+          <% }) %>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
   <script>
     let themeIndex = 0;
     let autoSaveTimeout;
     let isLoading = false;
+
+    // Auto-resize textarea function
+    function autoResize(textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto';
+      
+      // Calculate the new height based on scrollHeight
+      const newHeight = Math.max(textarea.scrollHeight, 50); // Minimum 50px
+      const maxHeight = 200; // Maximum 200px
+      
+      // Set the height, but not more than maxHeight
+      textarea.style.height = Math.min(newHeight, maxHeight) + 'px';
+      
+      // If content exceeds maxHeight, enable scrolling
+      if (newHeight > maxHeight) {
+        textarea.style.overflowY = 'auto';
+      } else {
+        textarea.style.overflowY = 'hidden';
+      }
+    }
+
+    // Initialize auto-resize for existing textareas
+    function initializeAutoResize() {
+      document.querySelectorAll('textarea').forEach(textarea => {
+        autoResize(textarea);
+        
+        // Add event listeners for dynamic resizing
+        textarea.addEventListener('input', function() {
+          autoResize(this);
+        });
+        
+        textarea.addEventListener('paste', function() {
+          // Delay to allow paste content to be processed
+          setTimeout(() => autoResize(this), 10);
+        });
+      });
+    }
 
     // Load existing data if available
  
@@ -597,10 +960,10 @@
         </div>
         <div class="form-group">
           <label for="themeName_${themeIndex}"><% if(studentClass<=3){ %>Theme Name<% }else{ %>मुल्याङ्कन आधारको नाम (Evaluation Criteria Name)<% } %></label>
-          <input type="text" name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" 
+          <textarea name="themes[${themeIndex}][themeName]" id="themeName_${themeIndex}" 
                  placeholder="<% if(studentClass<=3){ %>Enter Theme Name<% }else{ %>Enter मुल्याङ्कन आधारको नाम (Enter Evaluation Criteria Name)<% } %>" 
-                 required  value="${themeData ? themeData.themeName || '' : ''}"
-                 oninput="scheduleAutoSave()">
+                 required rows="1" 
+                 oninput="autoResize(this); scheduleAutoSave();">${themeData ? themeData.themeName || '' : ''}</textarea>
         </div>
         <div class="outcomes-container" id="outcomes-${themeIndex}"></div>
         <div class="btn-group">
@@ -618,6 +981,13 @@
       } else {
         addOutcome(themeIndex);
       }
+      
+      // Initialize auto-resize for new textareas
+      setTimeout(() => {
+        themeDiv.querySelectorAll('textarea').forEach(textarea => {
+          autoResize(textarea);
+        });
+      }, 10);
       
       themeIndex++;
     }
@@ -637,11 +1007,11 @@
         </div>
         <div class="form-group">
           <label for="outcomeName_${themeIdx}_${outcomeIndex}"><% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %></label>
-          <input type="text" name="themes[${themeIdx}][learningOutcome][${outcomeIndex}][learningOutcomeName]" 
+          <textarea name="themes[${themeIdx}][learningOutcome][${outcomeIndex}][learningOutcomeName]" 
                  id="outcomeName_${themeIdx}_${outcomeIndex}" 
                  placeholder="Enter <% if(studentClass<=3){ %>Learning Outcome Name<% }else{ %>परिक्षण पक्षको नाम (Examination Criteria Name)<% } %>" 
-                 required value="${outcomeData ? outcomeData.learningOutcomeName || '' : ''}"
-                 oninput="scheduleAutoSave()">
+                 required rows="1"
+                 oninput="autoResize(this); scheduleAutoSave();">${outcomeData ? outcomeData.learningOutcomeName || '' : ''}</textarea>
         </div>
         <div class="indicators-container" id="indicators-${themeIdx}-${outcomeIndex}"></div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
@@ -668,6 +1038,13 @@
       } else {
         addIndicator(themeIdx, outcomeIndex);
       }
+
+      // Initialize auto-resize for new textareas
+      setTimeout(() => {
+        outcomeDiv.querySelectorAll('textarea').forEach(textarea => {
+          autoResize(textarea);
+        });
+      }, 10);
     }
 
     function addIndicator(themeIdx, outcomeIdx, indicatorData = null) {
@@ -678,19 +1055,25 @@
       group.className = 'indicator-group';
 
       group.innerHTML = `
-        <input type="text" name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][indicators][${indicatorIndex}][indicatorName]" 
-               placeholder="Enter indicator name (सूचक)" required 
-               value="${indicatorData ? indicatorData.indicatorName || '' : ''}"
-               oninput="scheduleAutoSave()">
+        <textarea name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][indicators][${indicatorIndex}][indicatorName]" 
+               placeholder="Enter indicator name (सूचक)" required rows="1"
+               oninput="autoResize(this); scheduleAutoSave();">${indicatorData ? indicatorData.indicatorName || '' : ''}</textarea>
         <input type="number" class="indicator-marks" 
                name="themes[${themeIdx}][learningOutcome][${outcomeIdx}][indicators][${indicatorIndex}][indicatorsMarks]" 
                placeholder="Marks" required min="0"
                value="${indicatorData ? indicatorData.indicatorsMarks || '' : ''}"
-               oninput="updateTotalMarks(${themeIdx}, ${outcomeIdx}); scheduleAutoSave()">
+               oninput="updateTotalMarks(${themeIdx}, ${outcomeIdx}); scheduleAutoSave();">
         <button type="button" class="btn btn-danger" onclick="removeIndicator(this, ${themeIdx}, ${outcomeIdx})">Remove</button>
       `;
 
       container.appendChild(group);
+      
+      // Initialize auto-resize for the new textarea
+      const textarea = group.querySelector('textarea');
+      if (textarea) {
+        setTimeout(() => autoResize(textarea), 10);
+      }
+      
       updateTotalMarks(themeIdx, outcomeIdx);
     }
 
@@ -897,6 +1280,9 @@
     // Initialize on page load
     window.onload = () => {
       loadExistingData();
+      
+      // Initialize auto-resize for existing textareas
+      initializeAutoResize();
       
       // Add event listeners for subject and credit changes
       document.getElementById('subject').addEventListener('change', function() {

@@ -2264,7 +2264,7 @@ exports.seerubriks = async (req, res, next) => {
        }
      ]);
 
-    if (!projectFormatData.length && !practicalFormatData.length && !lessonData.length) {
+    if (!projectFormatData.length && !practicalFormatData.length) {
       return res.status(404).send("Rubrik not found");
     }
 

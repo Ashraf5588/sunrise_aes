@@ -279,7 +279,7 @@ student.get('/projectrubrikscreate', verifytoken, authorized, practical410contro
 student.post('/projectrubrikscreatesave',verifytoken,authorized,practical410controller.projectrubrikscreatesave)
 
 student.get('/editprojectrubriks',verifytoken,authorized,practical410controller.editprojectrubriks)
-
+student.get('/deleteprojectrubriks',verifytoken,authorized,practical410controller.deleteprojectrubriks)
 student.get('/editpracticalrubriks',verifytoken,authorized,themecontroller.editpracticalrubriks)
 
 student.get('/deletepracticalrubriks',verifytoken,authorized,themecontroller.deletepracticalrubriks)

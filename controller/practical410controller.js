@@ -2319,6 +2319,24 @@ exports.editprojectrubriks = async (req, res, next) => {
     res.status(500).send("Internal Server Error");
   }
 }
+exports.deleteprojectrubriks = async (req, res, next) => {
+  try {
+    const { studentClass: classParam ,subject,projectId,section,terminal} = req.query; 
+    if (!classParam || !subject || !projectId) {
+      return res.status(400).send("Student class, subject and project ID are required");
+    }
+    const model = getProjectThemeFormat(classParam);
+    const deleteResult = await model.findByIdAndDelete(projectId);
+    if (!deleteResult) {
+      return res.status(404).send("Rubrik not found for the specified ID");
+    }
+    res.redirect(`projectrubrikscreate?studentClass=${classParam}&subject=${subject}&section=${section}&terminal=${terminal}`);
+  } catch (err) {
+    console.error("Error deleting rubrik:", err);
+    res.status(500).send("Internal Server Error");
+  }
+};    
+
 
 exports.editlessondata = async (req, res, next) => {
 

@@ -944,6 +944,14 @@ document.querySelectorAll(".marks-radio-project").forEach(radio => {
 
 <script>
   async function fill(roll,name,reg) {
+    const buttons = document.querySelectorAll("[id^='studentData']");
+    buttons.forEach(btn => {
+        btn.style.backgroundColor = '#2196f3'; // default color
+        btn.style.color = 'white';
+    });
+    const clickedBtn = document.getElementById('studentData' + roll);
+    clickedBtn.style.backgroundColor = 'darkblue'; // selected color
+    clickedBtn.style.color = 'white';
     document.getElementById('roll').value = roll;
     document.getElementById('name').value = name;
     document.querySelector('input[name="reg"]').value = reg;

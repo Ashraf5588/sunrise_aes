@@ -53,13 +53,16 @@
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       margin-bottom: 30px;
+      width: 100%;
     }
 
     table {
       width: 100%;
+      min-width: 1000px; /* Minimum width to prevent cramping */
       border-collapse: collapse;
       background: white;
       font-size: 14px;
+      table-layout: fixed; /* Fixed layout for better control */
     }
 
     th {
@@ -72,10 +75,22 @@
       border: none;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
+    /* Define column widths for better spacing */
+    th:nth-child(1), td:nth-child(1) { width: 10%; } /* Reg No */
+    th:nth-child(2), td:nth-child(2) { width: 8%; }  /* Roll */
+    th:nth-child(3), td:nth-child(3) { width: 20%; } /* Name */
+    th:nth-child(4), td:nth-child(4) { width: 8%; }  /* Class */
+    th:nth-child(5), td:nth-child(5) { width: 8%; }  /* Section */
+    th:nth-child(6), td:nth-child(6) { width: 11.5%; } /* First Term */
+    th:nth-child(7), td:nth-child(7) { width: 11.5%; } /* Second Term */
+    th:nth-child(8), td:nth-child(8) { width: 11.5%; } /* Third Term */
+    th:nth-child(9), td:nth-child(9) { width: 11.5%; } /* Final Term */
+
     td {
-      padding: 12px;
+      padding: 12px 8px;
       text-align: center;
       border-bottom: 1px solid #f0f8ff;
       vertical-align: middle;
@@ -98,13 +113,15 @@
 
     input[type="text"], input[type="number"] {
       width: 100%;
-      padding: 8px 12px;
+      min-width: 0; /* Allow shrinking */
+      padding: 8px 6px;
       border: 2px solid #e3f2fd;
       border-radius: 6px;
       font-size: 14px;
       transition: all 0.3s ease;
       background: white;
       color: #2c3e50;
+      box-sizing: border-box;
     }
 
     input[type="text"]:focus, input[type="number"]:focus {
@@ -117,6 +134,13 @@
     input[type="text"]:read-only {
       background: #f8f9fa;
       color: #6c757d;
+      font-size: 13px;
+    }
+
+    /* Specific styling for number inputs */
+    input[type="number"] {
+      text-align: center;
+      font-weight: 600;
     }
 
     .submit-btn {
@@ -166,17 +190,92 @@
       }
       
       .form-container {
-        padding: 20px;
+        padding: 15px;
+      }
+      
+      .table-wrapper {
+        margin-bottom: 20px;
+        /* Enable horizontal scrolling on mobile */
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      table {
+        min-width: 800px; /* Reduced minimum width for mobile */
+        font-size: 12px;
       }
       
       th, td {
-        padding: 8px 6px;
+        padding: 8px 4px;
         font-size: 12px;
       }
       
+      th {
+        font-size: 11px;
+        padding: 12px 4px;
+      }
+      
       input[type="text"], input[type="number"] {
-        padding: 6px 8px;
+        padding: 6px 4px;
         font-size: 12px;
+        border-radius: 4px;
+      }
+      
+      input[type="text"]:read-only {
+        font-size: 11px;
+      }
+      
+      /* Adjust column widths for mobile */
+      th:nth-child(1), td:nth-child(1) { width: 12%; } /* Reg No */
+      th:nth-child(2), td:nth-child(2) { width: 8%; }  /* Roll */
+      th:nth-child(3), td:nth-child(3) { width: 25%; } /* Name */
+      th:nth-child(4), td:nth-child(4) { width: 8%; }  /* Class */
+      th:nth-child(5), td:nth-child(5) { width: 8%; }  /* Section */
+      th:nth-child(6), td:nth-child(6) { width: 9.75%; } /* First Term */
+      th:nth-child(7), td:nth-child(7) { width: 9.75%; } /* Second Term */
+      th:nth-child(8), td:nth-child(8) { width: 9.75%; } /* Third Term */
+      th:nth-child(9), td:nth-child(9) { width: 9.75%; } /* Final Term */
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 18px;
+      }
+      
+      .form-container {
+        padding: 10px;
+      }
+      
+      table {
+        min-width: 700px;
+        font-size: 11px;
+      }
+      
+      th, td {
+        padding: 6px 3px;
+        font-size: 11px;
+      }
+      
+      th {
+        font-size: 10px;
+        padding: 10px 3px;
+      }
+      
+      input[type="text"], input[type="number"] {
+        padding: 5px 3px;
+        font-size: 11px;
+      }
+      
+      input[type="text"]:read-only {
+        font-size: 10px;
+      }
+      
+      .submit-btn {
+        padding: 12px 30px;
+        font-size: 14px;
       }
     }
 

@@ -27,6 +27,35 @@
       overflow: hidden;
     }
 
+    /* Table Container for Horizontal Scroll */
+    .table-container {
+      overflow-x: auto;
+      margin: 15px 0;
+      border: 2px solid #c3dafe;
+      border-radius: 8px;
+      background: white;
+      max-width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background: #c3dafe;
+      border-radius: 10px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #667eea;
+    }
+
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -110,33 +139,35 @@
     /* Enhanced Table Styles */
     .evaluation-table, table {
       width: 100%;
+      min-width: 800px; /* Minimum width to ensure readability */
       border-collapse: collapse;
-      margin: 15px 0;
+      margin: 0;
       background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      border: 2px solid #c3dafe;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
     }
 
     .evaluation-table th, table th {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 15px 12px;
-      text-align: left;
+      padding: 12px 8px;
+      text-align: center;
       font-weight: 600;
-      font-size: 16px;
-      border: 2px solid #5a67d8;
-      border-bottom: 2px solid #4c51bf;
+      font-size: 14px;
+      border: 1px solid #5a67d8;
+      white-space: nowrap;
+      min-width: 120px;
     }
 
     .evaluation-table td, table td {
-      padding: 12px 15px;
+      padding: 10px 8px;
       border: 1px solid #c3dafe;
       vertical-align: middle;
-      font-size: 15px;
-      line-height: 1.6;
-      border-right: 1px solid #c3dafe;
+      font-size: 13px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      max-width: 200px;
     }
 
     .evaluation-table tr:hover, table tr:hover {
@@ -147,37 +178,36 @@
       background-color: #fafcff;
     }
 
-    .evaluation-table td:last-child, table td:last-child {
-      border-right: 2px solid #c3dafe;
-    }
-
     .radio-group {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin: 8px 0;
+      gap: 8px;
+      margin: 4px 0;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .radio-group input[type="radio"] {
-      margin-right: 8px;
-      width: 18px;
-      height: 18px;
+      margin-right: 4px;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
-      transform: scale(1.2);
+      transform: scale(1.1);
     }
 
     .radio-group label {
       margin: 0;
       font-weight: 600;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 14px;
       color: #2d3748;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 4px 8px;
+      border-radius: 4px;
       transition: all 0.2s ease;
       background: #f0f7ff;
       border: 1px solid #c3dafe;
+      min-width: 30px;
+      text-align: center;
     }
 
     .radio-group label:hover {

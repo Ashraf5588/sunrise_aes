@@ -2800,9 +2800,47 @@ reportofClass.push(
   }
 }
 exports.showmarksheetSetupForm = async (req, res) => {
-  res.render("admin/marksheetsetup", {
-    currentPage: 'marksheetsetup',
-  });
+  try {
+    // Get sidenav data
+    const sidenavData = await getSidenavData(req);
+    
+    // Debug: Check the collection name and connection
+    console.log("=== MARKSHEET SETUP DEBUG ===");
+    console.log("Model collection name:", marksheetSetup.collection.name);
+    console.log("Database name:", mongoose.connection.db.databaseName);
+    
+    // Try to get collection directly
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
+    console.log("Available collections:", collections.map(c => c.name));
+    
+    // Fetch all existing marksheet configurations
+    const marksheetData = await marksheetSetup.find({}).lean();
+    console.log("Number of records found:", marksheetData.length);
+    console.log("Marksheet data:", JSON.stringify(marksheetData, null, 2));
+    
+    // Also try querying the collection directly
+    const directQuery = await db.collection('marksheetSetting').find({}).toArray();
+    console.log("Direct query results:", directQuery.length);
+    console.log("Direct query data:", JSON.stringify(directQuery, null, 2));
+    
+    // Check if we're in edit mode
+    let editData = null;
+    if (req.query.edit === 'true' && req.query.id) {
+      editData = await marksheetSetup.findById(req.query.id).lean();
+      console.log("Edit data:", editData);
+    }
+    
+    res.render("admin/marksheetsetup", {
+      currentPage: 'marksheetsetup',
+      marksheetData: marksheetData,
+      editData: editData,
+      ...sidenavData
+    });
+  } catch (err) {
+    console.error("Error in showmarksheetSetupForm:", err);
+    res.status(500).send("Error loading marksheet setup: " + err.message);
+  }
 };
 exports.savemarksheetSetupForm = async (req, res) => {
   try {
@@ -2818,20 +2856,47 @@ exports.savemarksheetSetupForm = async (req, res) => {
       }
     }
 
-    const savesetting = await marksheetSetup.create({
-      schoolName: req.body.schoolName,
-      address: req.body.address,
-      phone: req.body.phone,
-      email: req.body.email,
-      website: req.body.website,
-      academicYear: req.body.academicYear,
-      totalTerminals: total,
-      terminals
-    });
+    // Check if we're updating an existing setup
+    if (req.query.edit === 'true' && req.query.id) {
+      // Update existing setup
+      await marksheetSetup.findByIdAndUpdate(req.query.id, {
+        schoolName: req.body.schoolName,
+        address: req.body.address,
+        phone: req.body.phone,
+        email: req.body.email,
+        website: req.body.website,
+        academicYear: req.body.academicYear,
+        totalTerminals: total,
+        terminals
+      });
+    } else {
+      // Create new setup
+      await marksheetSetup.create({
+        schoolName: req.body.schoolName,
+        address: req.body.address,
+        phone: req.body.phone,
+        email: req.body.email,
+        website: req.body.website,
+        academicYear: req.body.academicYear,
+        totalTerminals: total,
+        terminals
+      });
+    }
 
-    res.render("success");
+    res.redirect('/marksheetsetup');
   } catch (err) {
     console.error(err);
     res.status(500).send("Error saving marksheet setup");
+  }
+};
+
+exports.deletemarksheetSetup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await marksheetSetup.findByIdAndDelete(id);
+    res.redirect('/marksheetsetup');
+  } catch (err) {
+    console.error("Error deleting marksheet setup:", err);
+    res.status(500).send("Error deleting marksheet setup: " + err.message);
   }
 };

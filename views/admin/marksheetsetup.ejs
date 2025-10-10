@@ -421,7 +421,7 @@
 
         <div class="form-group">
           <label for="totalTerminals">Total Terminals</label>
-          <input type="number" name="totalTerminals" id="totalTerminals" placeholder="Enter Total Terminals" min="1" max="10" value="<%= typeof editData !== 'undefined' && editData && editData.terminals ? editData.terminals.length : '' %>" oninput="addMoreTerminals()" required>
+          <input type="number" name="totalTerminals" id="totalTerminals" placeholder="Enter Total Terminals" min="1" max="10" value="<%= typeof editData !== 'undefined' && editData && editData.terminals ? editData.terminals.length : '1' %>" oninput="addMoreTerminals()" required>
         </div>
 
         <div id="terminalsContainer">
@@ -540,13 +540,13 @@
         terminalDiv.innerHTML = `
           <div class="form-group">
             <label for="terminalName${i}">Terminal ${i} Name:</label>
-            <input type="text" id="terminalName${i}" name="terminals[${i-1}][name]" 
+            <input type="text" id="terminalName${i}" name="name${i}" 
                    placeholder="e.g., 1st Terminal, Mid-term" required 
                    style="background: #f8fbff; border: 2px solid #e3f2fd;">
           </div>
           <div class="form-group">
             <label for="workingDays${i}">Working Days:</label>
-            <input type="number" id="workingDays${i}" name="terminals[${i-1}][workingDays]" 
+            <input type="number" id="workingDays${i}" name="workingDays${i}" 
                    placeholder="Number of working days" min="1" max="365" required
                    style="background: #f8fbff; border: 2px solid #e3f2fd;">
           </div>
@@ -600,15 +600,15 @@
         }
         
         // Update input names for proper form submission
-        const nameInput = terminal.querySelector('input[name*="[name]"]');
-        const daysInput = terminal.querySelector('input[name*="[workingDays]"]');
+        const nameInput = terminal.querySelector('input[name*="name"]');
+        const daysInput = terminal.querySelector('input[name*="workingDays"]');
         
         if (nameInput) {
-          nameInput.name = `terminals[${index}][name]`;
+          nameInput.name = `name${index + 1}`;
           nameInput.id = `terminalName${index + 1}`;
         }
         if (daysInput) {
-          daysInput.name = `terminals[${index}][workingDays]`;
+          daysInput.name = `workingDays${index + 1}`;
           daysInput.id = `workingDays${index + 1}`;
         }
       });
@@ -620,6 +620,12 @@
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.querySelector('form');
       const inputs = form.querySelectorAll('input[required]');
+      
+      // Trigger terminal generation if totalTerminals has a value on page load
+      const totalTerminalsInput = document.getElementById('totalTerminals');
+      if (totalTerminalsInput.value && totalTerminalsInput.value > 0) {
+        addMoreTerminals();
+      }
       
       // Add real-time validation
       inputs.forEach(input => {
@@ -646,6 +652,14 @@
         let isValid = true;
         const requiredInputs = form.querySelectorAll('input[required]');
         
+        // Debug: Log form data before submission
+        console.log('Form submission - checking terminal data...');
+        const terminalInputs = form.querySelectorAll('input[name*="name"], input[name*="workingDays"]');
+        console.log('Terminal inputs found:', terminalInputs.length);
+        terminalInputs.forEach((input, index) => {
+          console.log(`Terminal input ${index}:`, input.name, '=', input.value);
+        });
+        
         requiredInputs.forEach(input => {
           if (input.value.trim() === '') {
             input.style.borderColor = '#e74c3c';
@@ -655,6 +669,16 @@
           }
         });
         
+        // Check if terminals are properly generated
+        const terminalNameInputs = form.querySelectorAll('input[name*="name"]:not([name="schoolName"])');
+        const terminalDaysInputs = form.querySelectorAll('input[name*="workingDays"]');
+        
+        if (terminalNameInputs.length === 0 || terminalDaysInputs.length === 0) {
+          e.preventDefault();
+          alert('Please generate terminal inputs by entering the number of terminals first!');
+          return false;
+        }
+        
         if (!isValid) {
           e.preventDefault();
           alert('Please fill in all required fields!');
@@ -662,14 +686,22 @@
         }
         
         // Show loading state
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '⏳ Saving...';
+        const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+        const originalText = submitBtn.value || submitBtn.innerHTML;
+        if (submitBtn.tagName === 'INPUT') {
+          submitBtn.value = '⏳ Saving...';
+        } else {
+          submitBtn.innerHTML = '⏳ Saving...';
+        }
         submitBtn.disabled = true;
         
         // Re-enable after a delay (in case of error)
         setTimeout(() => {
-          submitBtn.innerHTML = originalText;
+          if (submitBtn.tagName === 'INPUT') {
+            submitBtn.value = originalText;
+          } else {
+            submitBtn.innerHTML = originalText;
+          }
           submitBtn.disabled = false;
         }, 5000);
       });

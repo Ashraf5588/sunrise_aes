@@ -244,6 +244,7 @@ student.get('/theme/previous-data', verifytoken, authorized, themecontroller.get
 student.get('/theme/student-themes', verifytoken, authorized, themecontroller.getStudentThemes);
 student.get('/marksheetsetup',verifytoken,authorized,isAdmin,admincontrol.showmarksheetSetupForm);
 student.post('/marksheetsetup',verifytoken,authorized,isAdmin,admincontrol.savemarksheetSetupForm);
+student.get('/marksheetsetup/delete/:id',verifytoken,authorized,isAdmin,admincontrol.deletemarksheetSetup);
 student.get('/class',verifytoken,authorized,practical410controller.chooseClass);
 student.get('/evaluationform',verifytoken,authorized,practical410controller.evaluationForm);
 student.get('/practicaldetailform',verifytoken,authorized,practical410controller.showpracticalDetailForm);
